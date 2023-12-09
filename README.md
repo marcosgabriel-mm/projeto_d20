@@ -1,16 +1,11 @@
-# d20_project
+# PROJETO D20
 
-A new Flutter project.
+## Introdução
 
-## Getting Started
+>Esse projeto está sendo feito por pessoas que estão apredendo a linguagem usada. Algo pode quebrar
 
-This project is a starting point for a Flutter application.
+O projeto D20 foi criado com o objetivo de simplificar a organização das iniciativas em jogos de RPG de mesa. A motivação para sua criação surgiu da dificuldade que eu e meus amigos encontramos ao tentar coordenar as ações de cada personagem durante uma batalha. O desafio de determinar quem agiria primeiro tornava-se uma tarefa complexa.
 
-A few resources to get you started if this is your first Flutter project:
+Além disso, visamos expandir a aplicação para incluir funcionalidades que permitam a gestão de fichas de personagens. Isso engloba a criação, atualização, exclusão e visualização das fichas. Com essa abordagem, pretendemos simplificar e agilizar o processo de criação de fichas de RPG de mesa, tornando-o menos árduo e mais acessível.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Ao centralizar todas essas funcionalidades em uma única plataforma, buscamos oferecer uma solução abrangente que atenda às necessidades dos jogadores de RPG de mesa, proporcionando uma experiência mais fluida e agradável durante as partidas.
