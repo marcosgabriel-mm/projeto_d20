@@ -39,23 +39,6 @@ class ThemeConfig {
     iconTheme: const IconThemeData(
       color: Colors.white,
     ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ButtonStyle(
-        alignment: Alignment.center,
-        iconColor: const MaterialStatePropertyAll(Colors.white),
-        padding: const MaterialStatePropertyAll(EdgeInsets.fromLTRB(32, 16, 32, 16)),
-        elevation: const MaterialStatePropertyAll(5),
-        backgroundColor: MaterialStatePropertyAll(ColorsApp.instance.secondaryColor),
-        shape: const MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))))
-      )
-    ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: ColorsApp.instance.primaryColor,
-      selectedLabelStyle: TextStyles.instance.boldItalic,
-      selectedItemColor: Colors.white,
-      unselectedLabelStyle: TextStyles.instance.regular,
-      landscapeLayout: BottomNavigationBarLandscapeLayout.centered
-    ),
   );
 }
 

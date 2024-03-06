@@ -14,14 +14,14 @@ class TextStyles {
 
   TextStyle get regular => TextStyle(
     fontWeight: FontWeight.normal,
-    fontSize: 12,
+    fontSize: 16,
     color: Colors.white,
     fontFamily: font
   );
 
   TextStyle get boldItalic => TextStyle(
     fontWeight: FontWeight.bold,
-    fontSize: 12,
+    fontSize: 16,
     color: Colors.white,
     fontFamily: font
   );
