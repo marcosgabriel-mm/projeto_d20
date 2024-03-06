@@ -1,4 +1,4 @@
-import 'package:d20_project/src/views/battles/home_view.dart';
+import 'package:d20_project/src/views/home_view.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 
