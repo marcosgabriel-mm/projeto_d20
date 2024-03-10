@@ -2,10 +2,17 @@ import 'package:d20_project/styles/text_styles.dart';
 import 'package:flutter/material.dart';
 
 class InputSheet extends StatelessWidget {
-  const InputSheet({super.key, required this.campoTexto, required this.entradaExemplo});
+  
+  const InputSheet({
+    super.key, 
+    required this.campoTexto, 
+    required this.entradaExemplo, 
+    required this.controller, 
+  });
 
   final String campoTexto;
   final String entradaExemplo;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +26,10 @@ class InputSheet extends StatelessWidget {
             child: Text(campoTexto, style: TextStyles.instance.regular),
           ),
           TextFormField(
+            keyboardType: keyboardType(campoTexto),
+            controller: controller,
+            cursorColor: Colors.white,
+            style: TextStyles.instance.boldItalic,
             decoration: InputDecoration(
               hintText: entradaExemplo,
               hintStyle: TextStyles.instance.regular.copyWith(color: Colors.grey),
@@ -30,5 +41,14 @@ class InputSheet extends StatelessWidget {
         ],
       ),
     );
+  }
+  
+}
+
+TextInputType keyboardType(String campoTexto){
+  if (campoTexto == "Iniciativa") {
+    return TextInputType.number;
+  } else {
+    return TextInputType.text;
   }
 }
