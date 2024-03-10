@@ -1,4 +1,4 @@
-import 'package:d20_project/src/views/home_view.dart';
+import 'package:d20_project/src/views/initiatives_view.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +10,7 @@ class AppWidget extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeConfig.theme,
-      home: const HomeView(),
+      home: const InitiativeView(),
     );
   }
 }
