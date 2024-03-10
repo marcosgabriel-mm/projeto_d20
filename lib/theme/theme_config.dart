@@ -7,7 +7,7 @@ class ThemeConfig {
   
   ThemeConfig._();
   static final _defaultInputBorder = OutlineInputBorder(
-    borderRadius: BorderRadius.circular(15),
+    borderRadius: BorderRadius.circular(5),
     borderSide: const BorderSide(color: Colors.white)
   );
 
