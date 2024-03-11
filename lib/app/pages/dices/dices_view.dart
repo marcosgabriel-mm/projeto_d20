@@ -1,4 +1,4 @@
-import 'package:d20_project/styles/text_styles.dart';
+import 'package:d20_project/app/development_page.dart';
 import 'package:flutter/material.dart';
 
 class Dices extends StatelessWidget {
@@ -6,13 +6,6 @@ class Dices extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dices'),
-      ),
-      body: Center(
-        child: Text('Dices', style: TextStyles.instance.boldItalic,),
-      ),
-    );
+    return const DevelopmentPage();
   }
 }

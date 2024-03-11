@@ -39,6 +39,7 @@ class ThemeConfig {
     iconTheme: const IconThemeData(
       color: Colors.white,
     ),
+    
   );
 }
 

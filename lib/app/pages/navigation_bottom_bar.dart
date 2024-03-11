@@ -9,10 +9,10 @@ class BottomBar extends StatefulWidget {
   const BottomBar({Key? key, required this.currentIndex, required this.onTap}) : super(key: key);
 
   @override
-  _BottomBarState createState() => _BottomBarState();
+  BottomBarState createState() => BottomBarState();
 }
 
-class _BottomBarState extends State<BottomBar> {
+class BottomBarState extends State<BottomBar> {
   String? selectedButton = "Iniciativas";
 
   @override

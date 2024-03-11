@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:d20_project/app/pages/initiatives/widgets/initiatives_sheet.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/Sheet/initiatives_sheet.dart';
 import 'package:flutter/material.dart';
 
 
@@ -29,14 +29,14 @@ class BarraApp extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _BarraAppState extends State<BarraApp> {
-  
+  final horizontalPadding = 18.0;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: !widget.isSelectionMode 
         ? Padding(
-          padding: const EdgeInsets.only(left: 18),
+          padding: EdgeInsets.only(left: horizontalPadding),
           child: Text("Iniciativas", style: TextStyles.instance.regular),
         ) 
         : Padding(
@@ -47,18 +47,7 @@ class _BarraAppState extends State<BarraApp> {
               IconButton(
                 onPressed: () {
                   setState(() {
-                    if (widget.icon == Icons.radio_button_off) {
-                      for (var element in playersList) {
-                        element.isSelected = true;
-                      }
-                      widget.onIconChanged(Icons.radio_button_on);
-                    }
-                    else {
-                      for (var element in playersList) {
-                        element.isSelected = false;
-                      }
-                      widget.onIconChanged(Icons.radio_button_off);
-                    }
+                    widget.onIconChanged(changeIcon(widget.icon));
                     widget.refreshNotifier.value++;
                   });
                 },
@@ -79,7 +68,7 @@ class _BarraAppState extends State<BarraApp> {
           onPressed: ()  async { displayBottomSheet(context, () => widget.refreshNotifier.value++);},
         ),
         Padding(
-          padding: const EdgeInsets.only(right: 18),
+          padding: EdgeInsets.only(right: horizontalPadding),
           child: IconButton(
             tooltip: "Ordenar iniciativas",
             onPressed: () {},
@@ -89,15 +78,7 @@ class _BarraAppState extends State<BarraApp> {
               icon: const Icon(Icons.sort, color: Colors.white,),
               onSelected: (value) {
                 setState(() {
-                  if (value == "Nome") {
-                    playersList.sort((a, b) => a.playerName.compareTo(b.playerName));
-                  } else if (value == "Decrescente") {
-                    playersList.sort((a, b) => b.initiatives.compareTo(a.initiatives));
-                  } else if (value == "Crescente") {
-                    playersList.sort((a, b) => a.initiatives.compareTo(b.initiatives));
-                  } else {
-                    playersList.sort((a, b) => a.playerClass.compareTo(b.playerClass));
-                  }
+                  sortList(value);
                   widget.refreshNotifier.value++;
                 });
               },
@@ -114,5 +95,32 @@ class _BarraAppState extends State<BarraApp> {
         ),
       ],
     );
+  }
+}
+
+void sortList(String value) {
+  if (value == "Nome") {
+    playersList.sort((a, b) => a.playerName.compareTo(b.playerName));
+  } else if (value == "Decrescente") {
+    playersList.sort((a, b) => b.initiatives.compareTo(a.initiatives));
+  } else if (value == "Crescente") {
+    playersList.sort((a, b) => a.initiatives.compareTo(b.initiatives));
+  } else {
+    playersList.sort((a, b) => a.playerClass.compareTo(b.playerClass));
+  }
+}
+
+IconData changeIcon(IconData icon) {
+  if (icon == Icons.radio_button_off) {
+    for (var element in playersList) {
+      element.isSelected = true;
+    }
+    return (Icons.radio_button_on);
+  }
+  else {
+    for (var element in playersList) {
+      element.isSelected = false;
+    }
+    return (Icons.radio_button_off);
   }
 }

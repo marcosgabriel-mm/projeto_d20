@@ -1,6 +1,6 @@
 import 'package:d20_project/app/pages/initiatives/widgets/initiatives_appbar.dart';
 import 'package:d20_project/app/pages/initiatives/widgets/initiatives_itens.dart';
-import 'package:d20_project/app/pages/initiatives/widgets/initiatives_bottom_menu.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/bottomBar/initiatives_bottom_menu.dart';
 import 'package:d20_project/app/models/players.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';

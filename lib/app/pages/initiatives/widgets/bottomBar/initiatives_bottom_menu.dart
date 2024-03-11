@@ -1,4 +1,4 @@
-import 'package:d20_project/app/pages/initiatives/widgets/bottom_menu_button.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/bottomBar/bottom_menu_button.dart';
 import 'package:flutter/material.dart';
 
 class SelectionBottomMenu extends StatelessWidget {
