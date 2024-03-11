@@ -1,5 +1,5 @@
-import 'package:d20_project/src/views/components/bottom_sheet_input.dart';
-import 'package:d20_project/src/models/players.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/initiatives_sheet_input.dart';
+import 'package:d20_project/app/models/players.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:flutter/material.dart';

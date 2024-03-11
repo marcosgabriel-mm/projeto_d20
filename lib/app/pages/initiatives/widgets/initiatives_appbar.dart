@@ -1,8 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:d20_project/app/pages/initiatives/widgets/initiatives_sheet.dart';
 import 'package:flutter/material.dart';
 
-import 'package:d20_project/src/views/components/bottom_sheet.dart';
-import 'package:d20_project/src/models/players.dart';
+
+import 'package:d20_project/app/models/players.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';
 

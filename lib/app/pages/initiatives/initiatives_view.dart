@@ -1,16 +1,19 @@
-import 'package:d20_project/src/views/components/navigation_bottom_bar.dart';
-import 'package:d20_project/src/views/components/initiatives_and_names.dart';
-import 'package:d20_project/src/views/components/selection_bottom_menu.dart';
-import 'package:d20_project/src/models/players.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/initiatives_appbar.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/initiatives_itens.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/initiatives_bottom_menu.dart';
+import 'package:d20_project/app/models/players.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'components/app_bar.dart';
+
 
 class InitiativeView extends StatefulWidget {
+  final VoidCallback onSelectionModeChanged;
+
   const InitiativeView({
-    super.key,        
+    super.key,   
+    required this.onSelectionModeChanged     
   });
 
   @override
@@ -46,6 +49,7 @@ class _InitiativeViewState extends State<InitiativeView> {
         if (isSelectionMode) {
           setState(() {
             isSelectionMode = false;
+            widget.onSelectionModeChanged();
             _icon = Icons.radio_button_off;
             for (var element in playersList) {
               element.isSelected = false;}
@@ -66,7 +70,7 @@ class _InitiativeViewState extends State<InitiativeView> {
           },
         ),
         bottomNavigationBar: !isSelectionMode 
-          ? const BottomBar() 
+          ? const SizedBox()
           : SelectionBottomMenu(
             callback: () {
               setState(() {
@@ -98,7 +102,7 @@ class _InitiativeViewState extends State<InitiativeView> {
                     style: ButtonStyle(
                       elevation: MaterialStateProperty.all<double>(0),
                       backgroundColor: MaterialStateProperty.all<Color>(
-                        playersList[index].isSelected
+                        playersList[index].isSelected && isSelectionMode
                         ? ColorsApp.instance.secondaryColor
                         : ColorsApp.instance.primaryColor,
                       ),
@@ -106,8 +110,9 @@ class _InitiativeViewState extends State<InitiativeView> {
                     onLongPress: () {
                       setState(() {
                         if (isSelectionMode){ return;}
-                        playersList[index].isSelected = !playersList[index].isSelected;
                         isSelectionMode = true;
+                        widget.onSelectionModeChanged();
+                        playersList[index].isSelected = !playersList[index].isSelected;
                       });
                     },
                     onPressed: () {

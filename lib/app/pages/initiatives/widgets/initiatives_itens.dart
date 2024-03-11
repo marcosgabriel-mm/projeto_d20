@@ -1,4 +1,4 @@
-import 'package:d20_project/src/views/components/custom_column_text.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/initiatives_column_text.dart';
 import 'package:flutter/material.dart';
 
 class ItensNames extends StatelessWidget {
