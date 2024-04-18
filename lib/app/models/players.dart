@@ -14,5 +14,3 @@ class Players {
   
 
 }
-
-List<Players> playersList = []..sort((a, b) => b.initiatives.compareTo(a.initiatives));

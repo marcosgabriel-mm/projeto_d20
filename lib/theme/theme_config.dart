@@ -39,7 +39,11 @@ class ThemeConfig {
     iconTheme: const IconThemeData(
       color: Colors.white,
     ),
-    
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        iconColor: MaterialStateProperty.all<Color>(Colors.white)
+      )
+    ),    
   );
 }
 

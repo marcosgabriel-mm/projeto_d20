@@ -2,29 +2,24 @@ import 'package:d20_project/app/pages/initiatives/widgets/bottomBar/bottom_menu_
 import 'package:flutter/material.dart';
 
 class SelectionBottomMenu extends StatelessWidget {
-  final Function callback;
-
   const SelectionBottomMenu({
-    super.key, 
-    required this.callback, 
+    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return const SizedBox(
       height: 60,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           BottomButtonMenu(
-            textLabel: "Editar", 
+            textLabel: "Editar",
             icon: Icons.edit,
-            onPressedCallback: () { callback(); },            
           ),
           BottomButtonMenu(
-            textLabel: "Excluir", 
+            textLabel: "Excluir",
             icon: Icons.delete,
-            onPressedCallback: () { callback(); },
           ),
         ],
       ),

@@ -1,18 +1,19 @@
-import 'package:d20_project/app/models/players.dart';
+import 'package:d20_project/app/providers/initiatives_provider.dart';
+import 'package:d20_project/app/providers/players_provider.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BottomButtonMenu extends StatelessWidget {
   
   final String textLabel;
   final IconData icon;
-  final Function onPressedCallback;
   
   const BottomButtonMenu({
     super.key, 
     required this.textLabel, 
-    required this.icon, required this.onPressedCallback, 
+    required this.icon,
   });
 
   @override
@@ -21,7 +22,7 @@ class BottomButtonMenu extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {
           if (textLabel == "Excluir") {
-            removePlayerList(context, playersList, () => onPressedCallback());
+            removePlayerList(context);
           }
         },
         style: ButtonStyle(
@@ -43,7 +44,7 @@ class BottomButtonMenu extends StatelessWidget {
   }
 }
 
-Future<dynamic> removePlayerList(context, List listOfPlayers, Function callback) {
+Future<dynamic> removePlayerList(context) {
   return showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -68,9 +69,10 @@ Future<dynamic> removePlayerList(context, List listOfPlayers, Function callback)
         ),
         TextButton(
           onPressed: () {
+            context.read<PlayersProvider>().removePlayer();
+            context.read<InitiativesProvider>().setIcon(Icons.radio_button_off);
+            context.read<InitiativesProvider>().toogleSelectionMode();
             Navigator.pop(context);
-            listOfPlayers.removeWhere((element) => element.isSelected);
-            callback();
           },
           child: Text(
             "Excluir",

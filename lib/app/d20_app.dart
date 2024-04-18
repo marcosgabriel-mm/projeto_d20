@@ -1,6 +1,8 @@
+import 'package:d20_project/app/pages/character_sheet/character_sheet_view.dart';
 import 'package:d20_project/app/pages/dices/dices_view.dart';
 import 'package:d20_project/app/pages/initiatives/initiatives_view.dart';
 import 'package:d20_project/app/pages/navigation_bottom_bar.dart';
+import 'package:d20_project/app/pages/notes/notes_view.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +27,9 @@ class _AppWidgetState extends State<AppWidget> {
           _showBottomBar = !_showBottomBar;
         });
       }),
-      const Dices(),
+      Dices(),
+      const Notes(),
+      const CharacterSheet()
     ];
   }
 

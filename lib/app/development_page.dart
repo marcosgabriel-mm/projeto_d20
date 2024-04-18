@@ -12,14 +12,15 @@ class DevelopmentPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SvgPicture.asset('assets/svg/puppy_config.svg'),
             Padding(
               padding: const EdgeInsets.all(32),
               child: Text(
-                'Tela Indisponivel. Em desenvolvimento.', 
+                'Tela em desenvolvimento.\nVolte mais tarde...', 
                 style: TextStyles.instance.boldItalic,
+                textAlign: TextAlign.center,
               ),
             ),
-            SvgPicture.asset('assets/svg/sadface.svg')
           ],
         ),
       ),

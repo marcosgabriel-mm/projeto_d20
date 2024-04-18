@@ -20,9 +20,8 @@ class BottomBarState extends State<BottomBar> {
     var buttons = [
       "Iniciativas",
       "Dados",
-      "Personagens",
-      "Notas",
-      "Equipamentos",
+      "Fichas",
+      "Anotações",
     ];
 
     return Padding(
