@@ -3,6 +3,7 @@ import 'package:d20_project/app/utils/sort_functions.dart';
 import 'package:flutter/material.dart';
 
 class DicesProvider extends ChangeNotifier {
+  int _totalResult = 0;
   List<Map<dynamic, dynamic>> _resultList = [];
   List<Dices> _justSelectedDices = [];
   List<Dices> _dicesList = [
@@ -45,6 +46,7 @@ class DicesProvider extends ChangeNotifier {
   List<Dices> get dicesList => _dicesList;
   List<Map<dynamic, dynamic>> get resultList => _resultList;
   List<Dices> get justSelectedDices => _justSelectedDices;
+  int get totalResult => _totalResult;
 
   void addJustSelectedDices(List<Dices> dice) {
     for (var dices in dicesList) {
@@ -70,8 +72,30 @@ class DicesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String formatResultList(List<Map<dynamic, dynamic>> resultList) {
+  return resultList.map((result) {
+    final diceName = result.keys.first;
+    final numbersRolled = result[diceName]?.join(', ');
+    final totalForEachDice = result[diceName].fold(0, (previousValue, element) => previousValue + element);
+    return '$diceName:  $numbersRolled  ➡  $totalForEachDice';
+  }).join('\n\n');
+}
+
   void clearResult() {
     _resultList.clear();
+    notifyListeners();
+  }
+
+  void totalResultForTheRoll() {
+    _totalResult = 0;
+
+    for (var result in _resultList) {
+      for (var key in result.keys) {
+        for (var value in result[key]) {
+          _totalResult += value as int;
+        }
+      }
+    }
     notifyListeners();
   }
 

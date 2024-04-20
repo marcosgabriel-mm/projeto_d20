@@ -19,9 +19,27 @@ class AppFunctions {
         break;
       case "Rolar":
         rollDices(context);
+        screenPopUp(
+          context, 
+          "Soma total dos dados: ${context.read<DicesProvider>().totalResult.toString()}",
+          context.read<DicesProvider>().formatResultList(context.read<DicesProvider>().resultList),
+          ["Ok"],
+          [() => context.read<DicesProvider>().clearResult()]
+        );
         break;
       case "Excluir":
-        removeItems(context, "Excluir", "Deseja excluir os itens selecionados?",["Cancelar", "Excluir"]);
+        screenPopUp(
+          context, 
+          "Excluir", 
+          "Deseja excluir os itens selecionados?",
+          ["Cancelar", "Excluir"],
+          [ 
+            () => context.read<PlayersProvider>().removePlayer(),
+            () => context.read<InitiativesProvider>().setIcon(Icons.radio_button_off),
+            () => context.read<D20Provider>().toogleSelectionMode(),
+            () => context.read<D20Provider>().turnOffOrOnBottomBar()
+          ]
+        );
         break;
       default:
     }
@@ -44,15 +62,17 @@ class AppFunctions {
       dicesProvider.addResult({dice.diceName: numbersRolled});
     }
 
-    print(dicesProvider.resultList);
+    context.read<DicesProvider>().totalResultForTheRoll();
+    // print(dicesProvider.resultList);
+    // print(dicesProvider.totalResult);
   }
 
   static void clearSelection(BuildContext context) {
     context.read<DicesProvider>().clearNumberOfDicesToRoll();
   }
 
-  static Future<dynamic> removeItems(
-      context, String title, String content, List<String> textLabel) {
+  static Future<dynamic> screenPopUp(
+      context, String title, String content, List<String> textLabel, List<Function> listOfComands) {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -71,10 +91,7 @@ class AppFunctions {
               context: context,
               textLabel: item,
               listOfComands: [
-                () => context.read<PlayersProvider>().removePlayer(),
-                () => context.read<InitiativesProvider>().setIcon(Icons.radio_button_off),
-                () => context.read<D20Provider>().toogleSelectionMode(),
-                () => context.read<D20Provider>().turnOffOrOnBottomBar(),
+                for (var command in listOfComands) command,
               ],
             ),
         ],
