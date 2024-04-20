@@ -1,0 +1,124 @@
+import 'package:d20_project/app/models/dices.dart';
+import 'package:d20_project/app/utils/sort_functions.dart';
+import 'package:flutter/material.dart';
+
+class DicesProvider extends ChangeNotifier {
+  List<Map<dynamic, dynamic>> _resultList = [];
+  List<Dices> _justSelectedDices = [];
+  List<Dices> _dicesList = [
+    Dices(
+        diceName: "D4",
+        diceDescription: "Dado de 4 faces",
+        numberOfDicesToRoll: 0,
+        diceIcon: "assets/images/dice-d4.png"),
+    Dices(
+        diceName: "D6",
+        diceDescription: "Dado de 6 faces",
+        numberOfDicesToRoll: 0,
+        diceIcon: "assets/images/dice-d6.png"),
+    Dices(
+        diceName: "D8",
+        diceDescription: "Dado de 8 faces",
+        numberOfDicesToRoll: 0,
+        diceIcon: "assets/images/dice-d8.png"),
+    Dices(
+        diceName: "D10",
+        diceDescription: "Dado de 10 faces",
+        numberOfDicesToRoll: 0,
+        diceIcon: "assets/images/dice-d10.png"),
+    Dices(
+        diceName: "D12",
+        diceDescription: "Dado de 12 faces",
+        numberOfDicesToRoll: 0,
+        diceIcon: "assets/images/dice-d12.png"),
+    Dices(
+        diceName: "D20",
+        diceDescription: "Dado de 20 faces",
+        numberOfDicesToRoll: 0,
+        diceIcon: "assets/images/dice-d20.png"),
+    Dices(
+        diceName: "D100",
+        diceDescription: "Dado de 100 faces",
+        numberOfDicesToRoll: 0,
+        diceIcon: "assets/images/dice-d10.png"),
+  ];
+  List<Dices> get dicesList => _dicesList;
+  List<Map<dynamic, dynamic>> get resultList => _resultList;
+  List<Dices> get justSelectedDices => _justSelectedDices;
+
+  void addJustSelectedDices(List<Dices> dice) {
+    for (var dices in dicesList) {
+      if (dices.numberOfDicesToRoll > 0) {
+        _justSelectedDices.add(dices);
+      }
+    }
+    notifyListeners();
+  }
+
+  void sortDices(String value){
+    SortFunctions.sortDices(value, _dicesList)();
+    notifyListeners();
+  }
+
+  void clearDicesSelected() {
+    _justSelectedDices.clear();
+    notifyListeners();
+  }
+
+  void addResult(Map value) {
+    _resultList.add(value);
+    notifyListeners();
+  }
+
+  void clearResult() {
+    _resultList.clear();
+    notifyListeners();
+  }
+
+  void addDice(List<TextEditingController> controllers){
+    _dicesList.add(Dices(
+      diceName: "D${controllers[0].text}",
+      diceDescription: controllers[1].text,
+      numberOfDicesToRoll: 0,
+    ));
+    dicesList.sort((a, b) {
+      int numberA = int.parse(a.diceName.substring(1));
+      int numberB = int.parse(b.diceName.substring(1));
+      return numberA.compareTo(numberB);
+    });
+    notifyListeners();
+  }
+
+  void removeDice(int index) {
+    _dicesList.removeAt(index);
+    notifyListeners();
+  }
+
+  void addDiceToRoll(int index) {
+    _dicesList[index].numberOfDicesToRoll++;
+    notifyListeners();
+  }
+
+  void removeDiceToRoll(int index) {
+    if (_dicesList[index].numberOfDicesToRoll > 0) {
+      _dicesList[index].numberOfDicesToRoll--;
+      notifyListeners();
+    }
+  }
+
+  bool get isAnyDiceSelected {
+    for (var dice in _dicesList) {
+      if (dice.numberOfDicesToRoll > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void clearNumberOfDicesToRoll() {
+    for (var dice in _dicesList) {
+      dice.numberOfDicesToRoll = 0;
+    }
+    notifyListeners();
+  }
+}
