@@ -1,10 +1,12 @@
 import 'package:d20_project/app/pages/character_sheet/character_sheet_view.dart';
 import 'package:d20_project/app/pages/dices/dices_view.dart';
 import 'package:d20_project/app/pages/initiatives/initiatives_view.dart';
-import 'package:d20_project/app/pages/navigation_bottom_bar.dart';
+import 'package:d20_project/app/widgets/navigation_bottom_bar.dart';
 import 'package:d20_project/app/pages/notes/notes_view.dart';
+import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AppWidget extends StatefulWidget {
   const AppWidget({super.key});
@@ -14,20 +16,15 @@ class AppWidget extends StatefulWidget {
 }
 
 class _AppWidgetState extends State<AppWidget> {
-  int _currentIndex = 0;
-  bool _showBottomBar = true;
+  late D20Provider d20Provider;
   late List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
     _pages = [
-      InitiativeView(onSelectionModeChanged: () {
-        setState(() {
-          _showBottomBar = !_showBottomBar;
-        });
-      }),
-      Dices(),
+      const InitiativeView(),
+      const Dices(),
       const Notes(),
       const CharacterSheet()
     ];
@@ -35,21 +32,22 @@ class _AppWidgetState extends State<AppWidget> {
 
   @override
   Widget build(BuildContext context) {
+    d20Provider = context.watch<D20Provider>();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeConfig.theme,
       home: Scaffold(
-        body: _currentIndex < _pages.length ? _pages[_currentIndex] : null,
-        bottomNavigationBar: _showBottomBar ? BottomBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            if (index < _pages.length) {
-              setState(() {
-                _currentIndex = index;
-              });
-            }
-          },
-        ) : null,
+        body: d20Provider.currentIndex < _pages.length ? _pages[d20Provider.currentIndex] : null,
+        bottomNavigationBar: d20Provider.toogleBottomBar
+            ? BottomBar(
+                currentIndex: d20Provider.currentIndex,
+                onTap: (index) {
+                  if (index < _pages.length) {
+                    d20Provider.updateBottomMenuState(index);
+                  }
+                },
+              )
+            : null,
       ),
     );
   }
