@@ -2,6 +2,9 @@ import 'package:d20_project/styles/text_styles.dart';
 import 'package:flutter/material.dart';
 
 class InputSheet extends StatelessWidget {
+  final String campoTexto;
+  final String entradaExemplo;
+  final TextEditingController controller;
   
   const InputSheet({
     super.key, 
@@ -9,10 +12,6 @@ class InputSheet extends StatelessWidget {
     required this.entradaExemplo, 
     required this.controller, 
   });
-
-  final String campoTexto;
-  final String entradaExemplo;
-  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +25,12 @@ class InputSheet extends StatelessWidget {
             child: Text(campoTexto, style: TextStyles.instance.regular),
           ),
           TextFormField(
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, preencha o campo';
+              }
+              return null;
+            },
             keyboardType: keyboardType(campoTexto),
             controller: controller,
             cursorColor: Colors.white,
@@ -46,7 +51,7 @@ class InputSheet extends StatelessWidget {
 }
 
 TextInputType keyboardType(String campoTexto){
-  if (campoTexto == "Iniciativa") {
+  if (campoTexto.contains("Quantidade de lados") || campoTexto.contains("Iniciativa")) {
     return TextInputType.number;
   } else {
     return TextInputType.text;

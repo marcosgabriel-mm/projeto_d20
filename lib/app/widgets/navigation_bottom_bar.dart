@@ -6,23 +6,34 @@ class BottomBar extends StatefulWidget {
   final int currentIndex;
   final Function(int) onTap;
 
-  const BottomBar({Key? key, required this.currentIndex, required this.onTap}) : super(key: key);
+  const BottomBar({
+    Key? key, 
+    required this.currentIndex, 
+    required this.onTap
+  }) : super(key: key);
 
   @override
   BottomBarState createState() => BottomBarState();
 }
 
 class BottomBarState extends State<BottomBar> {
-  String? selectedButton = "Iniciativas";
 
   @override
   Widget build(BuildContext context) {
+    
+    String? selectedButton;
     var buttons = [
       "Iniciativas",
       "Dados",
       "Fichas",
       "Anotações",
     ];
+
+    for (var i = 0; i < buttons.length; i++) {
+      if (i == widget.currentIndex) {
+        selectedButton = buttons[i];
+      }
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -37,19 +48,21 @@ class BottomBarState extends State<BottomBar> {
 
             return TextButton(
               style: ButtonStyle(
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
-                ),
-                foregroundColor: MaterialStateProperty.all(
-                  text == selectedButton ? Colors.white : Colors.white30,
-                ),
-                overlayColor: MaterialStateProperty.all(
-                  text == selectedButton ? Colors.white.withOpacity(0.1) : null,
-                ),
-                textStyle: MaterialStatePropertyAll(TextStyles.instance.regular)
-              ),
+                  foregroundColor: MaterialStateProperty.all(
+                    text == selectedButton ? Colors.white : Colors.white30,
+                  ),
+                  overlayColor: MaterialStateProperty.all(
+                    text == selectedButton
+                        ? Colors.white.withOpacity(0.1)
+                        : null,
+                  ),
+                  textStyle:
+                      MaterialStatePropertyAll(TextStyles.instance.regular)),
               child: Text(text),
               onPressed: () {
                 setState(() {

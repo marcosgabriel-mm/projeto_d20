@@ -1,6 +1,7 @@
-import 'package:d20_project/app/pages/initiatives/initiatives_appbar.dart';
 import 'package:d20_project/app/pages/initiatives/widgets/initiatives_itens.dart';
-import 'package:d20_project/app/pages/initiatives/widgets/bottomBar/initiatives_bottom_menu.dart';
+import 'package:d20_project/app/widgets/appbar.dart';
+import 'package:d20_project/app/widgets/selection_bottom_menu.dart';
+import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/initiatives_provider.dart';
 import 'package:d20_project/app/providers/players_provider.dart';
 import 'package:d20_project/styles/text_styles.dart';
@@ -9,9 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class InitiativeView extends StatefulWidget {
-  final VoidCallback onSelectionModeChanged;
-
-  const InitiativeView({super.key, required this.onSelectionModeChanged});
+  const InitiativeView({super.key});
 
   @override
   State<InitiativeView> createState() => _InitiativeViewState();
@@ -20,32 +19,28 @@ class InitiativeView extends StatefulWidget {
 class _InitiativeViewState extends State<InitiativeView> {
   late InitiativesProvider initiativesProvider;
   late PlayersProvider playersProvider;
+  late D20Provider d20Provider;
 
   @override
   Widget build(BuildContext context) {
     initiativesProvider = context.watch<InitiativesProvider>();
     playersProvider = context.watch<PlayersProvider>();
+    d20Provider = context.watch<D20Provider>();
 
     return WillPopScope(
       onWillPop: () async {
-        if (initiativesProvider.isSelectionMode) {
-          setState(() {
-            initiativesProvider.toogleSelectionMode();
-            initiativesProvider.setIcon(Icons.radio_button_off);
-            playersProvider.turnAllUnselected();
-          });
-
+        if (d20Provider.isSelectionMode) {
+          d20Provider.toogleSelectionMode();
+          d20Provider.turnOffOrOnBottomBar();
+          playersProvider.turnAllUnselected();
+          initiativesProvider.setIcon(Icons.radio_button_off);
           return false;
         }
         return true;
       },
       child: Scaffold(
-        appBar: BarraApp(
-          title: "Iniciativas",
-        ),
-        bottomNavigationBar: !initiativesProvider.isSelectionMode
-            ? const SizedBox()
-            : const SelectionBottomMenu(),
+        appBar: const ApplicationBar(title: "Iniciativas", listOfSorts: ["Crescente", "Decrescente", "Nome", "Classe"]),
+        bottomNavigationBar: !d20Provider.isSelectionMode ? const SizedBox() : const SelectionBottomMenu(textLabel: ["Editar", "Excluir"], icons: [Icons.edit, Icons.delete]),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -73,17 +68,17 @@ class _InitiativeViewState extends State<InitiativeView> {
                               ),
                               onLongPress: () {
                                 setState(() {
-                                  if (initiativesProvider.isSelectionMode) {
+                                  if (d20Provider.isSelectionMode) {
                                     return;
                                   }
-                                  initiativesProvider.toogleSelectionMode();
-                                  widget.onSelectionModeChanged();
+                                  d20Provider.toogleSelectionMode();
+                                  d20Provider.turnOffOrOnBottomBar();
                                   playersProvider.playerSelect(index);
                                 });
                               },
                               onPressed: () {
                                 setState(() {
-                                  if (!initiativesProvider.isSelectionMode) {
+                                  if (!d20Provider.isSelectionMode) {
                                     return;
                                   }
                                   playersProvider.playerSelect(index);
@@ -102,7 +97,7 @@ class _InitiativeViewState extends State<InitiativeView> {
                                     ? Icons.radio_button_on
                                     : initiativesProvider.icon,
                                 isSelectionMode:
-                                    initiativesProvider.isSelectionMode,
+                                    d20Provider.isSelectionMode,
                                 alignText: TextAlign.center,
                               ),
                             ),
