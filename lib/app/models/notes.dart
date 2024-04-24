@@ -1,15 +1,16 @@
 class Notes {
-
   String title;
   String description;
-  final DateTime creationDate = DateTime.now();
-  DateTime modificationDate = DateTime.now();
+  DateTime creationDate;
+  DateTime modificationDate;
   bool isSelected;
 
   Notes({
     required this.title,
     required this.description,
+    DateTime? creationDate,
+    DateTime? modificationDate,
     this.isSelected = false,
-  });
-
+  })  : creationDate = creationDate ?? DateTime.now(),
+        modificationDate = modificationDate ?? DateTime.now();
 }

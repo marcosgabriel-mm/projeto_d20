@@ -27,7 +27,6 @@ void main() {
         ChangeNotifierProvider(
           create: (context) => D20Provider(),
         )
-        // Adicione mais providers aqui...
       ],
       child: const AppWidget(),
     ),

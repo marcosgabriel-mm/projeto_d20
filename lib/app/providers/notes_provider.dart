@@ -5,19 +5,7 @@ import 'package:flutter/material.dart';
 
 class NotesProvider extends ChangeNotifier {
 
-  List<Notes> _notesList = [
-      Notes(
-        title: "Anotação 1",
-        description: "Descrição da anotação 1",
-        isSelected: false
-      ),
-      Notes(
-        title: "Anotação 2",
-        description: "Descrição da anotação 2",
-        isSelected: false
-      ),
-  ];
-
+  List<Notes> _notesList = [];
   List<Notes> get notesList => _notesList;
 
   void selectOrUnselectAll() {
@@ -86,6 +74,11 @@ class NotesProvider extends ChangeNotifier {
   }
 
   void removeNotes() {
+    for (var note in _notesList) {
+      if (note.isSelected) {
+        FilesProvider().deleteNotes(note.title);
+      }
+    }
     _notesList.removeWhere((note) => note.isSelected);
     notifyListeners();
   }
@@ -94,10 +87,32 @@ class NotesProvider extends ChangeNotifier {
     if (value == "Data de criação") {
           notesList.sort((a, b) => a.creationDate.compareTo(b.creationDate));
         } else if (value == "Data de modificação") {
-          notesList.sort((a, b) => a.modificationDate.compareTo(b.modificationDate));
+          notesList.sort((a, b) => b.modificationDate.compareTo(a.modificationDate));
         } else {
           notesList.sort((a, b) => a.title.compareTo(b.title));
       }
+    notifyListeners();
+  }
+
+  void loadNotesToList(int start) async {
+    List<String> notes = await FilesProvider().readNotes(start);
+
+    for (var i=0; i<notes.length; i+=2) {
+      List<String> noteData = notes[i].split(', ');
+
+      if (_notesList.any((element) => element.title == noteData[0])) {
+        continue;
+      }else{
+        _notesList.add(
+          Notes(
+            title: noteData[0],
+            creationDate: DateTime.parse(noteData[1]),
+            modificationDate: DateTime.parse(noteData[2]),
+            description: notes[i+1],
+          )
+        );
+      }
+    }
     notifyListeners();
   }
 }

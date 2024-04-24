@@ -1,10 +1,13 @@
 import 'package:d20_project/app/pages/notes/widgets/custom_column_for_notes.dart';
 import 'package:d20_project/app/pages/notes/widgets/notes_text.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
+import 'package:d20_project/app/providers/files_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
 import 'package:d20_project/app/widgets/appbar.dart';
 import 'package:d20_project/app/widgets/selection_bottom_menu.dart';
+import 'package:d20_project/styles/text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class NotesView extends StatefulWidget {
@@ -17,8 +20,28 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
+  final FilesProvider filesProvider = FilesProvider();
+  final ScrollController _scrollController = ScrollController();
   late D20Provider d20provider;
   late NotesProvider notesProvider;
+
+  int start = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<NotesProvider>().loadNotesToList(start);
+    _scrollController.addListener(_loadMoreNotes);
+  }
+
+  void _loadMoreNotes(){
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      setState(() {
+        start += 5;
+        context.read<NotesProvider>().loadNotesToList(start);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +54,6 @@ class _NotesViewState extends State<NotesView> {
           d20provider.toogleSelectionMode();
           d20provider.turnOffOrOnBottomBar();
           notesProvider.turnEveryoneUnselected();
-          // notesProvider.turnAllSelecetedOrUnselected();
           return false;
         }
         return true;
@@ -43,8 +65,23 @@ class _NotesViewState extends State<NotesView> {
             listOfSorts: const ["Data de criação", "Data de modificação", "Nome"],
             areAllSelected: d20provider.areAllSelectedFromThatScreen("Anotações", context),
           ),
-        body: ListView.builder(
+        body: notesProvider.notesList.isEmpty 
+          ? Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset("assets/svg/Papigrafo.svg"),
+                const SizedBox(height: 36),
+                Text(
+                  "Nada anotado ainda!",
+                  style: TextStyles.instance.regular,
+                )
+              ],
+            ),
+          )
+          :ListView.builder(
             itemCount: notesProvider.notesList.length,
+            controller: _scrollController,
             itemBuilder: (context, index) => ElevatedButton(
                 style: ButtonStyle(
                   elevation: MaterialStateProperty.all(0),

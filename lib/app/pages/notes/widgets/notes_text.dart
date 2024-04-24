@@ -1,4 +1,3 @@
-import 'package:d20_project/app/providers/files_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';
@@ -9,7 +8,7 @@ import 'package:provider/provider.dart';
 class NotesText extends StatefulWidget {
   NotesText({
     Key? key, 
-    required this.noteTitle, 
+    this.noteTitle = "", 
     this.noteDescription = "",
     required this.index
   }) : super(key: key);
@@ -41,7 +40,7 @@ class _NotesTextState extends State<NotesText> {
       onWillPop: () {
         if (widget.index != -1) {
           notesProvider.updateTitleDescriptionModificationDate(_tittleNoteController.text, _descriptionController.text, widget.index);
-          FilesProvider().readNotes();
+          // FilesProvider().readNotes();
         } else {
           notesProvider.addNote(_tittleNoteController.text, _descriptionController.text);
         }

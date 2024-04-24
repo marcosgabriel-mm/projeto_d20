@@ -55,7 +55,7 @@ class _InitiativeViewState extends State<InitiativeView> {
                         SvgPicture.asset("assets/svg/CampoDeBatalha.svg"),
                         const SizedBox(height: 36),
                         Text(
-                          "Não há nada aqui",
+                          "Nenhuma iniciativa ainda!",
                           style: TextStyles.instance.regular,
                         )
                       ],
