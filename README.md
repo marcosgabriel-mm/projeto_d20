@@ -2,7 +2,7 @@
 
 ## Introdução
 
->Esse projeto está sendo feito por pessoas que estão apredendo a linguagem usada. Algo pode quebrar
+>Esse projeto está sendo feito por pessoas que estão apredendo a linguagem usada. Algo pode estar feito de mal modo!
 
 O projeto D20 foi criado com o objetivo de simplificar a organização das iniciativas em jogos de RPG de mesa. A motivação para sua criação surgiu da dificuldade que eu e meus amigos encontramos ao tentar coordenar as ações de cada personagem durante uma batalha. O desafio de determinar quem agiria primeiro tornava-se uma tarefa complexa.
 
