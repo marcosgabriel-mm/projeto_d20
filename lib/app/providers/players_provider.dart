@@ -1,5 +1,4 @@
 import 'package:d20_project/app/models/players.dart';
-import 'package:d20_project/app/utils/sort_functions.dart';
 import 'package:flutter/material.dart';
 
 class PlayersProvider extends ChangeNotifier {
@@ -8,7 +7,15 @@ class PlayersProvider extends ChangeNotifier {
   List<Players> get playersList => _playersList;
 
   void sortPlayers(String value){
-    SortFunctions.sortInitiativesPlayerList(value, _playersList)();
+    if (value == "Nome") {
+      playersList.sort((a, b) => a.playerName.compareTo(b.playerName));
+    } else if (value == "Decrescente") {
+      playersList.sort((a, b) => b.initiatives.compareTo(a.initiatives));
+    } else if (value == "Crescente") {
+      playersList.sort((a, b) => a.initiatives.compareTo(b.initiatives));
+    } else {
+      playersList.sort((a, b) => a.playerClass.compareTo(b.playerClass));
+    }
     notifyListeners();
   }
 
@@ -40,7 +47,7 @@ class PlayersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void turnEveryoneSelected() {
+  void selectOrUnselectAll() {
     if (_playersList.every((player) => player.isSelected)) {
       for (var player in _playersList) {
         player.isSelected = false;

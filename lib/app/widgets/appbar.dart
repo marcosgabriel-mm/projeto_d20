@@ -1,7 +1,7 @@
 import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/initiatives_provider.dart';
-import 'package:d20_project/app/providers/players_provider.dart';
 import 'package:d20_project/app/utils/add_functions.dart';
+import 'package:d20_project/app/utils/app_functions.dart';
 import 'package:d20_project/app/utils/sort_functions.dart';
 import 'package:d20_project/app/widgets/add_button.dart';
 import 'package:d20_project/app/widgets/sort_button.dart';
@@ -13,11 +13,13 @@ import 'package:provider/provider.dart';
 class ApplicationBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final List<String> listOfSorts;
+  final bool areAllSelected;
 
   const ApplicationBar({
     Key? key,
     required this.title,
     required this.listOfSorts,
+    required this.areAllSelected,
   }) : super(key: key);
 
   @override
@@ -45,8 +47,10 @@ class _ApplicationBarState extends State<ApplicationBar> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   IconButton(
-                      onPressed: () { context.read<PlayersProvider>().turnEveryoneSelected(); },
-                      icon: context.watch<PlayersProvider>().areEveryoneSelected() ? const Icon(Icons.radio_button_checked) : Icon(context.read<InitiativesProvider>().icon) 
+                      onPressed: () {
+                        AppFunctions.checkScreenToSelectEveryone(context);
+                      },
+                      icon: widget.areAllSelected ? const Icon(Icons.radio_button_checked) : Icon(context.read<InitiativesProvider>().icon)
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
@@ -56,21 +60,25 @@ class _ApplicationBarState extends State<ApplicationBar> {
               ),
             ),
       actions: [
-        Row(
-          children: [
-            AddButton(
-              function: AddFunctions.addSomethingAccordingToScreen(widget.title, context),
-            ),
-            SortButton(
-              listOfSorts: widget.listOfSorts,
-              padding: horizontalPadding,
-              function: (value) {
-                if (value != null) {
-                  SortFunctions.verifyScreenToSort(value, widget.title ,context);
-                }
-              },
-            )
-          ],
+        Visibility(
+          visible: !context.watch<D20Provider>().isSelectionMode,
+          replacement: const SizedBox.shrink(),
+          child: Row(
+            children: [
+              AddButton(
+                function: AddFunctions.addSomethingAccordingToScreen(context),
+              ),
+              SortButton(
+                listOfSorts: widget.listOfSorts,
+                padding: horizontalPadding,
+                function: (value) {
+                  if (value != null) {
+                    SortFunctions.verifyScreenToSort(value,context);
+                  }
+                },
+              )
+            ],
+          ),
         ),
       ],
     );

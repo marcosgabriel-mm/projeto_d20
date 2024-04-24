@@ -1,5 +1,4 @@
 import 'package:d20_project/app/models/dices.dart';
-import 'package:d20_project/app/utils/sort_functions.dart';
 import 'package:flutter/material.dart';
 
 class DicesProvider extends ChangeNotifier {
@@ -58,7 +57,19 @@ class DicesProvider extends ChangeNotifier {
   }
 
   void sortDices(String value){
-    SortFunctions.sortDices(value, _dicesList)();
+    if (value == "Decrescente") {
+      dicesList.sort((a, b) {
+        int numberA = int.parse(a.diceName.substring(1));
+        int numberB = int.parse(b.diceName.substring(1));
+        return numberB.compareTo(numberA);
+      });
+    } else {
+      dicesList.sort((a, b) {
+        int numberA = int.parse(a.diceName.substring(1));
+        int numberB = int.parse(b.diceName.substring(1));
+        return numberA.compareTo(numberB);
+      });
+    }
     notifyListeners();
   }
 
@@ -77,7 +88,7 @@ class DicesProvider extends ChangeNotifier {
     final diceName = result.keys.first;
     final numbersRolled = result[diceName]?.join(', ');
     final totalForEachDice = result[diceName].fold(0, (previousValue, element) => previousValue + element);
-    return '$diceName:  $numbersRolled  ➡  $totalForEachDice';
+    return '$diceName:  $numbersRolled  =>  $totalForEachDice';
   }).join('\n\n');
 }
 
@@ -113,8 +124,20 @@ class DicesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeDice(int index) {
-    _dicesList.removeAt(index);
+  void removeDices() {
+    _dicesList.removeWhere((element) => element.isSelected);
+    notifyListeners();
+  }
+
+  void selectDice(int index) {
+    _dicesList[index].isSelected = !_dicesList[index].isSelected;
+    notifyListeners();
+  }
+  
+  void turnAllUnselected(){
+    for (var element in _dicesList) {
+          element.isSelected = false;
+        }
     notifyListeners();
   }
 

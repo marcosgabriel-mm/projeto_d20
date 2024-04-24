@@ -1,6 +1,8 @@
+import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BottomBar extends StatefulWidget {
   final int currentIndex;
@@ -25,8 +27,12 @@ class BottomBarState extends State<BottomBar> {
     var buttons = [
       "Iniciativas",
       "Dados",
-      "Fichas",
+      "Personagens",
       "Anotações",
+      "Magias",
+      "Monstros",
+      "Itens",
+      "Configurações"      
     ];
 
     for (var i = 0; i < buttons.length; i++) {
@@ -67,6 +73,7 @@ class BottomBarState extends State<BottomBar> {
               onPressed: () {
                 setState(() {
                   selectedButton = text;
+                  context.read<D20Provider>().updateCurrentRoute(selectedButton!);
                   widget.onTap(index);
                 });
               },

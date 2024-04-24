@@ -28,25 +28,59 @@ class _DicesState extends State<Dices> {
         d20Provider.turnOffOrOnBottomBar();
         dicesProvider.clearNumberOfDicesToRoll();
         return false;
+      } else if (d20Provider.isSelectionMode) {
+        d20Provider.toogleSelectionMode();
+        d20Provider.turnOffOrOnBottomBar();
+        dicesProvider.turnAllUnselected();
+        return false;
       }
         return true;
       },
       child: Scaffold(
-        appBar: const ApplicationBar(title: "Dados", listOfSorts: ["Crescente", "Decrescente"],),
-        bottomNavigationBar: !dicesProvider.isAnyDiceSelected ? const SizedBox() : const SelectionBottomMenu(textLabel: ["Limpar", "Rolar"], icons: [Icons.clear_all, Icons.casino]),
+        appBar: ApplicationBar(
+          title: "Dados", 
+          listOfSorts: const ["Crescente", "Decrescente"],
+          areAllSelected: d20Provider.areAllSelectedFromThatScreen("Dados", context),  
+        ),
+        bottomNavigationBar: Stack(
+          children: [
+            Visibility(
+              visible: d20Provider.isSelectionMode,
+              child: const SelectionBottomMenu(
+                textLabel: ["Excluir"],
+                icons: [Icons.delete],
+              ),
+            ),
+            Visibility(
+              visible: dicesProvider.isAnyDiceSelected,
+              child: const SelectionBottomMenu(
+                textLabel: ["Limpar", "Rolar"],
+                icons: [Icons.clear_all, Icons.casino],
+              ),
+            ),
+          ],
+        ),
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: dicesProvider.dicesList.length,
-                itemBuilder: (context, index) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                itemBuilder: (context, index) => ElevatedButton(
+                  onPressed: () {
+                    dicesProvider.selectDice(index);
+                  },
+                  onLongPress: () {
+                    d20Provider.toogleSelectionMode();
+                    d20Provider.turnOffOrOnBottomBar();
+                    dicesProvider.selectDice(index);
+                  },
                   child: CustomRow(
                     diceName: dicesProvider.dicesList[index].diceName,
                     diceCount: dicesProvider.dicesList[index].numberOfDicesToRoll,
                     diceIcon: dicesProvider.dicesList[index].diceIcon,
                     diceDescription: dicesProvider.dicesList[index].diceDescription,
+                    icon: dicesProvider.dicesList[index].isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
                     diceIndex: index,
                   ),
                 ),
@@ -58,3 +92,5 @@ class _DicesState extends State<Dices> {
     );
   }
 }
+
+

@@ -25,8 +25,8 @@ class _AppWidgetState extends State<AppWidget> {
     _pages = [
       const InitiativeView(),
       const Dices(),
-      const Notes(),
-      const CharacterSheet()
+      const CharacterSheet(),
+      const NotesView(),
     ];
   }
 

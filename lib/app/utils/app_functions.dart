@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/dices_provider.dart';
 import 'package:d20_project/app/providers/initiatives_provider.dart';
+import 'package:d20_project/app/providers/notes_provider.dart';
 import 'package:d20_project/app/providers/players_provider.dart';
 import 'package:d20_project/app/widgets/popup_buttons.dart';
 import 'package:d20_project/styles/colors_app.dart';
@@ -34,7 +35,7 @@ class AppFunctions {
           "Deseja excluir os itens selecionados?",
           ["Cancelar", "Excluir"],
           [ 
-            () => context.read<PlayersProvider>().removePlayer(),
+            () => checkWhatToBeRemoved(context),
             () => context.read<InitiativesProvider>().setIcon(Icons.radio_button_off),
             () => context.read<D20Provider>().toogleSelectionMode(),
             () => context.read<D20Provider>().turnOffOrOnBottomBar()
@@ -57,14 +58,15 @@ class AppFunctions {
       List<int> numbersRolled = [];
       for (var i = 0; i < dice.numberOfDicesToRoll; i++) {
         int result = random.nextInt(int.parse(dice.diceName.substring(1)) + 1);
+        if (result == 0) {
+          result = 1;
+        }
         numbersRolled.add(result);
       }
       dicesProvider.addResult({dice.diceName: numbersRolled});
     }
 
     context.read<DicesProvider>().totalResultForTheRoll();
-    // print(dicesProvider.resultList);
-    // print(dicesProvider.totalResult);
   }
 
   static void clearSelection(BuildContext context) {
@@ -97,5 +99,32 @@ class AppFunctions {
         ],
       ),
     );
+  }
+
+  static void checkScreenToSelectEveryone(BuildContext context) {
+    switch (context.read<D20Provider>().currentRoute) {
+      case "Iniciativas":
+        context.read<PlayersProvider>().selectOrUnselectAll();
+        break;
+      case "Anotações":
+        context.read<NotesProvider>().selectOrUnselectAll();
+        break;
+      default:
+    }
+  }
+
+  static void checkWhatToBeRemoved(BuildContext context) {
+    switch (context.read<D20Provider>().currentRoute) {
+      case "Iniciativas":
+        context.read<PlayersProvider>().removePlayer();
+        break;
+      case "Dados":
+        context.read<DicesProvider>().removeDices();
+        break;
+      case "Anotações":
+        context.read<NotesProvider>().removeNotes();
+        break;
+      default:
+    }
   }
 }

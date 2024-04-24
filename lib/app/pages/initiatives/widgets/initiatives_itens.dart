@@ -1,5 +1,6 @@
 
 import 'package:d20_project/app/pages/initiatives/widgets/initiatives_column_text.dart';
+import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 
 class ItensNames extends StatelessWidget {
@@ -21,15 +22,11 @@ class ItensNames extends StatelessWidget {
     required this.icon, 
   });
 
-  final double height = 100;
-  final double horizontal = 18;
-  final double vertical = 26;
-
   @override
   Widget build(BuildContext context) {
     return Container(
-            margin:  EdgeInsets.symmetric(vertical: vertical),
-            padding:  EdgeInsets.fromLTRB(horizontal, vertical, horizontal, vertical),
+            margin: const EdgeInsets.symmetric(vertical: verticalPadding),
+            padding: const EdgeInsets.fromLTRB(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding),
             alignment: AlignmentDirectional.centerStart,
             decoration: const BoxDecoration(
               border: Border(

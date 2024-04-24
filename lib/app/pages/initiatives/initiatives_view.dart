@@ -39,8 +39,12 @@ class _InitiativeViewState extends State<InitiativeView> {
         return true;
       },
       child: Scaffold(
-        appBar: const ApplicationBar(title: "Iniciativas", listOfSorts: ["Crescente", "Decrescente", "Nome", "Classe"]),
-        bottomNavigationBar: !d20Provider.isSelectionMode ? const SizedBox() : const SelectionBottomMenu(textLabel: ["Editar", "Excluir"], icons: [Icons.edit, Icons.delete]),
+        appBar: ApplicationBar(
+          title: "Iniciativas", 
+          listOfSorts: const ["Crescente", "Decrescente", "Nome", "Classe"],
+          areAllSelected: d20Provider.areAllSelectedFromThatScreen("Iniciativas", context),  
+        ),
+        bottomNavigationBar: !d20Provider.isSelectionMode ? const SizedBox.shrink() : const SelectionBottomMenu(textLabel: ["Editar", "Excluir"], icons: [Icons.edit, Icons.delete]),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

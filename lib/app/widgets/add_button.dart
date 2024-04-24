@@ -14,15 +14,3 @@ class AddButton extends StatelessWidget {
     );
   }
 }
-
-
-// displayBottomSheet(
-        //   context, 
-        //   // "Iniciativas", 
-        //   // [["Nome", "Ex: Geraldo"],
-        //   //   ["Classe", "Ex: Guerreiro"],
-        //   //   ["Iniciativa", "Ex: 15"],]
-        //   "Novo dado", 
-        //   [["Nome", "Ex: D12"],
-        //     ["Descrição", "Ex: Dados de 12 faces"]]
-        // );
