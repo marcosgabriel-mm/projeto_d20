@@ -12,14 +12,14 @@ import 'package:provider/provider.dart';
 
 class ApplicationBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
-  final List<String> listOfSorts;
   final bool areAllSelected;
+  final List<Widget>? actions;
 
   const ApplicationBar({
     Key? key,
-    required this.title,
-    required this.listOfSorts,
     required this.areAllSelected,
+    required this.title,
+    this.actions,
   }) : super(key: key);
 
   @override
@@ -65,18 +65,7 @@ class _ApplicationBarState extends State<ApplicationBar> {
           replacement: const SizedBox.shrink(),
           child: Row(
             children: [
-              AddButton(
-                function: AddFunctions.addSomethingAccordingToScreen(context),
-              ),
-              SortButton(
-                listOfSorts: widget.listOfSorts,
-                padding: horizontalPadding,
-                function: (value) {
-                  if (value != null) {
-                    SortFunctions.verifyScreenToSort(value,context);
-                  }
-                },
-              )
+              if (widget.actions != null) ...widget.actions!,
             ],
           ),
         ),
