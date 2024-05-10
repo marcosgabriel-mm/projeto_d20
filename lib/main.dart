@@ -5,6 +5,7 @@ import 'package:d20_project/app/providers/dices_provider.dart';
 import 'package:d20_project/app/providers/initiatives_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
 import 'package:d20_project/app/providers/players_provider.dart';
+import 'package:d20_project/app/providers/spell_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +13,9 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (context) => SpellProvider()
+        ),
         ChangeNotifierProvider(
           create: (context) => NotesProvider(),
         ),

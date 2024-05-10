@@ -1,8 +1,14 @@
 import 'package:d20_project/app/pages/dices/widgets/dices_custom_row.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/dices_provider.dart';
+import 'package:d20_project/app/utils/add_functions.dart';
+import 'package:d20_project/app/utils/sort_functions.dart';
+import 'package:d20_project/app/widgets/add_button.dart';
 import 'package:d20_project/app/widgets/appbar.dart';
 import 'package:d20_project/app/widgets/selection_bottom_menu.dart';
+import 'package:d20_project/app/widgets/sort_button.dart';
+import 'package:d20_project/styles/text_styles.dart';
+import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -38,9 +44,25 @@ class _DicesState extends State<Dices> {
       },
       child: Scaffold(
         appBar: ApplicationBar(
-          title: "Dados", 
-          listOfSorts: const ["Crescente", "Decrescente"],
-          areAllSelected: d20Provider.areAllSelectedFromThatScreen("Dados", context),  
+          title: context.read<D20Provider>().currentRoute, 
+          actions: [
+            AddButton(
+                function: AddFunctions.addSomethingAccordingToScreen(context),
+              ),
+            Padding(
+              padding: const EdgeInsets.only(right: horizontalPadding),
+              child: SortButton(
+                listOfSorts: const ["Crescente", "Decrescente"],
+                padding: horizontalPadding,
+                function: (value) {
+                  if (value != null) {
+                    SortFunctions.verifyScreenToSort(value,context);
+                  }
+                },
+              ),
+            )
+          ],
+          areAllSelected: d20Provider.areAllSelectedFromThatScreen(context),  
         ),
         bottomNavigationBar: Stack(
           children: [
@@ -62,12 +84,16 @@ class _DicesState extends State<Dices> {
         ),
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: verticalPadding),
+              child: Text("Dados Padrões", style: TextStyles.instance.regular),
+            ), //TODO - Mudar titulo de dados padrões para dados personalizados ao começar a exibir proxima lista
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: dicesProvider.dicesList.length,
-                itemBuilder: (context, index) => ElevatedButton(
-                  onPressed: () {
+                itemBuilder: (context, index) => ListTile(
+                  onTap: () {
                     dicesProvider.selectDice(index);
                   },
                   onLongPress: () {
@@ -75,7 +101,7 @@ class _DicesState extends State<Dices> {
                     d20Provider.turnOffOrOnBottomBar();
                     dicesProvider.selectDice(index);
                   },
-                  child: CustomRow(
+                  title: CustomRow(
                     diceName: dicesProvider.dicesList[index].diceName,
                     diceCount: dicesProvider.dicesList[index].numberOfDicesToRoll,
                     diceIcon: dicesProvider.dicesList[index].diceIcon,

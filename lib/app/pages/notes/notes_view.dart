@@ -3,9 +3,14 @@ import 'package:d20_project/app/pages/notes/widgets/notes_text.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/files_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
+import 'package:d20_project/app/utils/add_functions.dart';
+import 'package:d20_project/app/utils/sort_functions.dart';
+import 'package:d20_project/app/widgets/add_button.dart';
 import 'package:d20_project/app/widgets/appbar.dart';
 import 'package:d20_project/app/widgets/selection_bottom_menu.dart';
+import 'package:d20_project/app/widgets/sort_button.dart';
 import 'package:d20_project/styles/text_styles.dart';
+import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -61,9 +66,29 @@ class _NotesViewState extends State<NotesView> {
       child: Scaffold(
         bottomNavigationBar: !d20provider.isSelectionMode ? const SizedBox.shrink() : const SelectionBottomMenu( textLabel: ["Excluir"], icons: [Icons.delete]),
         appBar: ApplicationBar(
-            title: "Anotações",
-            listOfSorts: const ["Data de criação", "Data de modificação", "Nome"],
-            areAllSelected: d20provider.areAllSelectedFromThatScreen("Anotações", context),
+            title: context.read<D20Provider>().currentRoute,
+            actions: [
+              IconButton(
+                onPressed: (){}, 
+                icon: const Icon(Icons.search, color: Colors.white,)
+              ),
+              AddButton(
+                function: AddFunctions.addSomethingAccordingToScreen(context),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: horizontalPadding),
+                child: SortButton(
+                  listOfSorts: const ["Data de criação", "Data de modificação", "Nome"],
+                  padding: horizontalPadding,
+                  function: (value) {
+                    if (value != null) {
+                      SortFunctions.verifyScreenToSort(value,context);
+                    }
+                  },
+                ),
+              )
+            ],
+            areAllSelected: d20provider.areAllSelectedFromThatScreen(context),
           ),
         body: notesProvider.notesList.isEmpty 
           ? Center(
@@ -82,12 +107,8 @@ class _NotesViewState extends State<NotesView> {
           :ListView.builder(
             itemCount: notesProvider.notesList.length,
             controller: _scrollController,
-            itemBuilder: (context, index) => ElevatedButton(
-                style: ButtonStyle(
-                  elevation: MaterialStateProperty.all(0),
-                  alignment: Alignment.centerLeft,
-                ),
-                onPressed: () {
+            itemBuilder: (context, index) => ListTile(              
+                onTap: () {
                   if (d20provider.isSelectionMode){
                     context.read<NotesProvider>().selectNote(index); 
                   } else {
@@ -108,7 +129,7 @@ class _NotesViewState extends State<NotesView> {
                   d20provider.turnOffOrOnBottomBar();
                   context.read<NotesProvider>().selectNote(index); 
                 },
-                child: NotesRow(
+                title: NotesRow(
                   title: notesProvider.notesList[index].title,
                   description: notesProvider.notesList[index].description,
                   modificationDate: notesProvider.notesList[index].modificationDate,

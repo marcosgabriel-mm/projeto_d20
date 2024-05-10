@@ -92,7 +92,7 @@ class CustomRow extends StatelessWidget {
                       context.read<D20Provider>().turnOffOrOnBottomBar();
                     }
                   },
-                  icon: const Icon(Icons.remove),
+                  icon: const Icon(Icons.remove, color: Colors.white,),
                   iconSize: iconSize,
                 ),
                 Padding(
@@ -109,7 +109,7 @@ class CustomRow extends StatelessWidget {
                       context.read<D20Provider>().turnOffOrOnBottomBar();
                     }
                   },
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.add, color: Colors.white,),
                   iconSize: iconSize,
                 ),
               ],

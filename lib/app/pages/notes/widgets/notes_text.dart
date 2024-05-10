@@ -5,6 +5,8 @@ import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+
+
 class NotesText extends StatefulWidget {
   NotesText({
     Key? key, 
@@ -41,6 +43,8 @@ class _NotesTextState extends State<NotesText> {
         if (widget.index != -1) {
           notesProvider.updateTitleDescriptionModificationDate(_tittleNoteController.text, _descriptionController.text, widget.index);
           // FilesProvider().readNotes();
+        } else if (_tittleNoteController.text.isEmpty && _descriptionController.text.isEmpty) {
+          return Future.value(true);
         } else {
           notesProvider.addNote(_tittleNoteController.text, _descriptionController.text);
         }
@@ -48,10 +52,26 @@ class _NotesTextState extends State<NotesText> {
       },
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight), // Altura padrão da AppBar
+          preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
             child: AppBar(
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    if (widget.index != -1) {
+                      notesProvider.updateTitleDescriptionModificationDate(_tittleNoteController.text, _descriptionController.text, widget.index);
+                      // FilesProvider().readNotes();
+                    } else if (_tittleNoteController.text.isEmpty && _descriptionController.text.isEmpty) {
+                      return Navigator.pop(context);  
+                    } else {
+                      notesProvider.addNote(_tittleNoteController.text, _descriptionController.text);
+                    }
+                    return Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.done),
+                )
+              ],
               automaticallyImplyLeading: false,
               centerTitle: false,
               title: _editingTitle(),
@@ -80,9 +100,11 @@ class _NotesTextState extends State<NotesText> {
                   child: TextField(
                     controller: _descriptionController,
                     cursorColor: Colors.white,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.all(0),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(0),
                       border: InputBorder.none,
+                      hintText: "Escreva sua descrição aqui...",
+                      hintStyle: TextStyles.instance.regular.copyWith(color: Colors.white30),
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                     ),
@@ -108,14 +130,16 @@ class _NotesTextState extends State<NotesText> {
   Widget _editingTitle() {
     return TextField(
       cursorColor: Colors.white,
-      decoration: const InputDecoration(
-        contentPadding: EdgeInsets.all(0),
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(0),
+        hintText: "Título",
+        hintStyle: TextStyles.instance.regular.copyWith(color: Colors.white30),
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
       ),
       controller: _tittleNoteController,
-      autofocus: false,
+      autofocus: true,
       style: TextStyles.instance.regular,
       onSubmitted: (value) {
         setState(() {

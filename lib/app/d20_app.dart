@@ -1,6 +1,7 @@
 import 'package:d20_project/app/pages/character_sheet/character_sheet_view.dart';
 import 'package:d20_project/app/pages/dices/dices_view.dart';
 import 'package:d20_project/app/pages/initiatives/initiatives_view.dart';
+import 'package:d20_project/app/pages/spells/spells_view.dart';
 import 'package:d20_project/app/widgets/navigation_bottom_bar.dart';
 import 'package:d20_project/app/pages/notes/notes_view.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
@@ -27,6 +28,7 @@ class _AppWidgetState extends State<AppWidget> {
       const Dices(),
       const CharacterSheet(),
       const NotesView(),
+      const SpellView(),
     ];
   }
 
