@@ -6,13 +6,20 @@ import 'package:provider/provider.dart';
 class D20Provider extends ChangeNotifier {
   bool _toogleBottomBar = true;
   bool _isSelectionMode = false;
+  bool _showFloatingButton = true;
   int _currentIndex = 0;
   String _currentRoute = "Iniciativas";
 
   bool get toogleBottomBar => _toogleBottomBar;
   bool get isSelectionMode => _isSelectionMode;
+  bool get showFloatingButton => _showFloatingButton;
   int get currentIndex => _currentIndex;
   String get currentRoute => _currentRoute;
+
+  void toggleFloatingButton() {
+    _showFloatingButton = !_showFloatingButton;
+    notifyListeners();
+  }
 
   void turnOffOrOnBottomBar() {
     _toogleBottomBar = !_toogleBottomBar;
@@ -34,8 +41,8 @@ class D20Provider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool areAllSelectedFromThatScreen(String screen, BuildContext context) {
-    switch (screen) {
+  bool areAllSelectedFromThatScreen(BuildContext context) {
+    switch (_currentRoute) {
       case "Iniciativas":
         return context.read<PlayersProvider>().areEveryoneSelected();
       case "Dados":

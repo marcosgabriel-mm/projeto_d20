@@ -38,24 +38,28 @@ class FilesProvider {
   }
 
   Future<List<String>> readNotes(int start) async {
-  final appDirectory = await _localAppDirectory;
-  Directory directory = Directory('${appDirectory.path}/notes');
-  
-  List<String> allNotes = [];
+    final appDirectory = await _localAppDirectory;
+    Directory directory = Directory('${appDirectory.path}/notes');
+    
+    List<String> allNotes = [];
 
-  if (await directory.exists()) {
-    List<FileSystemEntity> entities = directory.listSync();
-    int end = (start + 5 > entities.length) ? entities.length : start + 5;
+    if (await directory.exists()) {
+      List<FileSystemEntity> entities = directory.listSync();
+      int end = (start + 5 > entities.length) ? entities.length : start + 5;
 
-    for (int i = start; i < end; i++) {
-      if (entities[i] is File && entities[i].path.endsWith('.txt')) {
-        String contents = await File(entities[i].path).readAsString();
-        List<String> notes = contents.split(',\n');
-        allNotes.addAll(notes);
+      for (int i = start; i < end; i++) {
+        if (entities[i] is File && entities[i].path.endsWith('.txt')) {
+          String contents = await File(entities[i].path).readAsString();
+          List<String> notes = contents.split(',\n');
+          allNotes.addAll(notes);
+        }
       }
     }
+
+    return allNotes;
   }
 
-  return allNotes;
-}
+  //TODO - implementar a função de salvar, deletar e ler dados
+
+  //TODO - implementar a função de ler, salvar e deletar magias
 }

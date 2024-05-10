@@ -70,6 +70,8 @@ class NotesProvider extends ChangeNotifier {
       _notesList.last.modificationDate,
       _notesList.last.description
     );
+    //organizar por data de modificação
+    notesList.sort((a, b) => b.modificationDate.compareTo(a.modificationDate));
     notifyListeners();
   }
 
@@ -80,6 +82,8 @@ class NotesProvider extends ChangeNotifier {
       }
     }
     _notesList.removeWhere((note) => note.isSelected);
+    //organizar por data de modificação
+    notesList.sort((a, b) => b.modificationDate.compareTo(a.modificationDate));
     notifyListeners();
   }
 
@@ -113,6 +117,8 @@ class NotesProvider extends ChangeNotifier {
         );
       }
     }
+    //organizar por data de modificação
+    notesList.sort((a, b) => b.modificationDate.compareTo(a.modificationDate));
     notifyListeners();
   }
 }
