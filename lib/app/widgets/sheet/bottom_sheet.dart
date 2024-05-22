@@ -1,8 +1,130 @@
+import 'package:d20_project/app/providers/initiatives_provider.dart';
+import 'package:d20_project/app/widgets/damage_type.dart';
 import 'package:d20_project/app/widgets/sheet/bottom_sheet_input.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';
+import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+class BottomSheetModal {
+
+  static Future addInitiative(BuildContext context) {
+    List<TextEditingController> controller = List.generate(6, (index) => TextEditingController());
+    for (var element in controller) {element.clear();}
+    
+    context.read<InitiativesProvider>().resistanceTypesSelected.clear();
+    context.read<InitiativesProvider>().weaknessTypesSelected.clear();
+
+    return  showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      barrierColor: Colors.black.withOpacity(0.5),
+      backgroundColor: ColorsApp.instance.primaryColor,
+      
+      // shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))), 
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height / 1.6,
+            child: ListView(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(horizontalPadding*2),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Nova Iniciativa", style: TextStyles.instance.regular,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InputSheet(campoTexto: "Nome", entradaExemplo: "Kuth", controller: controller[0], width: 85),
+                          InputSheet(campoTexto: "Classe", entradaExemplo: "Mago", controller: controller[1], width: 85)
+,                         InputSheet(campoTexto: "Vida", entradaExemplo: "36", controller: controller[2], width: 85)
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InputSheet(campoTexto: "Iniciativa", entradaExemplo: "15", controller: controller[3], width: 85,),
+                          InputSheet(campoTexto: "CD Magia", entradaExemplo: "10", controller: controller[4], width: 85),
+                          InputSheet(campoTexto: "CD", entradaExemplo: "15", controller: controller[5], width: 85)
+                        ],
+                      ),
+                      ExpansionTile(
+                        title: Text("Resistências", style: TextStyles.instance.regular,),
+                        collapsedIconColor: Colors.white,
+                        iconColor: Colors.white,
+                        childrenPadding: const EdgeInsets.symmetric(vertical: verticalPadding),
+                        children: [
+                          Wrap(
+                            spacing: horizontalPadding,
+                            runSpacing: verticalPadding,
+                            children: [
+                              for (var damageType in context.read<InitiativesProvider>().damageTypes)
+                              DamageType(
+                                damageType: "Resistências",
+                                damageTypeText: damageType,
+                                damageTypeSvg: "assets/svg/damage_types/${damageType.toLowerCase()}.svg",
+                              ),
+                            ]
+                          ),
+                        ],
+                      ),
+                      ExpansionTile(
+                        title: Text("Fraquezas", style: TextStyles.instance.regular,),
+                        collapsedIconColor: Colors.white,
+                        iconColor: Colors.white,
+                        childrenPadding: const EdgeInsets.symmetric(vertical: verticalPadding),
+                        children: [
+                          Wrap(
+                            spacing: horizontalPadding,
+                            runSpacing: verticalPadding,
+                            children: [
+                              for (var damageType in context.read<InitiativesProvider>().damageTypes)
+                              DamageType(
+                                damageType: "Fraquezas",
+                                damageTypeText: damageType,
+                                damageTypeSvg: "assets/svg/damage_types/${damageType.toLowerCase()}.svg",
+                              ),
+                            ]
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 30),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            context.read<InitiativesProvider>().addInitiative(controller);
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: ColorsApp.instance.secondaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 65,
+                            child: Center(
+                              child: Text("Feito", style: TextStyles.instance.regular),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ]
+            ),
+          ),
+        );
+      }
+    );
+  }
+}
 
 Future displayBottomSheet(BuildContext context, String title, List<List<String>> fields, Function function) {
 
@@ -35,7 +157,8 @@ Future displayBottomSheet(BuildContext context, String title, List<List<String>>
                       InputSheet(
                           campoTexto: firstField[0],
                           entradaExemplo: firstField[1],
-                          controller: controllers[fields.indexOf(firstField)]                          
+                          controller: controllers[fields.indexOf(firstField)],
+                          width: 150,                          
                         ),
                     Padding(
                       padding: const EdgeInsets.only(top: 30),

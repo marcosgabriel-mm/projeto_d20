@@ -1,5 +1,5 @@
+import 'package:d20_project/app/providers/initiatives_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
-import 'package:d20_project/app/providers/players_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,8 +26,9 @@ class D20Provider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toogleSelectionMode() {
+  void toogleSelectionModeAndBottomBar() {
     _isSelectionMode = !_isSelectionMode;
+    _toogleBottomBar = !_toogleBottomBar;
     notifyListeners();
   }
 
@@ -44,7 +45,7 @@ class D20Provider extends ChangeNotifier {
   bool areAllSelectedFromThatScreen(BuildContext context) {
     switch (_currentRoute) {
       case "Iniciativas":
-        return context.read<PlayersProvider>().areEveryoneSelected();
+        return context.read<InitiativesProvider>().areEveryoneSelected();
       case "Dados":
         return false;
       case "Anotações":

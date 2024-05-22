@@ -1,18 +1,20 @@
-import 'package:d20_project/app/pages/initiatives/widgets/initiatives_itens.dart';
-import 'package:d20_project/app/utils/add_functions.dart';
-import 'package:d20_project/app/utils/sort_functions.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/additional_information.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/initiatives_details.dart';
+import 'package:d20_project/app/pages/initiatives/widgets/tile_information.dart';
 import 'package:d20_project/app/widgets/add_button.dart';
 import 'package:d20_project/app/widgets/appbar.dart';
 import 'package:d20_project/app/widgets/selection_bottom_menu.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/initiatives_provider.dart';
-import 'package:d20_project/app/providers/players_provider.dart';
+import 'package:d20_project/app/widgets/sheet/bottom_sheet.dart';
 import 'package:d20_project/app/widgets/sort_button.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+
+//TODO - fazer o botão de editar
 
 class InitiativeView extends StatefulWidget {
   const InitiativeView({super.key});
@@ -23,22 +25,17 @@ class InitiativeView extends StatefulWidget {
 
 class _InitiativeViewState extends State<InitiativeView> {
   late InitiativesProvider initiativesProvider;
-  late PlayersProvider playersProvider;
   late D20Provider d20Provider;
 
   @override
   Widget build(BuildContext context) {
     initiativesProvider = context.watch<InitiativesProvider>();
-    playersProvider = context.watch<PlayersProvider>();
     d20Provider = context.watch<D20Provider>();
-
     return WillPopScope(
       onWillPop: () async {
         if (d20Provider.isSelectionMode) {
-          d20Provider.toogleSelectionMode();
-          d20Provider.turnOffOrOnBottomBar();
-          playersProvider.turnAllUnselected();
-          initiativesProvider.setIcon(Icons.radio_button_off);
+          d20Provider.toogleSelectionModeAndBottomBar();
+          initiativesProvider.turnAllUnselected();
           return false;
         }
         return true;
@@ -48,7 +45,8 @@ class _InitiativeViewState extends State<InitiativeView> {
           title: context.read<D20Provider>().currentRoute, 
           actions : [
             AddButton(
-                function: AddFunctions.addSomethingAccordingToScreen(context),
+                // function: AddFunctions.addSomethingAccordingToScreen(context),
+                function: () => BottomSheetModal.addInitiative(context),
               ),
             Padding(
               padding: const EdgeInsets.only(right: horizontalPadding),
@@ -57,7 +55,7 @@ class _InitiativeViewState extends State<InitiativeView> {
                 padding: horizontalPadding,
                 function: (value) {
                   if (value != null) {
-                    SortFunctions.verifyScreenToSort(value,context);
+                    initiativesProvider.sortInitiatives(value);
                   }
                 },
               ),
@@ -70,63 +68,130 @@ class _InitiativeViewState extends State<InitiativeView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              playersProvider.playersList.isEmpty
-                  ? Column(
-                      children: [
-                        SvgPicture.asset("assets/svg/CampoDeBatalha.svg"),
-                        const SizedBox(height: 36),
-                        Text(
-                          "Nenhuma iniciativa ainda!",
-                          style: TextStyles.instance.regular,
-                        )
-                      ],
+              initiativesProvider.initiativesList.isEmpty
+              ? Column(
+                  children: [
+                    SvgPicture.asset("assets/svg/CampoDeBatalha.svg"),
+                    const SizedBox(height: 36),
+                    Text(
+                      "Nenhuma iniciativa ainda!",
+                      style: TextStyles.instance.regular,
                     )
-                  : Expanded(
-                      child: Consumer(
-                        builder: (context, value, child) {
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: playersProvider.playersList.length,
-                            itemBuilder: (context, index) => ListTile(
-                              onLongPress: () {
-                                setState(() {
-                                  if (d20Provider.isSelectionMode) {
-                                    return;
-                                  }
-                                  d20Provider.toogleSelectionMode();
-                                  d20Provider.turnOffOrOnBottomBar();
-                                  playersProvider.playerSelect(index);
-                                });
-                              },
-                              onTap: () {
-                                setState(() {
+                  ],
+                )
+              : Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: initiativesProvider.initiativesList.length,
+                    itemBuilder: (context, index) {
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.all(horizontalPadding),
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Colors.white,
+                                    width: 1
+                                  )
+                                )
+                              ),
+                              child: GestureDetector(
+                                onLongPress: () {
                                   if (!d20Provider.isSelectionMode) {
-                                    return;
+                                    d20Provider.toogleSelectionModeAndBottomBar();
                                   }
-                                  playersProvider.playerSelect(index);
-                                });
-                              },
-                              title: ItensNames(
-                                playerName: playersProvider
-                                    .playersList[index].playerName,
-                                playerClass: playersProvider
-                                    .playersList[index].playerClass,
-                                initiatives: int.parse(playersProvider
-                                    .playersList[index].initiatives
-                                    .toString()),
-                                icon: playersProvider
-                                        .playersList[index].isSelected
-                                    ? Icons.radio_button_on
-                                    : initiativesProvider.icon,
-                                isSelectionMode:
-                                    d20Provider.isSelectionMode,
-                                alignText: TextAlign.center,
+                                  initiativesProvider.selectInitiative(index);
+                                },
+                                child: ExpansionTile(
+                                  leading: d20Provider.isSelectionMode ? 
+                                  (initiativesProvider.initiativesList[index].isSelected 
+                                    ? const Padding(
+                                      padding: EdgeInsets.only(top: verticalPadding/2),
+                                      child: Icon(Icons.radio_button_on, color: Colors.white,),
+                                    ) 
+                                    : const Padding(
+                                      padding: EdgeInsets.only(top: verticalPadding/2),
+                                      child: Icon(Icons.radio_button_off, color: Colors.white,),
+                                    )) 
+                                  : null, 
+                                  title: Text(
+                                    initiativesProvider.initiativesList[index].playerName,
+                                    style: TextStyles.instance.regular,
+                                  ),
+                                  subtitle: Text(
+                                    initiativesProvider.initiativesList[index].playerClass,
+                                    style: TextStyles.instance.boldItalic,
+                                  ),
+                                  initiallyExpanded: false,
+                                  trailing: SizedBox(
+                                    width: 140,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        TileInformation(
+                                          text: initiativesProvider.initiativesList[index].hitPoints.toString(), 
+                                          label: "PV"
+                                        ),
+                                        TileInformation(
+                                          text: initiativesProvider.initiativesList[index].initiatives.toString(), 
+                                          label: "Iniciativa"
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            GestureDetector(
+                                              child: InitiativesDetails(
+                                                damagesTypes: initiativesProvider.initiativesList[index].resistanceTypes ?? [],
+                                                title: "Res",
+                                              ),
+                                            ),
+                                            InitiativesDetails(
+                                              damagesTypes: initiativesProvider.initiativesList[index].weaknessTypes ?? [],
+                                              title: "Fra",
+                                            ),
+                                          ],
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(right: horizontalPadding),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                AdditionalInformation(
+                                                  value: initiativesProvider.initiativesList[index].spellClass.toString(), 
+                                                  asset: "assets/svg/sc.svg", 
+                                                  field: "CD Magia"
+                                                ),
+                                                AdditionalInformation(
+                                                  value: initiativesProvider.initiativesList[index].armorClass.toString(), 
+                                                  asset: "assets/svg/cd.svg", 
+                                                  field: "CD"
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    
+                                  ],
+                                ),
                               ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
+                          ),
+                        ],
+                      );
+                    }
+                  ),
+                ),
             ],
           ),
         ),
@@ -134,3 +199,44 @@ class _InitiativeViewState extends State<InitiativeView> {
     );
   }
 }
+
+
+// Row(
+//                                       children: [
+//                                         Column(
+//                                           crossAxisAlignment: CrossAxisAlignment.start,
+//                                           children: [
+//                                             GestureDetector(
+//                                               child: InitiativesDetails(
+//                                                 damagesTypes: initiativesProvider.initiativesList[index].resistanceTypes ?? [],
+//                                                 title: "Res",
+//                                               ),
+//                                             ),
+//                                             InitiativesDetails(
+//                                               damagesTypes: initiativesProvider.initiativesList[index].weaknessTypes ?? [],
+//                                               title: "Fra",
+//                                             ),
+//                                           ],
+//                                         ),
+//                                         Expanded(
+//                                           child: Padding(
+//                                             padding: const EdgeInsets.only(right: horizontalPadding),
+//                                             child: Row(
+//                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                               children: [
+//                                                 AdditionalInformation(
+//                                                   value: initiativesProvider.initiativesList[index].spellClass.toString(), 
+//                                                   asset: "assets/svg/sc.svg", 
+//                                                   field: "CD Magia"
+//                                                 ),
+//                                                 AdditionalInformation(
+//                                                   value: initiativesProvider.initiativesList[index].armorClass.toString(), 
+//                                                   asset: "assets/svg/cd.svg", 
+//                                                   field: "CD"
+//                                                 )
+//                                               ],
+//                                             ),
+//                                           ),
+//                                         )
+//                                       ],
+//                                     ),

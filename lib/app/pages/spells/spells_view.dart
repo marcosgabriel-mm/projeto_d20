@@ -1,13 +1,16 @@
 import 'package:d20_project/app/pages/spells/spells_details_view.dart';
-import 'package:d20_project/app/pages/spells/widgets/spells_custom_row.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/spell_provider.dart';
 import 'package:d20_project/app/widgets/add_button.dart';
 import 'package:d20_project/app/widgets/appbar.dart';
 import 'package:d20_project/app/widgets/scroll_listener.dart';
+import 'package:d20_project/styles/colors_app.dart';
+import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 class SpellView extends StatefulWidget {
   const SpellView({super.key});
@@ -38,6 +41,15 @@ class _SpellViewState extends State<SpellView> {
   Widget build(BuildContext context) {
     d20provider = context.watch<D20Provider>();
     spellProvider = context.watch<SpellProvider>();
+
+    Map<String, List<Map<String, dynamic>>> spellsByLevel = {};
+    for (var spell in spellProvider.spells) {
+      String level = spell['level'];
+      if (!spellsByLevel.containsKey(level)) {
+        spellsByLevel[level] = [];
+      }
+      spellsByLevel[level]!.add(spell);
+    }
 
     return Scaffold(
       appBar: ApplicationBar(
@@ -74,27 +86,57 @@ class _SpellViewState extends State<SpellView> {
       body: ScrollListerner(
         context: context,
         scrollController: _scrollController,
-        child: ListView.builder(
-            itemCount: spellProvider.spells.length,
-            controller: _scrollController,
-            itemBuilder: (context, index) => ListTile(
-              title: SpellsRow(
-              nameOfSpell: spellProvider.spells[index]["name"],
-                castingTime: spellProvider.spells[index]["casting_time"].split(",")[0],
-                levelOfSpell: spellProvider.spells[index]["level"]
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: spellsByLevel.entries.map((entry) {
+            return SliverStickyHeader(
+              header: Container(
+                // margin: const EdgeInsets.symmetric(horizontal: horizontalPadding),
+                padding: const EdgeInsets.symmetric(horizontal: horizontalPadding*2, vertical: verticalPadding/2),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: ColorsApp.instance.secondaryColor,
+                  // borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5)),
+                ),
+                child: Text(
+                  '${entry.key} | ${entry.value.length} magias',
+                  style: TextStyles.instance.regular,
+                ),
               ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SpellsDetails(
-                      spell: spellProvider.spells[index],
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: horizontalPadding),
+                    padding: const EdgeInsets.all(horizontalPadding),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.white,
+                          width: 1,
+                        ),
+                      ),
                     ),
-                  )
-                );
-              },
-            )
-          ),
+                    child: ListTile(
+                      title: Text(entry.value[index]['name'], style: TextStyles.instance.regular,),
+                      subtitle: Text(entry.value[index]['level'] + " | " + entry.value[index]["casting_time"].split(', ')[0], style: TextStyles.instance.boldItalic,),
+                      trailing: SvgPicture.asset("assets/svg/add-spell.svg"),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SpellsDetails(spell: entry.value[index]),
+                          ),
+                        );
+                      
+                      },
+                    ),
+                  ),
+                  childCount: entry.value.length,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

@@ -3,8 +3,6 @@ import 'package:d20_project/app/pages/notes/widgets/notes_text.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/files_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
-import 'package:d20_project/app/utils/add_functions.dart';
-import 'package:d20_project/app/utils/sort_functions.dart';
 import 'package:d20_project/app/widgets/add_button.dart';
 import 'package:d20_project/app/widgets/appbar.dart';
 import 'package:d20_project/app/widgets/selection_bottom_menu.dart';
@@ -56,8 +54,7 @@ class _NotesViewState extends State<NotesView> {
     return WillPopScope(
       onWillPop: () async {
         if (d20provider.isSelectionMode) {
-          d20provider.toogleSelectionMode();
-          d20provider.turnOffOrOnBottomBar();
+          d20provider.toogleSelectionModeAndBottomBar();
           notesProvider.turnEveryoneUnselected();
           return false;
         }
@@ -73,7 +70,16 @@ class _NotesViewState extends State<NotesView> {
                 icon: const Icon(Icons.search, color: Colors.white,)
               ),
               AddButton(
-                function: AddFunctions.addSomethingAccordingToScreen(context),
+                function: () => Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (context) => NotesText(
+                      noteTitle: "",
+                      noteDescription: "",
+                      index: -1,
+                    ),
+                  ),
+                )
               ),
               Padding(
                 padding: const EdgeInsets.only(right: horizontalPadding),
@@ -82,7 +88,7 @@ class _NotesViewState extends State<NotesView> {
                   padding: horizontalPadding,
                   function: (value) {
                     if (value != null) {
-                      SortFunctions.verifyScreenToSort(value,context);
+                      notesProvider.sortNotes(value);
                     }
                   },
                 ),
@@ -125,8 +131,7 @@ class _NotesViewState extends State<NotesView> {
                   }
                 },
                 onLongPress: () { 
-                  d20provider.toogleSelectionMode(); 
-                  d20provider.turnOffOrOnBottomBar();
+                  d20provider.toogleSelectionModeAndBottomBar(); 
                   context.read<NotesProvider>().selectNote(index); 
                 },
                 title: NotesRow(

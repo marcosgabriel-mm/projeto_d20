@@ -1,10 +1,6 @@
 import 'package:d20_project/app/providers/d20_provider.dart';
-import 'package:d20_project/app/providers/initiatives_provider.dart';
-import 'package:d20_project/app/utils/add_functions.dart';
 import 'package:d20_project/app/utils/app_functions.dart';
-import 'package:d20_project/app/utils/sort_functions.dart';
-import 'package:d20_project/app/widgets/add_button.dart';
-import 'package:d20_project/app/widgets/sort_button.dart';
+import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 
 import 'package:d20_project/styles/text_styles.dart';
@@ -30,7 +26,6 @@ class ApplicationBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _ApplicationBarState extends State<ApplicationBar> {
-  final horizontalPadding = 18.0;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +33,7 @@ class _ApplicationBarState extends State<ApplicationBar> {
       centerTitle: false,
       title: !context.watch<D20Provider>().isSelectionMode
           ? Padding(
-              padding: EdgeInsets.only(left: horizontalPadding),
+              padding: const EdgeInsets.only(left: horizontalPadding),
               child: Text(widget.title, style: TextStyles.instance.regular),
             )
           : Padding(
@@ -50,7 +45,7 @@ class _ApplicationBarState extends State<ApplicationBar> {
                       onPressed: () {
                         AppFunctions.checkScreenToSelectEveryone(context);
                       },
-                      icon: widget.areAllSelected ? const Icon(Icons.radio_button_checked) : Icon(context.read<InitiativesProvider>().icon)
+                      icon: widget.areAllSelected ? const Icon(Icons.radio_button_checked) : const Icon(Icons.radio_button_off)
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8),

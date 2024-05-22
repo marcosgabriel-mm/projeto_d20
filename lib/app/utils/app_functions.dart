@@ -4,7 +4,6 @@ import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/dices_provider.dart';
 import 'package:d20_project/app/providers/initiatives_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
-import 'package:d20_project/app/providers/players_provider.dart';
 import 'package:d20_project/app/widgets/popup_buttons.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';
@@ -36,9 +35,7 @@ class AppFunctions {
           ["Cancelar", "Excluir"],
           [ 
             () => checkWhatToBeRemoved(context),
-            () => context.read<InitiativesProvider>().setIcon(Icons.radio_button_off),
-            () => context.read<D20Provider>().toogleSelectionMode(),
-            () => context.read<D20Provider>().turnOffOrOnBottomBar()
+            () => context.read<D20Provider>().toogleSelectionModeAndBottomBar(),
           ]
         );
         break;
@@ -104,7 +101,7 @@ class AppFunctions {
   static void checkScreenToSelectEveryone(BuildContext context) {
     switch (context.read<D20Provider>().currentRoute) {
       case "Iniciativas":
-        context.read<PlayersProvider>().selectOrUnselectAll();
+        context.read<InitiativesProvider>().selectOrUnselectAll();
         break;
       case "Anotações":
         context.read<NotesProvider>().selectOrUnselectAll();
@@ -116,7 +113,7 @@ class AppFunctions {
   static void checkWhatToBeRemoved(BuildContext context) {
     switch (context.read<D20Provider>().currentRoute) {
       case "Iniciativas":
-        context.read<PlayersProvider>().removePlayer();
+        context.read<InitiativesProvider>().removeInitiative();
         break;
       case "Dados":
         context.read<DicesProvider>().removeDices();

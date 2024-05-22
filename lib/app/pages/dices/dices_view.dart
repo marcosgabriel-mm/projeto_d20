@@ -1,11 +1,10 @@
 import 'package:d20_project/app/pages/dices/widgets/dices_custom_row.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/dices_provider.dart';
-import 'package:d20_project/app/utils/add_functions.dart';
-import 'package:d20_project/app/utils/sort_functions.dart';
 import 'package:d20_project/app/widgets/add_button.dart';
 import 'package:d20_project/app/widgets/appbar.dart';
 import 'package:d20_project/app/widgets/selection_bottom_menu.dart';
+import 'package:d20_project/app/widgets/sheet/bottom_sheet.dart';
 import 'package:d20_project/app/widgets/sort_button.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
@@ -35,8 +34,7 @@ class _DicesState extends State<Dices> {
         dicesProvider.clearNumberOfDicesToRoll();
         return false;
       } else if (d20Provider.isSelectionMode) {
-        d20Provider.toogleSelectionMode();
-        d20Provider.turnOffOrOnBottomBar();
+        d20Provider.toogleSelectionModeAndBottomBar();
         dicesProvider.turnAllUnselected();
         return false;
       }
@@ -47,7 +45,12 @@ class _DicesState extends State<Dices> {
           title: context.read<D20Provider>().currentRoute, 
           actions: [
             AddButton(
-                function: AddFunctions.addSomethingAccordingToScreen(context),
+                function: () => displayBottomSheet(
+                  context, 
+                  "Novo dado", 
+                  [["Quantidade de lados", "Ex: 34"],["Descrição", "Ex: Dado de 34 faces"]],
+                  context.read<DicesProvider>().addDice,
+                )
               ),
             Padding(
               padding: const EdgeInsets.only(right: horizontalPadding),
@@ -56,7 +59,7 @@ class _DicesState extends State<Dices> {
                 padding: horizontalPadding,
                 function: (value) {
                   if (value != null) {
-                    SortFunctions.verifyScreenToSort(value,context);
+                    dicesProvider.sortDices(value);
                   }
                 },
               ),
@@ -87,7 +90,8 @@ class _DicesState extends State<Dices> {
             Padding(
               padding: const EdgeInsets.only(bottom: verticalPadding),
               child: Text("Dados Padrões", style: TextStyles.instance.regular),
-            ), //TODO - Mudar titulo de dados padrões para dados personalizados ao começar a exibir proxima lista
+            ), 
+            //TODO - Mudar titulo de dados padrões para dados personalizados ao começar a exibir proxima lista
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
@@ -97,8 +101,7 @@ class _DicesState extends State<Dices> {
                     dicesProvider.selectDice(index);
                   },
                   onLongPress: () {
-                    d20Provider.toogleSelectionMode();
-                    d20Provider.turnOffOrOnBottomBar();
+                    d20Provider.toogleSelectionModeAndBottomBar();
                     dicesProvider.selectDice(index);
                   },
                   title: CustomRow(

@@ -1,4 +1,4 @@
-import 'package:d20_project/app/pages/character_sheet/character_sheet_view.dart';
+import 'package:d20_project/app/pages/characters/characters_view.dart';
 import 'package:d20_project/app/pages/dices/dices_view.dart';
 import 'package:d20_project/app/pages/initiatives/initiatives_view.dart';
 import 'package:d20_project/app/pages/spells/spells_view.dart';
