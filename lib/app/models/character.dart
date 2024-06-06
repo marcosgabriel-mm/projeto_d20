@@ -1,16 +1,31 @@
 class Character {
-  final String name;
-  final String race;
-  final String classType;
+  String name;
+  String race;
+  String classType;
 
   int level;
-  final int experience;
-  final int maxHitPoints;
-  final int currentHitPoints;
+  int experience;
+  int maxHitPoints;
+  int currentHitPoints;
 
-  final Map<String, int> stats;
-  final Map<String, Object> skills;
-  final Map<String, int> primaryStats;
+  Map<String, int> stats;
+  Map<String, int> primaryStats;
+  Map<String, dynamic> skills;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "name" : name,
+      "race" : race,
+      "classType" : classType,
+      "level" : level,
+      "experience" : experience,
+      "maxHitPoints" : maxHitPoints,
+      "currentHitPoints" : currentHitPoints,
+      "skills" : skills,
+      "primaryStats" : primaryStats,
+      "stats" : stats,
+    };
+  }
 
   Character({
     required this.name,

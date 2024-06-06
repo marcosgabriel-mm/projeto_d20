@@ -1,3 +1,4 @@
+import 'package:d20_project/app/pages/characters/widgets/fields.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +8,16 @@ class SecondElements extends StatelessWidget {
   final String asset;
   final String title;
   final String label;
+  final bool? justText;
+  final ValueChanged<String> onTextChanged;
   
   const SecondElements({
     super.key, 
     required this.asset, 
     required this.title, 
-    required this.label
+    required this.label, 
+    required this.onTextChanged, 
+    this.justText
   });
 
   @override
@@ -32,11 +37,19 @@ class SecondElements extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Tooltip(
-                  
                   message: label,
                   child: SvgPicture.asset(asset,)
                 ),
-                Text(title, style: TextStyles.instance.regular,)
+                justText!=false 
+                ? Text(
+                  title,
+                  style: TextStyles.instance.regular,
+                ) 
+                : TextFields(
+                  fontSize: TextStyles.instance.regular.fontSize ?? 16, 
+                  text: title,
+                  onTextChanged: onTextChanged
+                )
               ],
             ),
           )

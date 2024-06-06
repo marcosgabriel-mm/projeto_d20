@@ -1,3 +1,4 @@
+import 'package:d20_project/app/pages/characters/widgets/fields.dart';
 import 'package:d20_project/app/providers/characters_provider.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
@@ -10,12 +11,15 @@ class Skill extends StatelessWidget {
   final String skillValue;
   final String asset;
   final Color colors;
+  final ValueChanged<String> onTextChanged;
+
   const Skill({
     super.key, 
     required this.skillName, 
     required this.skillValue, 
     required this.asset, 
-    required this.colors
+    required this.colors, 
+    required this.onTextChanged
   });
 
   @override
@@ -40,6 +44,7 @@ class Skill extends StatelessWidget {
                         child: GestureDetector(
                           onLongPress: () {
                             context.read<CharacterProvider>().toggleProeficient(skillName);
+                            context.read<CharacterProvider>().addProeficiencyModifier(skillName);
                           },
                           child: SvgPicture.asset(
                             asset, 
@@ -49,14 +54,20 @@ class Skill extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Text(skillName, style: TextStyles.instance.regular.copyWith(fontSize: 10, color: colors))
+                      Text(skillName, style: TextStyles.instance.regular.copyWith(fontSize: 8, color: colors))
                     ],
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: horizontalPadding/6),
-                child: Text(skillValue, style: TextStyles.instance.regular.copyWith(fontSize: 12, color: colors)),
+                padding: EdgeInsets.only(
+                  right: skillValue.length > 1 ? horizontalPadding/5 : horizontalPadding/3
+                ),
+                child: TextFields(
+                  fontSize: TextStyles.instance.regular.copyWith(fontSize: 14).fontSize ?? 14, 
+                  text: skillValue,
+                  onTextChanged: onTextChanged
+                ),
               )
             ],
           )

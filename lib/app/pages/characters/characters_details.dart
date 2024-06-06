@@ -1,32 +1,52 @@
 import 'package:d20_project/app/pages/characters/widgets/atributes.dart';
+import 'package:d20_project/app/pages/characters/widgets/fields.dart';
 import 'package:d20_project/app/pages/characters/widgets/fisrt_elements.dart';
 import 'package:d20_project/app/pages/characters/widgets/second_elements.dart';
 import 'package:d20_project/app/pages/characters/widgets/skills.dart';
 import 'package:d20_project/app/providers/characters_provider.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
+import 'package:d20_project/app/providers/files_provider.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-
 class CharacterDetails extends StatefulWidget {
-  const CharacterDetails({super.key});
+  final String fullPath;
+  final int index;
+  const CharacterDetails({
+    super.key, 
+    required this.fullPath, 
+    required this.index
+  });
 
   @override
   State<CharacterDetails> createState() => _CharacterDetailsState();
 }
 
 class _CharacterDetailsState extends State<CharacterDetails> {
-    late D20Provider d20provider;
-    late CharacterProvider characterProvider;
-    bool _isExpanded = true;
+  late D20Provider d20provider;
+  late CharacterProvider characterProvider;
+  bool _isExpanded = true;
+  String _atributeLabel = "Atributos do personagem";
+
+  @override
+  void initState() {
+    super.initState();
+    characterProvider = context.read<CharacterProvider>();
+
+    //todo resolver esse problema
+    if (widget.index == -1 && widget.fullPath.isEmpty) {
+      characterProvider.character = characterProvider.characterDefault;
+    } else {
+      FilesProvider().loadSimpleJsonFromDirectory(widget.fullPath, characterProvider);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     d20provider = context.watch<D20Provider>();
     characterProvider = context.watch<CharacterProvider>();
-    
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -35,14 +55,46 @@ class _CharacterDetailsState extends State<CharacterDetails> {
           child: AppBar(
             title: Column(
               children: [
-                Text(characterProvider.character.name, style: TextStyles.instance.regular,),
-                Text('${characterProvider.character.race} | ${characterProvider.character.classType}', style: TextStyles.instance.regular.copyWith(fontSize: 14),)
+                TextFields(
+                  fontSize: TextStyles.instance.regular.fontSize!,
+                  text: characterProvider.character.name,
+                  onTextChanged: (value) {
+                    characterProvider.character.name = value;
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextFields(
+                      fontSize: 14,
+                      text: characterProvider.character.race,
+                      onTextChanged: (value) {
+                        characterProvider.character.race = value;
+                      },
+                    ),
+                    Text(" | ", style: TextStyles.instance.regular.copyWith(fontSize: 14),),
+                    TextFields(
+                      fontSize: 14,
+                      text: characterProvider.character.classType,
+                      onTextChanged: (value) {
+                        characterProvider.character.classType = value;
+                      },
+                    ),
+                  ],
+                )
               ],
             ),
             actions: [
               IconButton(
                 onPressed: (){
                   //todo salvar personagem em um arquivo json
+                  if (widget.index == -1) {
+                    FilesProvider().saveNewJson(characterProvider.character);
+                    Navigator.pop(context);
+                  } else {
+                    FilesProvider().saveExistentJson(widget.index, characterProvider.character);
+                    Navigator.pop(context);
+                  }
                 },
                 icon: const Icon(Icons.done)
               )
@@ -64,15 +116,32 @@ class _CharacterDetailsState extends State<CharacterDetails> {
               children: [
                 Elements(
                   title: "Vida Atual | Maxima", 
-                  subtitle: "${characterProvider.character.currentHitPoints} | ${characterProvider.character.maxHitPoints}",
+                  firstSubtitle: characterProvider.character.currentHitPoints.toString(),
+                  secondSubtitle: characterProvider.character.maxHitPoints.toString(),
                   asset: "assets/svg/character/life_heart.svg",
-                  width: 150,
+                  width: 155,
+                  justText: false,
+                  onTextChangedFistSubtitle: (value) {
+                    if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
+                      characterProvider.character.currentHitPoints = int.parse(value);
+                    }
+                  },
+                  onTextChangedSecondSubtitle: (value) {
+                    if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
+                      characterProvider.character.maxHitPoints = int.parse(value);
+                    }
+                  },
                 ),
                 Elements(
                   title: "Experiencia | Nível", 
-                  subtitle: "${characterProvider.character.experience} | ${characterProvider.character.level}",
+                  firstSubtitle: characterProvider.character.experience.toString(),
+                  secondSubtitle: characterProvider.character.level.toString(),
                   asset: "assets/svg/character/experience.svg",
-                  width: 150,
+                  width: 155,
+                  justText: true,
+                  onTextChangedFistSubtitle: (value) {
+                    characterProvider.updateLevel(value);
+                  },
                 )
               ],
             ),
@@ -89,11 +158,19 @@ class _CharacterDetailsState extends State<CharacterDetails> {
               spacing: horizontalPadding,
               runSpacing: horizontalPadding,
               children: [
+                //todo verificar como colocar o valor da percepção passiva de forma dinamica
                 for (int index=0 ; index<characterProvider.character.primaryStats.length; index++)
                 SecondElements(
                   asset: characterProvider.assetsRoutes[1][characterProvider.character.primaryStats.keys.elementAt(index)] ?? "assets/svg/character/initiatives.svg", 
                   title: characterProvider.character.primaryStats.values.elementAt(index).toString(), 
+                  // title: index == 5 && characterProvider.character.primaryStats.keys.elementAt(index) == "Percepção Passiva" ? characterProvider.calculatePassivePerception().toString() : characterProvider.character.primaryStats.values.elementAt(index).toString(),
                   label: characterProvider.character.primaryStats.keys.elementAt(index), 
+                  justText: index == 1 ? true : false,
+                  onTextChanged: (value) {
+                    if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
+                      characterProvider.character.primaryStats[characterProvider.character.primaryStats.keys.elementAt(index)] = int.parse(value.trim());
+                    }
+                  }
                 ),
               ],
             ),
@@ -119,11 +196,17 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                             padding: const EdgeInsets.only(right: horizontalPadding/2),
                             child: SvgPicture.asset("assets/svg/character/atributes_icon.svg"),
                           ),
-                          Text("Atributos", style: TextStyles.instance.regular)
+                          Text(_atributeLabel, style: TextStyles.instance.regular)
                         ],
                       ),
                       IconButton(onPressed: (){
-                        //todo mudar para salvaguardas
+                        setState(() {
+                          if (_atributeLabel == "Atributos do personagem") {
+                            _atributeLabel = "Salvaguardas";
+                          } else {
+                            _atributeLabel = "Atributos do personagem";
+                          }
+                        });
                       }, 
                       icon: const Icon(Icons.switch_right))
                     ],
@@ -134,11 +217,16 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                   spacing: horizontalPadding,
                   runSpacing: verticalPadding,
                   children: [
+                    //todo mudar para salvaguardas
+                    //todo quando em atributos, salvar alterações
                     for (int index=0; index<characterProvider.character.stats.length; index++)
                     Atribute(
                       atributeName: characterProvider.character.stats.keys.elementAt(index),
                       atributeValue: characterProvider.character.stats.values.elementAt(index).toString(),
-                      atributeModificator: characterProvider.calcutateModificator(characterProvider.character.stats.values.elementAt(index)).toString()
+                      atributeModificator: characterProvider.calcutateModificator(characterProvider.character.stats.values.elementAt(index)).toString(),
+                      onTextChanged: (value) {
+                        characterProvider.updateAtributes(value, index);
+                      },
                     )
                   ],
                 ),
@@ -171,11 +259,14 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                     ],
                   ),
                   if (_isExpanded)
-                  IconButton(
-                    onPressed: (){
-                      //todo preencher pericias automaticamente com base nos atributos
-                    },
-                    icon: const Icon(Icons.drive_file_rename_outline, color: Colors.white),
+                  Tooltip(
+                    message: "Auto completar campos",
+                    child: IconButton(
+                      onPressed: (){
+                        characterProvider.autoCompleteProeficiencyModifierFields();
+                      },
+                      icon: const Icon(Icons.drive_file_rename_outline, color: Colors.white),
+                    ),
                   )
                 ],
               ),
@@ -190,12 +281,15 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                   spacing: horizontalPadding,
                   runSpacing: verticalPadding,
                   children: [
-                    for (int i = 0; i < characterProvider.character.skills.keys.length; i++)
+                    for (int index = 0; index < characterProvider.character.skills.keys.length; index++)
                     Skill(
-                      skillName: characterProvider.character.skills.keys.elementAt(i),
-                      skillValue: (characterProvider.character.skills.values.elementAt(i) as Map<String, dynamic>)['valor'].toString(),
-                      asset: characterProvider.assetsRoutes[0][characterProvider.character.skills.keys.elementAt(i)] ?? "",
-                      colors: characterProvider.isProeficient(characterProvider.character.skills.keys.elementAt(i)) ? Colors.white : Colors.white30,
+                      skillName: characterProvider.character.skills.keys.elementAt(index),
+                      skillValue: (characterProvider.character.skills.values.elementAt(index) as Map<String, dynamic>)['valor'].toString(),
+                      asset: characterProvider.assetsRoutes[0][characterProvider.character.skills.keys.elementAt(index)] ?? "assets/svg/skills/question_mark.svg",
+                      colors: characterProvider.isProeficient(characterProvider.character.skills.keys.elementAt(index)) ? Colors.white : Colors.white30,
+                      onTextChanged: (value) {
+                        characterProvider.updateSkills(value, index);
+                      },
                     )
                   ],
                 ),

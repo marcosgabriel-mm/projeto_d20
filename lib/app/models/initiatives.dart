@@ -1,8 +1,8 @@
 class Initiatives {
 
-  final String playerName;
-  final String playerClass;
-  final int initiatives;
+  String playerName;
+  String playerClass;
+  int initiatives;
   
   int? armorClass;
   int? hitPoints;
