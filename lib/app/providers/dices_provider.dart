@@ -1,5 +1,10 @@
+import 'dart:math';
+
 import 'package:d20_project/app/models/dices.dart';
+import 'package:d20_project/app/providers/d20_provider.dart';
+import 'package:d20_project/app/utils/app_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DicesProvider extends ChangeNotifier {
   int _totalResult = 0;
@@ -162,10 +167,38 @@ class DicesProvider extends ChangeNotifier {
     return false;
   }
 
-  void clearNumberOfDicesToRoll() {
+  void clearNumberOfDicesToRoll(BuildContext context) {
     for (var dice in _dicesList) {
       dice.numberOfDicesToRoll = 0;
     }
+    context.read<D20Provider>().turnOffOrOnBottomBar();
     notifyListeners();
+  }
+
+  void rollDices(BuildContext context) {
+    final random = Random();
+
+    addJustSelectedDices(dicesList);
+    for (var dice in justSelectedDices) {
+      List<int> numbersRolled = [];
+      for (var i = 0; i < dice.numberOfDicesToRoll; i++) {
+        int result = random.nextInt(int.parse(dice.diceName.substring(1)) + 1);
+        if (result == 0) {
+          result = 1;
+        }
+        numbersRolled.add(result);
+      }
+      addResult({dice.diceName: numbersRolled});
+    }
+
+    totalResultForTheRoll();
+    AppFunctions.screenPopUp(
+      context, 
+      "Soma total dos dados: ${totalResult.toString()}",
+      formatResultList(resultList),
+      ["Ok"],
+    );
+    clearResult();
+    clearDicesSelected();
   }
 }

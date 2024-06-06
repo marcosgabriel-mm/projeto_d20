@@ -1,4 +1,6 @@
 import 'package:d20_project/app/models/initiatives.dart';
+import 'package:d20_project/app/utils/app_functions.dart';
+import 'package:d20_project/app/widgets/sheet/bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 class InitiativesProvider extends ChangeNotifier {
@@ -18,6 +20,16 @@ class InitiativesProvider extends ChangeNotifier {
 
   void onSelectionMode(Initiatives player) {
     player.isSelected = !player.isSelected;
+    notifyListeners();
+  }
+
+  set resistanceTypesSelected(List<String> value) {
+    _resistanceTypesSelected = value;
+    notifyListeners();
+  }
+
+  set weaknessTypesSelected(List<String> value) {
+    _weaknessTypesSelected = value;
     notifyListeners();
   }
 
@@ -54,15 +66,40 @@ class InitiativesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeInitiative() {
-    _initiativesList.removeWhere((element) => element.isSelected);
-    notifyListeners();
+  void removeInitiative(BuildContext context) async {
+    bool? shouldDelete = await AppFunctions.screenPopUp(context, "Excluir", "Deseja excluir as iniciativas selecionadas?", ["Cancelar", "Excluir"]);
+    if (shouldDelete == true) {
+      _initiativesList.removeWhere((element) => element.isSelected);
+      notifyListeners();
+    }
   }
 
   void selectInitiative(int index) {
     _initiativesList[index].isSelected = !_initiativesList[index].isSelected;
     notifyListeners();
   }
+
+  void editInitiative(BuildContext context) async {
+    int index = _initiativesList.indexWhere((element) => element.isSelected);
+    List<TextEditingController>? controllers = await BottomSheetModal.addOrEditInitiative(context, true, _initiativesList[index]);
+
+    if (controllers != null) {
+      _initiativesList[index].playerName = controllers[0].text;
+      _initiativesList[index].playerClass = controllers[1].text;
+      _initiativesList[index].hitPoints = int.parse(controllers[2].text);
+
+      _initiativesList[index].initiatives = int.parse(controllers[3].text);
+      _initiativesList[index].spellClass = int.parse(controllers[4].text);
+      _initiativesList[index].armorClass = int.parse(controllers[5].text);
+
+      _initiativesList[index].resistanceTypes = List<String>.from(_resistanceTypesSelected);
+      _initiativesList[index].weaknessTypes = List<String>.from(_weaknessTypesSelected);
+    }
+
+    notifyListeners();
+  }
+
+
 
   void selectOrUnselectAll() {
     if (_initiativesList.every((initiative) => initiative.isSelected)) {

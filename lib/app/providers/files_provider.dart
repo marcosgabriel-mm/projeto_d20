@@ -1,5 +1,12 @@
+import 'dart:async';
 import 'dart:io';
+import 'package:d20_project/app/models/character.dart';
+import 'package:d20_project/app/providers/characters_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
+import 'dart:convert';
 
 class FilesProvider {
 
@@ -59,7 +66,225 @@ class FilesProvider {
     return allNotes;
   }
 
-  //TODO - implementar a função de salvar, deletar e ler dados
+  Future<List<String>> searchNotesByName(String noteTitle) async {
+  final appDirectory = await _localAppDirectory;
+  Directory directory = Directory('${appDirectory.path}/notes');
+  List<String> matchingNotes = [];
 
-  //TODO - implementar a função de ler, salvar e deletar magias
+  if (await directory.exists()) {
+    var entities = directory.listSync(recursive: true, followLinks: false);
+
+    for (var entity in entities) {
+      if (entity is File && entity.path.endsWith('.txt')) {
+
+        String contents = await File(entity.path).readAsString();
+        List<String> notes = contents.split(',\n');
+
+        for (var note in notes) {
+          List<String> noteParts = note.split(', ');
+          String noteTittle = noteParts[0];
+
+            if (noteTittle.toLowerCase().contains(noteTitle.toLowerCase())) {
+              matchingNotes.addAll(notes);
+            }
+          break;
+        }
+      }
+    }
+  }
+
+  return matchingNotes;
+}
+  
+  Future<void> saveNewPhoto(int characterId) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final appDirectory = await _localAppDirectory;
+
+      
+      String id = (characterId+1).toString();
+      Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$id');
+      if (!await characterDirectory.parent.exists()) {
+        await characterDirectory.parent.create();
+      }
+
+      if (!await characterDirectory.exists()) {
+        await characterDirectory.create();
+      }
+
+      String characterName = 'Character';
+      String characterClass = 'Class';
+      int characterLife = 0;
+      int characterLevel = 0;
+
+      if (await characterDirectory.exists()) {
+        var files = characterDirectory.listSync();
+
+        for (var file in files) {
+          if (file is File) {
+            if (path.extension(file.path) == '.json')  {
+              List<String> parts = path.basename(file.path).split('_');
+              String lastPart = parts.last;
+              List<String> lastPartAndExtension = lastPart.split('.');
+              parts[parts.length - 1] = lastPartAndExtension.first;
+              characterName = parts[0];
+              characterClass = parts[1];
+              characterLife = int.parse(parts[2]);
+              characterLevel = int.parse(parts[3]);
+            }
+          }
+        }
+      }
+
+      if (await characterDirectory.exists()) {
+      var files = characterDirectory.listSync();
+
+      for (var file in files) {
+        if (file is File) {
+          if (path.extension(file.path) == '.jpg' || path.extension(file.path) == '.png') {
+            await file.delete();
+          }
+        }
+      }
+    }
+
+      File imageFile = File(pickedFile.path);
+      await imageFile.copy('${characterDirectory.path}/${characterName}_${characterClass}_${characterLife}_$characterLevel.jpg');
+    }
+  }
+
+  Future<void> saveExistentJson(int characterId, Character character) async {
+
+    final appDirectory = await _localAppDirectory;
+    String id = (characterId+1).toString();
+    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$id');
+
+    if (!await characterDirectory.parent.exists()) {
+      await characterDirectory.parent.create();
+    }
+
+    if (!await characterDirectory.exists()) {
+      await characterDirectory.create();
+    }
+
+    if (await characterDirectory.exists()) {
+      List<FileSystemEntity> files = characterDirectory.listSync();
+      for (var file in files) {
+      if (file is File && file.path.endsWith('.json')) {
+        await file.delete();
+      }
+      }
+    }
+
+    File jsonFile = File('${characterDirectory.path}/${character.name}_${character.classType}_${character.currentHitPoints}_${character.level}.json');
+    await jsonFile.writeAsString(jsonEncode(character.toJson()));
+  }
+
+  Future<void> saveNewJson(Character character) async {
+    final appDirectory = await _localAppDirectory;
+    int quantity = await getCharactersQuantityInPath();
+
+    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR${quantity + 1}');
+
+    if (!await characterDirectory.parent.exists()) {
+      await characterDirectory.parent.create();
+    }
+
+    if (!await characterDirectory.exists()) {
+      await characterDirectory.create();
+    }
+
+    File jsonFile = File('${characterDirectory.path}/${character.name}_${character.classType}_${character.currentHitPoints}_${character.level}.json');
+    print(jsonFile);
+    await jsonFile.writeAsString(jsonEncode(character.toJson()));
+  }
+
+  Future deleteFolderAndRenameAll(int index) async {
+    final appDirectory = await _localAppDirectory;
+    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$index');
+
+    if (await characterDirectory.exists()) {
+      await characterDirectory.delete(recursive: true);
+    }
+
+    for (int i = index; i <= await getCharactersQuantityInPath(); i++) {
+      Directory oldDirectory = Directory('${appDirectory.path}/characters/CHAR$i');
+      Directory newDirectory = Directory('${appDirectory.path}/characters/CHAR${i - 1}');
+
+      if (await oldDirectory.exists()) {
+        await oldDirectory.rename(newDirectory.path);
+      }
+    }
+  }
+
+  Future loadSimpleJsonFromDirectory(String directory, CharacterProvider characterProvider) async {
+    
+    File jsonFile = File(directory);
+    String jsonString = await jsonFile.readAsString();
+
+    Map<String, dynamic> json = jsonDecode(jsonString);
+    characterProvider.loadCharacter(json);
+  }
+
+  Future getNameOfFiles(int characterId) async {
+    
+    String id = (characterId+1).toString();
+    final appDirectory = await _localAppDirectory;
+    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$id');
+
+    for (var entity in characterDirectory.listSync()) {
+      if (entity is File && entity.path.endsWith('.json')) {
+        return entity.path;
+      }
+    }
+    return null;
+  }
+
+  Future<String> loadPhoto(int characterId) async {
+    
+    final appDirectory = await _localAppDirectory;
+    String id = (characterId+1).toString();
+    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$id');
+    
+    if (await characterDirectory.exists()) {
+      List<FileSystemEntity> entities = characterDirectory.listSync();
+      for (FileSystemEntity entity in entities) {
+        if (entity is File && entity.path.endsWith('.jpg')) {
+          return entity.path;
+        }
+      }
+    }
+    return "";
+  }
+
+  Future getCharactersQuantityInPath() async {
+  
+    final appDirectory = await _localAppDirectory;
+    Directory characterDirectory = Directory('${appDirectory.path}/characters');
+    int quantity = 0;
+
+    for (var entity in characterDirectory.listSync()) {
+      if (entity is Directory) {
+        quantity++;
+      }
+    }
+
+    return quantity;
+  }
+
+  Future seeAllFolders() async {
+    
+    final appDirectory = await _localAppDirectory;
+    Directory characterDirectory = Directory('${appDirectory.path}/characters');
+
+    for (var entity in characterDirectory.listSync()) {
+      if (entity is Directory) {
+        debugPrint(entity.path);
+      }
+    }
+  }
+
+
 }

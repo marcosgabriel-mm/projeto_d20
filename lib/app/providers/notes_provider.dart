@@ -121,4 +121,30 @@ class NotesProvider extends ChangeNotifier {
     notesList.sort((a, b) => b.modificationDate.compareTo(a.modificationDate));
     notifyListeners();
   }
+
+  void loadNotesBySearch(String name) async {
+    List<String> notes = await FilesProvider().searchNotesByName(name);
+    _notesList.clear();
+
+
+    for (var i=0; i<notes.length; i+=2) {
+      List<String> noteData = notes[i].split(', ');
+
+      if (noteData.isEmpty){
+        continue;
+      } else {
+        _notesList.add(
+          Notes(
+            title: noteData[0],
+            creationDate: DateTime.parse(noteData[1]),
+            modificationDate: DateTime.parse(noteData[2]),
+            description: notes[i+1],
+          )
+        );
+      }
+
+    }
+    notesList.sort((a, b) => b.modificationDate.compareTo(a.modificationDate));
+    notifyListeners();
+  }
 }

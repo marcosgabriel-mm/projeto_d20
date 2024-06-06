@@ -7,14 +7,28 @@ class D20Provider extends ChangeNotifier {
   bool _toogleBottomBar = true;
   bool _isSelectionMode = false;
   bool _showFloatingButton = true;
+  bool _onSearch = false;
   int _currentIndex = 0;
   String _currentRoute = "Iniciativas";
+  String _currentSearch = "";
 
   bool get toogleBottomBar => _toogleBottomBar;
   bool get isSelectionMode => _isSelectionMode;
   bool get showFloatingButton => _showFloatingButton;
+  bool get onSearch => _onSearch;
   int get currentIndex => _currentIndex;
   String get currentRoute => _currentRoute;
+  String get currentSearch => _currentSearch;
+
+  void updateSearch(String search) {
+    _currentSearch = search;
+    notifyListeners();
+  }
+
+  void toggleSearch() {
+    _onSearch = !_onSearch;
+    notifyListeners();
+  }
 
   void toggleFloatingButton() {
     _showFloatingButton = !_showFloatingButton;
@@ -39,6 +53,7 @@ class D20Provider extends ChangeNotifier {
 
   void updateCurrentRoute(String route) {
     _currentRoute = route;
+    _onSearch = false;
     notifyListeners();
   }
 
