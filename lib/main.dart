@@ -7,32 +7,37 @@ import 'package:d20_project/app/providers/initiatives_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
 import 'package:d20_project/app/providers/spell_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => CharacterProvider(),
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+    .then((_){
+      runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (context) => CharacterProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => SpellProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => NotesProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => DicesProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => InitiativesProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => D20Provider(),
+            )
+          ],
+          child: const AppWidget(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => SpellProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => NotesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => DicesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => InitiativesProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => D20Provider(),
-        )
-      ],
-      child: const AppWidget(),
-    ),
-  );
+      );
+    });
 }

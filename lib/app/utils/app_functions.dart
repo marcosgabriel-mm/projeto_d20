@@ -1,77 +1,16 @@
-import 'dart:math';
 
-import 'package:d20_project/app/providers/d20_provider.dart';
-import 'package:d20_project/app/providers/dices_provider.dart';
-import 'package:d20_project/app/providers/initiatives_provider.dart';
-import 'package:d20_project/app/providers/notes_provider.dart';
-import 'package:d20_project/app/widgets/popup_buttons.dart';
-import 'package:d20_project/styles/colors_app.dart';
-import 'package:d20_project/styles/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:d20_project/app/providers/d20_provider.dart';
+import 'package:d20_project/app/providers/initiatives_provider.dart';
+import 'package:d20_project/app/providers/notes_provider.dart';
+import 'package:d20_project/styles/colors_app.dart';
+import 'package:d20_project/styles/text_styles.dart';
+
 class AppFunctions {
-  static void callFunction(String textLabel, BuildContext context) {
-    switch (textLabel) {
-      case "Limpar":
-        clearSelection(context);
-        context.read<D20Provider>().turnOffOrOnBottomBar();
-        break;
-      case "Rolar":
-        rollDices(context);
-        screenPopUp(
-          context, 
-          "Soma total dos dados: ${context.read<DicesProvider>().totalResult.toString()}",
-          context.read<DicesProvider>().formatResultList(context.read<DicesProvider>().resultList),
-          ["Ok"],
-          [() => context.read<DicesProvider>().clearResult()]
-        );
-        break;
-      case "Excluir":
-        screenPopUp(
-          context, 
-          "Excluir", 
-          "Deseja excluir os itens selecionados?",
-          ["Cancelar", "Excluir"],
-          [ 
-            () => checkWhatToBeRemoved(context),
-            () => context.read<D20Provider>().toogleSelectionModeAndBottomBar(),
-          ]
-        );
-        break;
-      default:
-    }
-  }
-
-  static void rollDices(BuildContext context) {
-    final dicesProvider = context.read<DicesProvider>();
-    final random = Random();
-
-    dicesProvider.clearResult();
-    dicesProvider.clearDicesSelected();
-
-    dicesProvider.addJustSelectedDices(dicesProvider.dicesList);
-    for (var dice in dicesProvider.justSelectedDices) {
-      List<int> numbersRolled = [];
-      for (var i = 0; i < dice.numberOfDicesToRoll; i++) {
-        int result = random.nextInt(int.parse(dice.diceName.substring(1)) + 1);
-        if (result == 0) {
-          result = 1;
-        }
-        numbersRolled.add(result);
-      }
-      dicesProvider.addResult({dice.diceName: numbersRolled});
-    }
-
-    context.read<DicesProvider>().totalResultForTheRoll();
-  }
-
-  static void clearSelection(BuildContext context) {
-    context.read<DicesProvider>().clearNumberOfDicesToRoll();
-  }
-
-  static Future<dynamic> screenPopUp(
-      context, String title, String content, List<String> textLabel, List<Function> listOfComands) {
+  
+  static Future<dynamic> screenPopUp(context, String title, String content, List<String> textButtons) {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -85,19 +24,22 @@ class AppFunctions {
           style: TextStyles.instance.regular,
         ),
         actions: [
-          for (var item in textLabel)
-            PopupButtons(
-              context: context,
-              textLabel: item,
-              listOfComands: [
-                for (var command in listOfComands) command,
-              ],
-            ),
+          for (var item in textButtons)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, item == "Excluir");
+              },
+              child: Text(
+                item,
+                style: TextStyles.instance.boldItalic,
+              ),
+            )
         ],
       ),
     );
   }
 
+  //muda na appbar
   static void checkScreenToSelectEveryone(BuildContext context) {
     switch (context.read<D20Provider>().currentRoute) {
       case "Iniciativas":
@@ -110,18 +52,4 @@ class AppFunctions {
     }
   }
 
-  static void checkWhatToBeRemoved(BuildContext context) {
-    switch (context.read<D20Provider>().currentRoute) {
-      case "Iniciativas":
-        context.read<InitiativesProvider>().removeInitiative();
-        break;
-      case "Dados":
-        context.read<DicesProvider>().removeDices();
-        break;
-      case "Anotações":
-        context.read<NotesProvider>().removeNotes();
-        break;
-      default:
-    }
-  }
 }

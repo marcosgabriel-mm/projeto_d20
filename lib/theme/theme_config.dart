@@ -43,9 +43,16 @@ class ThemeConfig {
     ),
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
-        iconColor: MaterialStateProperty.all<Color>(Colors.white)
+        iconColor: WidgetStateProperty.all<Color>(Colors.white)
       )
     ),    
+    expansionTileTheme: const ExpansionTileThemeData(
+      iconColor: Colors.white,
+      collapsedIconColor: Colors.white,
+      textColor: Colors.white,
+      collapsedTextColor: Colors.white,
+      shape: Border(),
+    ),
   );
 }
 
