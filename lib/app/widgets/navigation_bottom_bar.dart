@@ -52,21 +52,21 @@ class BottomBarState extends State<BottomBar> {
 
             return TextButton(
               style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  foregroundColor: MaterialStateProperty.all(
+                  foregroundColor: WidgetStateProperty.all(
                     text == selectedButton ? Colors.white : Colors.white30,
                   ),
-                  overlayColor: MaterialStateProperty.all(
+                  overlayColor: WidgetStateProperty.all(
                     text == selectedButton
                         ? Colors.white.withOpacity(0.1)
                         : null,
                   ),
                   textStyle:
-                      MaterialStatePropertyAll(TextStyles.instance.regular)),
+                      WidgetStatePropertyAll(TextStyles.instance.regular)),
               child: Text(text),
               onPressed: () {
                 setState(() {

@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 class SelectionBottomMenu extends StatelessWidget {
   final List textLabel;
   final List<IconData> icons;
+  final List<Function> onPressed;
   const SelectionBottomMenu({
-    super.key, required this.textLabel, required this.icons,
+    super.key, 
+    required this.textLabel, 
+    required this.icons, 
+    required this.onPressed,
   });
 
   @override
@@ -19,6 +23,7 @@ class SelectionBottomMenu extends StatelessWidget {
             BottomButtonMenu(
               textLabel: textLabel[i],
               icon: icons[i],
+              onPressed: onPressed[i],
             ),
         ],
       ),

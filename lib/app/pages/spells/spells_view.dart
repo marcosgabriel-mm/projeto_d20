@@ -57,17 +57,29 @@ class _SpellViewState extends State<SpellView> {
         title: context.read<D20Provider>().currentRoute,
         actions: [
           IconButton(
-            onPressed: (){},
-            icon: const Icon(Icons.search)
+            onPressed: (){
+              d20provider.toggleSearch();
+            },
+            icon: const Icon(
+              Icons.search,
+              color: Colors.white,
+            )
           ),
           AddButton(
-            function: (){},
+            function: (){
+              //todo abrir modal de adicionar magia perosnalizada
+            },
           ),
           Padding(
             padding: const EdgeInsets.only(right: horizontalPadding),
             child: IconButton(
-              onPressed: (){},
-              icon: const Icon(Icons.tune)
+              onPressed: (){
+                //todo abrir modal de filtro
+              },
+              icon: const Icon(
+                Icons.tune,
+                color: Colors.white30,
+              )
             ),
           ),
         ],
@@ -81,7 +93,10 @@ class _SpellViewState extends State<SpellView> {
             curve: Curves.easeOut,
           );
         },
-        child: const Icon(Icons.keyboard_arrow_up),
+        backgroundColor: ColorsApp.instance.secondaryColor,
+        mini: true,
+
+        child: const Icon(Icons.keyboard_arrow_up, color: Colors.white,),
       ),
       body: ScrollListerner(
         context: context,
@@ -91,12 +106,12 @@ class _SpellViewState extends State<SpellView> {
           slivers: spellsByLevel.entries.map((entry) {
             return SliverStickyHeader(
               header: Container(
-                // margin: const EdgeInsets.symmetric(horizontal: horizontalPadding),
+                margin: const EdgeInsets.symmetric(horizontal: horizontalPadding-2),
                 padding: const EdgeInsets.symmetric(horizontal: horizontalPadding*2, vertical: verticalPadding/2),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: ColorsApp.instance.secondaryColor,
-                  // borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
                 ),
                 child: Text(
                   '${entry.key} | ${entry.value.length} magias',
@@ -117,9 +132,15 @@ class _SpellViewState extends State<SpellView> {
                       ),
                     ),
                     child: ListTile(
+                      contentPadding: const EdgeInsets.all(0),
                       title: Text(entry.value[index]['name'], style: TextStyles.instance.regular,),
                       subtitle: Text(entry.value[index]['level'] + " | " + entry.value[index]["casting_time"].split(', ')[0], style: TextStyles.instance.boldItalic,),
-                      trailing: SvgPicture.asset("assets/svg/add-spell.svg"),
+                      trailing: IconButton(
+                        onPressed: () {
+                          //todo adiconar magia para um personagem
+                        },
+                        icon: SvgPicture.asset("assets/svg/add-spell.svg"),
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,

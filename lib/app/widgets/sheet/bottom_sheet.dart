@@ -1,3 +1,4 @@
+import 'package:d20_project/app/models/initiatives.dart';
 import 'package:d20_project/app/providers/initiatives_provider.dart';
 import 'package:d20_project/app/widgets/damage_type.dart';
 import 'package:d20_project/app/widgets/sheet/bottom_sheet_input.dart';
@@ -9,13 +10,28 @@ import 'package:provider/provider.dart';
 
 class BottomSheetModal {
 
-  static Future addInitiative(BuildContext context) {
+  static Future addOrEditInitiative(BuildContext context, bool isEditing, [Initiatives? initiative]) {
     List<TextEditingController> controller = List.generate(6, (index) => TextEditingController());
-    for (var element in controller) {element.clear();}
     
-    context.read<InitiativesProvider>().resistanceTypesSelected.clear();
-    context.read<InitiativesProvider>().weaknessTypesSelected.clear();
+    if (initiative != null){
+      controller[0].text = initiative.playerName;
+      controller[1].text = initiative.playerClass;
+      controller[2].text = initiative.hitPoints.toString();
+      controller[3].text = initiative.initiatives.toString();
+      controller[4].text = initiative.spellClass.toString();
+      controller[5].text = initiative.armorClass.toString();
 
+      context.read<InitiativesProvider>().resistanceTypesSelected = List<String>.from(initiative.resistanceTypes ?? []);
+      context.read<InitiativesProvider>().weaknessTypesSelected = List<String>.from(initiative.weaknessTypes ?? []);
+
+    }else {
+      for (var element in controller) {
+        element.clear();
+        context.read<InitiativesProvider>().resistanceTypesSelected.clear();
+        context.read<InitiativesProvider>().weaknessTypesSelected.clear();
+      }
+    }
+    
     return  showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -40,8 +56,8 @@ class BottomSheetModal {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           InputSheet(campoTexto: "Nome", entradaExemplo: "Kuth", controller: controller[0], width: 85),
-                          InputSheet(campoTexto: "Classe", entradaExemplo: "Mago", controller: controller[1], width: 85)
-,                         InputSheet(campoTexto: "Vida", entradaExemplo: "36", controller: controller[2], width: 85)
+                          InputSheet(campoTexto: "Classe", entradaExemplo: "Mago", controller: controller[1], width: 85),
+                          InputSheet(campoTexto: "Vida", entradaExemplo: "36", controller: controller[2], width: 85)
                         ],
                       ),
                       Row(
@@ -52,52 +68,64 @@ class BottomSheetModal {
                           InputSheet(campoTexto: "CD", entradaExemplo: "15", controller: controller[5], width: 85)
                         ],
                       ),
-                      ExpansionTile(
-                        title: Text("Resistências", style: TextStyles.instance.regular,),
-                        collapsedIconColor: Colors.white,
-                        iconColor: Colors.white,
-                        childrenPadding: const EdgeInsets.symmetric(vertical: verticalPadding),
-                        children: [
-                          Wrap(
-                            spacing: horizontalPadding,
-                            runSpacing: verticalPadding,
-                            children: [
-                              for (var damageType in context.read<InitiativesProvider>().damageTypes)
-                              DamageType(
-                                damageType: "Resistências",
-                                damageTypeText: damageType,
-                                damageTypeSvg: "assets/svg/damage_types/${damageType.toLowerCase()}.svg",
-                              ),
-                            ]
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.only(top: verticalPadding),
+                        child: ExpansionTile(
+                          maintainState: true,
+                          title: Text("Resistências", style: TextStyles.instance.regular,),
+                          collapsedIconColor: Colors.white,
+                          iconColor: Colors.white,
+                          childrenPadding: const EdgeInsets.symmetric(vertical: verticalPadding),
+                          children: [
+                            Wrap(
+                              spacing: horizontalPadding,
+                              runSpacing: verticalPadding,
+                              children: [
+                                for (var damageType in context.read<InitiativesProvider>().damageTypes)
+                                DamageType(
+                                  damageType: "Resistências",
+                                  damageTypeText: damageType,
+                                  damageTypeSvg: "assets/svg/damage_types/${damageType.toLowerCase()}.svg",
+                                ),
+                              ]
+                            ),
+                          ],
+                        ),
                       ),
-                      ExpansionTile(
-                        title: Text("Fraquezas", style: TextStyles.instance.regular,),
-                        collapsedIconColor: Colors.white,
-                        iconColor: Colors.white,
-                        childrenPadding: const EdgeInsets.symmetric(vertical: verticalPadding),
-                        children: [
-                          Wrap(
-                            spacing: horizontalPadding,
-                            runSpacing: verticalPadding,
-                            children: [
-                              for (var damageType in context.read<InitiativesProvider>().damageTypes)
-                              DamageType(
-                                damageType: "Fraquezas",
-                                damageTypeText: damageType,
-                                damageTypeSvg: "assets/svg/damage_types/${damageType.toLowerCase()}.svg",
-                              ),
-                            ]
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.only(top: verticalPadding),
+                        child: ExpansionTile(
+                          maintainState: true,
+                          title: Text("Fraquezas", style: TextStyles.instance.regular,),
+                          collapsedIconColor: Colors.white,
+                          iconColor: Colors.white,
+                          childrenPadding: const EdgeInsets.symmetric(vertical: verticalPadding),
+                          children: [
+                            Wrap(
+                              spacing: horizontalPadding,
+                              runSpacing: verticalPadding,
+                              children: [
+                                for (var damageType in context.read<InitiativesProvider>().damageTypes)
+                                DamageType(
+                                  damageType: "Fraquezas",
+                                  damageTypeText: damageType,
+                                  damageTypeSvg: "assets/svg/damage_types/${damageType.toLowerCase()}.svg",
+                                ),
+                              ]
+                            ),
+                          ],
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 30),
                         child: ElevatedButton(
                           onPressed: () {
-                            context.read<InitiativesProvider>().addInitiative(controller);
-                            Navigator.pop(context);
+                            if (isEditing) {
+                              Navigator.pop(context, controller);
+                            }else{
+                              context.read<InitiativesProvider>().addInitiative(controller);
+                              Navigator.pop(context);
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: ColorsApp.instance.secondaryColor,

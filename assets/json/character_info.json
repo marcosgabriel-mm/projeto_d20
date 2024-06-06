@@ -1,0 +1,70 @@
+[
+    {
+        "nome": "João",
+        "raça": "Humano",
+        "classe": "Guerreiro",
+        "vida_atual": 100,
+        "vida_maxima": 100,
+        "experiencia": 100000,
+        "nivel": 12,
+        "inspiração": 1,
+        "bonus_proficiencia": 4,
+        "classe_de_armadura": 18,
+        "deslocamento": 9,
+        "iniciativa": 2,
+        "percepção_passiva": 10,
+        "atributos": {
+            "Força": 18,
+            "Destreza": 14,
+            "Constituição": 16,
+            "Inteligência": 10,
+            "Sabedoria": 12,
+            "Carisma": 8
+        },
+        "pericias": {
+            "Acrobacia": 2,
+            "Arcanismo": 0,
+            "Atletismo": 6,
+            "Atuação": -1,
+            "Blefar": -1,
+            "Furtividade": 2,
+            "História": 0,
+            "Intimidação": 1,
+            "Intuição": 1,
+            "Investigação": 0,
+            "Lidar com Animais": -1,
+            "Medicina": 1,
+            "Natureza": 0,
+            "Percepção": 3,
+            "Persuasão": -1,
+            "Prestidigitação": 2,
+            "Religião": 0,
+            "Sobrevivência": 1
+        },
+        "nome_do_modificador_da_pericia":{
+            "Acrobacia": "destreza",
+            "Arcanismo": "inteligência",
+            "Atletismo": "força",
+            "Atuação": "carisma",
+            "Blefar": "carisma",
+            "Furtividade": "destreza",
+            "História": "inteligência",
+            "Intimidação": "carisma",
+            "Intuição": "sabedoria",
+            "Investigação": "inteligência",
+            "Lidar com Animais": "sabedoria",
+            "Medicina": "sabedoria",
+            "Natureza": "inteligência",
+            "Percepção": "sabedoria",
+            "Persuasão": "carisma",
+            "Prestidigitação": "destreza",
+            "Religião": "inteligência",
+            "Sobrevivência": "sabedoria"
+        },
+        "pericias_selecionadas": [
+            "Atletismo",
+            "Intimidação",
+            "Percepção"
+        ]
+    }
+]

@@ -139,7 +139,7 @@ class _NotesTextState extends State<NotesText> {
         focusedBorder: InputBorder.none,
       ),
       controller: _tittleNoteController,
-      autofocus: false,
+      autofocus: widget.index != -1 ? false : true,
       style: TextStyles.instance.regular,
       onSubmitted: (value) {
         setState(() {

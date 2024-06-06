@@ -30,8 +30,7 @@ class _DicesState extends State<Dices> {
   return WillPopScope(
     onWillPop: () async {
       if (dicesProvider.isAnyDiceSelected) {
-        d20Provider.turnOffOrOnBottomBar();
-        dicesProvider.clearNumberOfDicesToRoll();
+        dicesProvider.clearNumberOfDicesToRoll(context);
         return false;
       } else if (d20Provider.isSelectionMode) {
         d20Provider.toogleSelectionModeAndBottomBar();
@@ -71,16 +70,23 @@ class _DicesState extends State<Dices> {
           children: [
             Visibility(
               visible: d20Provider.isSelectionMode,
-              child: const SelectionBottomMenu(
-                textLabel: ["Excluir"],
-                icons: [Icons.delete],
+              child: SelectionBottomMenu(
+                textLabel: const ["Excluir"],
+                icons: const [Icons.delete],
+                onPressed: [
+                  () => dicesProvider.removeDices()
+                ],
               ),
             ),
             Visibility(
               visible: dicesProvider.isAnyDiceSelected,
-              child: const SelectionBottomMenu(
-                textLabel: ["Limpar", "Rolar"],
-                icons: [Icons.clear_all, Icons.casino],
+              child: SelectionBottomMenu(
+                textLabel: const ["Limpar", "Rolar"],
+                icons: const [Icons.clear_all, Icons.casino],
+                onPressed: [
+                  () => dicesProvider.clearNumberOfDicesToRoll(context),
+                  () => dicesProvider.rollDices(context)
+                ],
               ),
             ),
           ],

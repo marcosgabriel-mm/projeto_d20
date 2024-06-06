@@ -5,8 +5,10 @@ import 'package:d20_project/app/providers/files_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
 import 'package:d20_project/app/widgets/add_button.dart';
 import 'package:d20_project/app/widgets/appbar.dart';
+import 'package:d20_project/app/widgets/scroll_listener.dart';
 import 'package:d20_project/app/widgets/selection_bottom_menu.dart';
 import 'package:d20_project/app/widgets/sort_button.dart';
+import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,7 @@ class NotesView extends StatefulWidget {
 class _NotesViewState extends State<NotesView> {
   final FilesProvider filesProvider = FilesProvider();
   final ScrollController _scrollController = ScrollController();
+  
   late D20Provider d20provider;
   late NotesProvider notesProvider;
 
@@ -51,6 +54,11 @@ class _NotesViewState extends State<NotesView> {
     d20provider = context.watch<D20Provider>();
     notesProvider = context.watch<NotesProvider>();
 
+    if (!d20provider.onSearch){
+      start = 0;
+      notesProvider.loadNotesToList(start);
+    }
+
     return WillPopScope(
       onWillPop: () async {
         if (d20provider.isSelectionMode) {
@@ -61,12 +69,26 @@ class _NotesViewState extends State<NotesView> {
         return true;
       },
       child: Scaffold(
-        bottomNavigationBar: !d20provider.isSelectionMode ? const SizedBox.shrink() : const SelectionBottomMenu( textLabel: ["Excluir"], icons: [Icons.delete]),
+        bottomNavigationBar: !d20provider.isSelectionMode 
+        ? const SizedBox.shrink() 
+        : SelectionBottomMenu(
+          textLabel: const ["Excluir"], 
+          icons: const [Icons.delete],
+          onPressed: [
+            () => notesProvider.removeNotes(),
+          ],
+        ),
         appBar: ApplicationBar(
             title: context.read<D20Provider>().currentRoute,
+            onSearch: (value) {
+              debugPrint(value);
+              notesProvider.loadNotesBySearch(value);
+            },
             actions: [
               IconButton(
-                onPressed: (){}, 
+                onPressed: (){
+                  d20provider.toggleSearch();
+                }, 
                 icon: const Icon(Icons.search, color: Colors.white,)
               ),
               AddButton(
@@ -96,8 +118,37 @@ class _NotesViewState extends State<NotesView> {
             ],
             areAllSelected: d20provider.areAllSelectedFromThatScreen(context),
           ),
+        floatingActionButtonLocation:  FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: d20provider.showFloatingButton ? const SizedBox.shrink() : FloatingActionButton(
+          onPressed: () {
+            _scrollController.animateTo(
+              0.0,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeOut,
+            );
+          },
+          backgroundColor: ColorsApp.instance.secondaryColor,
+          mini: true,
+
+          child: const Icon(Icons.keyboard_arrow_up, color: Colors.white,),
+        ),
         body: notesProvider.notesList.isEmpty 
-          ? Center(
+          ? d20provider.onSearch 
+            ? Center(
+              child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //todo colocar uma imagem de nada encontrado
+                // SvgPicture.asset("assets/svg/Papigrafo.svg"),
+                const SizedBox(height: 36),
+                Text(
+                  "Nada encontrado!",
+                  style: TextStyles.instance.regular,
+                )
+              ],
+            ),
+            )
+            : Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -110,37 +161,41 @@ class _NotesViewState extends State<NotesView> {
               ],
             ),
           )
-          :ListView.builder(
-            itemCount: notesProvider.notesList.length,
-            controller: _scrollController,
-            itemBuilder: (context, index) => ListTile(              
-                onTap: () {
-                  if (d20provider.isSelectionMode){
-                    context.read<NotesProvider>().selectNote(index); 
-                  } else {
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(
-                        builder: (context) => NotesText(
-                          index: index,
-                          noteTitle: notesProvider.notesList[index].title,
-                          noteDescription: notesProvider.notesList[index].description,
+          :ScrollListerner(
+            context: context,
+            scrollController: _scrollController,
+            child: ListView.builder(
+              itemCount: notesProvider.notesList.length,
+              controller: _scrollController,
+              itemBuilder: (context, index) => ListTile(              
+                  onTap: () {
+                    if (d20provider.isSelectionMode){
+                      context.read<NotesProvider>().selectNote(index); 
+                    } else {
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(
+                          builder: (context) => NotesText(
+                            index: index,
+                            noteTitle: notesProvider.notesList[index].title,
+                            noteDescription: notesProvider.notesList[index].description,
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                },
-                onLongPress: () { 
-                  d20provider.toogleSelectionModeAndBottomBar(); 
-                  context.read<NotesProvider>().selectNote(index); 
-                },
-                title: NotesRow(
-                  title: notesProvider.notesList[index].title,
-                  description: notesProvider.notesList[index].description,
-                  modificationDate: notesProvider.notesList[index].modificationDate,
-                  icon: notesProvider.notesList[index].isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                )
-            )
+                      );
+                    }
+                  },
+                  onLongPress: () { 
+                    d20provider.toogleSelectionModeAndBottomBar(); 
+                    context.read<NotesProvider>().selectNote(index); 
+                  },
+                  title: NotesRow(
+                    title: notesProvider.notesList[index].title,
+                    description: notesProvider.notesList[index].description,
+                    modificationDate: notesProvider.notesList[index].modificationDate,
+                    icon: notesProvider.notesList[index].isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                  )
+              )
+            ),
           ),
       ),
     );

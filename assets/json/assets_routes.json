@@ -1,0 +1,32 @@
+[
+    {
+        "Atletismo": "assets/svg/skills/atletism.svg",
+        "Acrobacia": "assets/svg/skills/acrobatics.svg",
+        "Furtividade": "assets/svg/skills/stealth.svg",
+        "Prestidigitação": "assets/svg/skills/sleight-of-hand.svg",
+        "Arcanismo": "assets/svg/skills/arcana.svg",
+        "Investigacao": "assets/svg/skills/investigation.svg",
+        "Historia": "assets/svg/skills/history.svg",
+        "Natureza": "assets/svg/skills/nature.svg",
+        "Religiao": "assets/svg/skills/religion.svg",
+        "Intuição": "assets/svg/skills/insight.svg",
+        "Sobrevicencia": "assets/svg/skills/survival.svg",
+        "Medicina": "assets/svg/skills/medicine.svg",
+        "Percepcao": "assets/svg/skills/perception.svg",
+        "Lidar /c animais": "assets/svg/skills/animal-handling.svg",
+        "Atuação": "assets/svg/skills/performance.svg",
+        "Persuasão": "assets/svg/skills/persuasion.svg",
+        "Intimidação": "assets/svg/skills/intimidation.svg",
+        "Enganação": "assets/svg/skills/deception.svg"
+    },
+    {
+        "Vida": "assets/svg/skills/life_heart.svg",
+        "Experiencia": "assets/svg/skills/experience.svg",
+        "Inspiracao": "assets/svg/skills/inspiration.svg",
+        "Proficiencia": "assets/svg/skills/proeficiency_bonus.svg",
+        "Classe_de_armadura": "assets/svg/skills/cd.svg",
+        "Movimento": "assets/svg/skills/moviment.svg",
+        "Inicitiava": "assets/svg/skills/initiatives.svg",
+        "Percepcao_passiva": "assets/svg/skills/passive_perception.svg"
+    }
+]

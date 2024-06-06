@@ -10,7 +10,7 @@ class DamageType extends StatefulWidget {
   final String damageTypeSvg;
   final String damageType;
 
-  DamageType({
+  const DamageType({
     super.key, 
     required this.damageTypeText, 
     required this.damageTypeSvg, 
@@ -54,7 +54,7 @@ class _DamageTypeState extends State<DamageType> {
             ),
             Text(
               widget.damageTypeText, 
-              style: TextStyles.instance.regular.copyWith(fontSize: 12)
+              style: TextStyles.instance.regular.copyWith(fontSize: 10)
             ),
           ],
         ),
