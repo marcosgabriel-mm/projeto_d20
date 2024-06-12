@@ -197,7 +197,6 @@ class FilesProvider {
     }
 
     File jsonFile = File('${characterDirectory.path}/${character.name}_${character.classType}_${character.currentHitPoints}_${character.level}.json');
-    print(jsonFile);
     await jsonFile.writeAsString(jsonEncode(character.toJson()));
   }
 

@@ -3,6 +3,7 @@ import 'package:d20_project/app/d20_app.dart';
 import 'package:d20_project/app/providers/characters_provider.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/dices_provider.dart';
+import 'package:d20_project/app/providers/filter_provider.dart';
 import 'package:d20_project/app/providers/initiatives_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
 import 'package:d20_project/app/providers/spell_provider.dart';
@@ -17,6 +18,9 @@ void main() {
       runApp(
         MultiProvider(
           providers: [
+            ChangeNotifierProvider(
+              create: (context) => FilterProvider(),
+            ),
             ChangeNotifierProvider(
               create: (context) => CharacterProvider(),
             ),

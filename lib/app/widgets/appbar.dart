@@ -9,14 +9,14 @@ import 'package:provider/provider.dart';
 
 class ApplicationBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
-  final bool areAllSelected;
+  final bool? areAllSelected;
   final List<Widget>? actions;
   final Function(String)? onSearch;
 
   const ApplicationBar({
     super.key,
-    required this.areAllSelected,
     required this.title,
+    this.areAllSelected,
     this.actions, 
     this.onSearch, 
   });
@@ -82,7 +82,7 @@ class _ApplicationBarState extends State<ApplicationBar> {
                       onPressed: () {
                         AppFunctions.checkScreenToSelectEveryone(context);
                       },
-                      icon: widget.areAllSelected ? const Icon(Icons.radio_button_checked) : const Icon(Icons.radio_button_off)
+                      icon: widget.areAllSelected ?? false ? const Icon(Icons.radio_button_checked) : const Icon(Icons.radio_button_off)
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8),

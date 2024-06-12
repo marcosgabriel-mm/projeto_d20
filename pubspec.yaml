@@ -73,6 +73,7 @@ flutter:
     - assets/svg/character/
     - assets/svg/skills/
     - assets/svg/damage_types/
+    - assets/svg/filters/
     - assets/fonts/Fraunces/
     - assets/json/spells_pt.json
     - assets/json/assets_routes.json

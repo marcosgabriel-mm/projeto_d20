@@ -1,7 +1,8 @@
+import 'package:d20_project/app/pages/filters/filter_view.dart';
 import 'package:d20_project/app/pages/spells/spells_details_view.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
+import 'package:d20_project/app/providers/filter_provider.dart';
 import 'package:d20_project/app/providers/spell_provider.dart';
-import 'package:d20_project/app/widgets/add_button.dart';
 import 'package:d20_project/app/widgets/appbar.dart';
 import 'package:d20_project/app/widgets/scroll_listener.dart';
 import 'package:d20_project/styles/colors_app.dart';
@@ -32,7 +33,12 @@ class _SpellViewState extends State<SpellView> {
   }
 
   void _loadMoreSpells() async {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+
+    if (
+      _scrollController.position.pixels == _scrollController.position.maxScrollExtent 
+      && !context.read<D20Provider>().onSearch 
+      && context.read<FilterProvider>().selected.isEmpty
+    ) {
       spellProvider.loadThirtySpells();
     }
   }
@@ -55,6 +61,9 @@ class _SpellViewState extends State<SpellView> {
       appBar: ApplicationBar(
         areAllSelected: context.read<D20Provider>().areAllSelectedFromThatScreen(context),
         title: context.read<D20Provider>().currentRoute,
+        onSearch: (value) {
+          spellProvider.searchSpell(value);
+        },
         actions: [
           IconButton(
             onPressed: (){
@@ -65,20 +74,25 @@ class _SpellViewState extends State<SpellView> {
               color: Colors.white,
             )
           ),
-          AddButton(
-            function: (){
-              //todo abrir modal de adicionar magia perosnalizada
-            },
-          ),
           Padding(
             padding: const EdgeInsets.only(right: horizontalPadding),
             child: IconButton(
-              onPressed: (){
-                //todo abrir modal de filtro
+              onPressed: () async {
+                var filters = await Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (context) => FilterView(
+                      filters: spellProvider.spellFilters,
+                    ),
+                  ),
+                );
+                if (filters != null) {
+                  spellProvider.searchSpellByFilter(filters);
+                }
               },
               icon: const Icon(
                 Icons.tune,
-                color: Colors.white30,
+                color: Colors.white,
               )
             ),
           ),

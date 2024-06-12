@@ -1,4 +1,3 @@
-import 'package:d20_project/app/utils/app_functions.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 import 'package:d20_project/styles/text_styles.dart';
@@ -8,15 +7,17 @@ class DetailsRow extends StatelessWidget {
   final String text;
   final dynamic asset;
 
-  bool isString;
-  String image;
-  Icon icon;
+  final bool isString;
+  final String image;
+  final Icon icon;
 
-  DetailsRow({Key? key, required this.text, required this.asset})
-      : isString = asset is String ? true : false,
+  DetailsRow({
+    super.key, 
+    required this.text, 
+    required this.asset
+  })  : isString = asset is String,
         image = asset is String ? asset : '',
-        icon = asset is IconData ? Icon(asset) : const Icon(Icons.error),
-        super(key: key);
+        icon = asset is IconData ? Icon(asset) : const Icon(Icons.error);
 
   @override
   Widget build(BuildContext context) {

@@ -30,7 +30,6 @@ class BottomBarState extends State<BottomBar> {
       "Personagens",
       "Anotações",
       "Magias",
-      "Configurações"
     ];
 
     for (var i = 0; i < buttons.length; i++) {
