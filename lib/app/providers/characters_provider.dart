@@ -1,6 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:d20_project/app/models/character.dart';
@@ -16,6 +14,7 @@ class CharacterProvider extends ChangeNotifier {
     experience: 0,
     maxHitPoints: 0,
     currentHitPoints: 0,
+    description: "",
     primaryStats: {
       'Inspiração': 0,
       'Bônus de Proficiência': 0,
@@ -130,6 +129,7 @@ class CharacterProvider extends ChangeNotifier {
     name: "Nome",
     race: "Raça",
     classType: "Classe",
+    description: "",
     level: 1,
     experience: 0,
     maxHitPoints: 0,
@@ -272,6 +272,11 @@ class CharacterProvider extends ChangeNotifier {
         "Movimento": "assets/svg/character/moviment.svg",
         "Iniciativa": "assets/svg/character/initiatives.svg",
         "Percepção Passiva": "assets/svg/character/passive_perception.svg"
+    },
+    {
+      "Equipamentos": "assets/svg/character/swords-emblem.svg",
+      "Mochila": "assets/svg/character/backpack.svg",
+      "Grimório": "assets/svg/character/grimory.svg"
     }
   ];
 
@@ -292,6 +297,7 @@ class CharacterProvider extends ChangeNotifier {
       classType: json['classType'],
       level: json['level'],
       experience: json['experience'],
+      description: json['description'],
       maxHitPoints: json['maxHitPoints'],
       currentHitPoints: json['currentHitPoints'],
       primaryStats:  primaryStats,

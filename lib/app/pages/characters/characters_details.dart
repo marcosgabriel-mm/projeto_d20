@@ -35,7 +35,6 @@ class _CharacterDetailsState extends State<CharacterDetails> {
     super.initState();
     characterProvider = context.read<CharacterProvider>();
 
-    //todo resolver esse problema
     if (widget.index == -1 && widget.fullPath.isEmpty) {
       characterProvider.character = characterProvider.characterDefault;
     } else {
@@ -53,6 +52,7 @@ class _CharacterDetailsState extends State<CharacterDetails> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
           child: AppBar(
+            scrolledUnderElevation: 0,
             title: Column(
               children: [
                 TextFields(
@@ -87,7 +87,6 @@ class _CharacterDetailsState extends State<CharacterDetails> {
             actions: [
               IconButton(
                 onPressed: (){
-                  //todo salvar personagem em um arquivo json
                   if (widget.index == -1) {
                     FilesProvider().saveNewJson(characterProvider.character);
                     Navigator.pop(context);
@@ -158,7 +157,6 @@ class _CharacterDetailsState extends State<CharacterDetails> {
               spacing: horizontalPadding,
               runSpacing: horizontalPadding,
               children: [
-                //todo verificar como colocar o valor da percepção passiva de forma dinamica
                 for (int index=0 ; index<characterProvider.character.primaryStats.length; index++)
                 SecondElements(
                   asset: characterProvider.assetsRoutes[1][characterProvider.character.primaryStats.keys.elementAt(index)] ?? "assets/svg/character/initiatives.svg", 
@@ -295,6 +293,90 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                 ),
               ] 
             )
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: horizontalPadding*2),
+            padding: const EdgeInsets.symmetric(vertical: verticalPadding),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Colors.white)
+              )
+            ),
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              spacing: horizontalPadding,
+              runSpacing: verticalPadding,
+              children: [
+                for (int index=0; index<characterProvider.assetsRoutes[2].length; index++)
+                GestureDetector(
+                  onTap: () {
+                    //todo abrir tela de grimorio, equipamentos e mochila
+                    debugPrint("index: $index");
+                  },
+                  child: SizedBox(
+                    width: 150,
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(characterProvider.assetsRoutes[2].values.elementAt(index)),
+                        Padding(
+                          padding: const EdgeInsets.only(left: horizontalPadding/2),
+                          child: Text(characterProvider.assetsRoutes[2].keys.elementAt(index), style: TextStyles.instance.regular),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: horizontalPadding*2),
+            padding: const EdgeInsets.symmetric(vertical: verticalPadding), 
+            child: Column(
+              children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.description),
+                      Padding(
+                        padding: const EdgeInsets.only(left: horizontalPadding/2),
+                        child: Text("Sobre o personagem", style: TextStyles.instance.regular),
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: verticalPadding),
+                    child: Container(
+                      width: double.infinity,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: Colors.white)
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: TextField(
+                        controller: TextEditingController(text: characterProvider.character.description),
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(0),
+                          border: InputBorder.none,
+                          hintText: "Escreva sobre o personagem...",
+                          hintStyle: TextStyles.instance.regular.copyWith(color: Colors.white30),
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
+                        onChanged: (value) {
+                          characterProvider.character.description = value;
+                        },
+                        onTapOutside: (value) {
+                          FocusScope.of(context).unfocus();
+                        },
+                        style: TextStyles.instance.regular,
+                        maxLines: null,
+                      ),
+                    ),
+                  )
+                ],
+              ), 
           )
         ],
       ),

@@ -2,6 +2,7 @@ class Character {
   String name;
   String race;
   String classType;
+  String description;
 
   int level;
   int experience;
@@ -12,6 +13,8 @@ class Character {
   Map<String, int> primaryStats;
   Map<String, dynamic> skills;
 
+  //todo colocar magias, esquipamentos e mochila
+
   Map<String, dynamic> toJson() {
     return {
       "name" : name,
@@ -21,6 +24,7 @@ class Character {
       "experience" : experience,
       "maxHitPoints" : maxHitPoints,
       "currentHitPoints" : currentHitPoints,
+      "description" : description,
       "skills" : skills,
       "primaryStats" : primaryStats,
       "stats" : stats,
@@ -36,6 +40,7 @@ class Character {
     required this.maxHitPoints,
     required this.currentHitPoints,
     required this.skills,
+    required this.description,
     Map<String, int>? primaryStats,
     Map<String, int>? stats,
   })  : primaryStats = primaryStats ?? {},

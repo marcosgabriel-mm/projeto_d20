@@ -7,13 +7,14 @@ import 'package:provider/provider.dart';
 
 
 
+// ignore: must_be_immutable
 class NotesText extends StatefulWidget {
   NotesText({
-    Key? key, 
+    super.key, 
     this.noteTitle = "", 
     this.noteDescription = "",
     required this.index
-  }) : super(key: key);
+  });
 
   String noteTitle;
   String noteDescription;
