@@ -200,22 +200,32 @@ class FilesProvider {
     await jsonFile.writeAsString(jsonEncode(character.toJson()));
   }
 
-  Future deleteFolderAndRenameAll(int index) async {
+  Future deleteFolderAndRenameAll(List<int> indexes) async {
     final appDirectory = await _localAppDirectory;
-    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$index');
+    
+    for (int index in indexes){
+      Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR${index+1}');
 
-    if (await characterDirectory.exists()) {
-      await characterDirectory.delete(recursive: true);
-    }
-
-    for (int i = index; i <= await getCharactersQuantityInPath(); i++) {
-      Directory oldDirectory = Directory('${appDirectory.path}/characters/CHAR$i');
-      Directory newDirectory = Directory('${appDirectory.path}/characters/CHAR${i - 1}');
-
-      if (await oldDirectory.exists()) {
-        await oldDirectory.rename(newDirectory.path);
+      if (await characterDirectory.exists()) {
+        await characterDirectory.delete(recursive: true);
       }
+    } 
+
+    int quantity = await getCharactersQuantityInPath();
+    if (quantity == 0) {
+      return;
+    }else{
+      Directory characterDirectory = Directory('${appDirectory.path}/characters');
+      int newIndex = 1;
+      for (var entity in characterDirectory.listSync()) {
+        if (entity is Directory) {
+          String newPath = '${appDirectory.path}/characters/CHAR$newIndex';
+          entity.renameSync(newPath);
+          newIndex++;
+        }
+      }      
     }
+
   }
 
   Future loadSimpleJsonFromDirectory(String directory, CharacterProvider characterProvider) async {
@@ -233,9 +243,11 @@ class FilesProvider {
     final appDirectory = await _localAppDirectory;
     Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$id');
 
-    for (var entity in characterDirectory.listSync()) {
-      if (entity is File && entity.path.endsWith('.json')) {
-        return entity.path;
+    if(await characterDirectory.exists()){
+      for (var entity in characterDirectory.listSync()) {
+        if (entity is File && entity.path.endsWith('.json')) {
+          return entity.path;
+        }
       }
     }
     return null;
@@ -270,6 +282,7 @@ class FilesProvider {
       }
     }
 
+    // print(quantity);
     return quantity;
   }
 

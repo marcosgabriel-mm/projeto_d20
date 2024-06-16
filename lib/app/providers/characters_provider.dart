@@ -124,7 +124,7 @@ class CharacterProvider extends ChangeNotifier {
       }
     }
   );
-  Character get character => _character;
+  
   Character characterDefault = Character(
     name: "Nome",
     race: "Raça",
@@ -274,14 +274,54 @@ class CharacterProvider extends ChangeNotifier {
         "Percepção Passiva": "assets/svg/character/passive_perception.svg"
     },
     {
-      "Equipamentos": "assets/svg/character/swords-emblem.svg",
+      // "Equipamentos": "assets/svg/character/swords-emblem.svg",
       "Mochila": "assets/svg/character/backpack.svg",
       "Grimório": "assets/svg/character/grimory.svg"
     }
   ];
 
-  List<List<String>> _listOfCharacters = [];
   List<List<String>> get listOfCharacters => _listOfCharacters;
+  List<int> get indexesSelected => _indexesSelected;
+
+  List<List<String>> _listOfCharacters = [];
+  Character get character => _character;
+  List<int> _indexesSelected = [];
+
+
+
+  void addIndexSelected(int index) {
+    _indexesSelected.add(index);
+    debugPrint(_indexesSelected.toString());
+    notifyListeners();
+  }
+
+  void removeIndexSelected(int index) {
+    _indexesSelected.remove(index);
+    debugPrint(_indexesSelected.toString());
+    notifyListeners();
+  }
+
+  void selectOrUnselectAll() {
+    int quantity = _listOfCharacters.length;
+    if (_indexesSelected.length == quantity) {
+      _indexesSelected.clear();
+    } else {
+      for (int index = 0; index < quantity; index++) {
+        if (!_indexesSelected.contains(index)) {
+          _indexesSelected.add(index);
+        }
+      }
+    }
+    notifyListeners();
+  }
+
+  bool areEveryoneSelected() {
+    int quantity = _listOfCharacters.length;
+    if (_indexesSelected.length == quantity) {
+      return true;
+    }
+    return false;
+  }
 
   loadCharacter(Map<String, dynamic> json) {
 
@@ -310,6 +350,7 @@ class CharacterProvider extends ChangeNotifier {
 
   set character(Character character) {
     _character = character;
+    notifyListeners();
   }
 
   calcutateModificator(int atributeValue) {
@@ -476,19 +517,22 @@ class CharacterProvider extends ChangeNotifier {
     int quantity = await FilesProvider().getCharactersQuantityInPath();
     for (int index=0 ; index < quantity; index++) {
       
-      String fullPath = await FilesProvider().getNameOfFiles(index);
-      String fileName = path.basename(fullPath);
+      String? fullPath = await FilesProvider().getNameOfFiles(index);
       
-      List<String> parts = fileName.split('_');
+      if (fullPath != null) {
+        String fileName = path.basename(fullPath);
+        
+        List<String> parts = fileName.split('_');
 
-      String lastPart = parts.last;
-      List<String> lastPartAndExtension = lastPart.split('.');
-      parts[parts.length - 1] = lastPartAndExtension.first;
-      
-      bool listExists = listOfCharacters.any((character) => listEquals(character, parts));
-      if (!listExists) {
-        listOfCharacters.add(parts);
-        notifyListeners();
+        String lastPart = parts.last;
+        List<String> lastPartAndExtension = lastPart.split('.');
+        parts[parts.length - 1] = lastPartAndExtension.first;
+        
+        bool listExists = listOfCharacters.any((character) => listEquals(character, parts));
+        if (!listExists) {
+          listOfCharacters.add(parts);
+          notifyListeners();
+        }
       }
     }
   }
@@ -516,6 +560,16 @@ class CharacterProvider extends ChangeNotifier {
       }
     }
     
+    notifyListeners();
+  }
+
+  void deleteCharacter() async {
+    FilesProvider().deleteFolderAndRenameAll(indexesSelected);
+
+    for (int index in indexesSelected) {
+      listOfCharacters.removeAt(index);
+    }
+    loadAllCharactersToList();
     notifyListeners();
   }
 

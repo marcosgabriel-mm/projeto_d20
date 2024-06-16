@@ -52,7 +52,7 @@ class SecondElements extends StatelessWidget {
                 )
               ],
             ),
-          )
+          ),
         ],
       ),
     );

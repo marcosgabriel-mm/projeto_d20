@@ -201,4 +201,24 @@ class DicesProvider extends ChangeNotifier {
     clearResult();
     clearDicesSelected();
   }
+
+  bool areEveryoneSelected() {
+    for (var dice in _dicesList) {
+      if (!dice.isSelected) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void selectOrUnselectAll() {
+    if (areEveryoneSelected()) {
+      turnAllUnselected();
+    } else {
+      for (var dice in _dicesList) {
+        dice.isSelected = true;
+      }
+    }
+    notifyListeners();
+  }
 }

@@ -1,3 +1,5 @@
+import 'package:d20_project/app/providers/characters_provider.dart';
+import 'package:d20_project/app/providers/dices_provider.dart';
 import 'package:d20_project/app/providers/initiatives_provider.dart';
 import 'package:d20_project/app/providers/notes_provider.dart';
 import 'package:flutter/material.dart';
@@ -62,9 +64,11 @@ class D20Provider extends ChangeNotifier {
       case "Iniciativas":
         return context.read<InitiativesProvider>().areEveryoneSelected();
       case "Dados":
-        return false;
+        return context.read<DicesProvider>().areEveryoneSelected();
       case "Anotações":
         return context.read<NotesProvider>().areEveryoneSelected();
+      case "Personagens":
+        return context.read<CharacterProvider>().areEveryoneSelected();
       default:
         return false;
     }

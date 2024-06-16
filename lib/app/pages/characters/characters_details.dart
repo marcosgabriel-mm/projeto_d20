@@ -216,7 +216,6 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                   runSpacing: verticalPadding,
                   children: [
                     //todo mudar para salvaguardas
-                    //todo quando em atributos, salvar alterações
                     for (int index=0; index<characterProvider.character.stats.length; index++)
                     Atribute(
                       atributeName: characterProvider.character.stats.keys.elementAt(index),

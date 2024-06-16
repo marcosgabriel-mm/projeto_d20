@@ -1,4 +1,6 @@
 
+import 'package:d20_project/app/providers/characters_provider.dart';
+import 'package:d20_project/app/providers/dices_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,6 +50,13 @@ class AppFunctions {
       case "Anotações":
         context.read<NotesProvider>().selectOrUnselectAll();
         break;
+      case "Dados":
+        context.read<DicesProvider>().selectOrUnselectAll();
+        break;
+      case "Personagens":
+        context.read<CharacterProvider>().selectOrUnselectAll();
+        break;
+      
       default:
     }
   }
