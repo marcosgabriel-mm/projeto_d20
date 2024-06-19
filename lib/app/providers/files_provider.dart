@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:d20_project/app/models/character.dart';
-import 'package:d20_project/app/providers/characters_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -228,13 +227,13 @@ class FilesProvider {
 
   }
 
-  Future loadSimpleJsonFromDirectory(String directory, CharacterProvider characterProvider) async {
+  Future getJson(String directory) async {
     
     File jsonFile = File(directory);
     String jsonString = await jsonFile.readAsString();
 
     Map<String, dynamic> json = jsonDecode(jsonString);
-    characterProvider.loadCharacter(json);
+    return json;
   }
 
   Future getNameOfFiles(int characterId) async {

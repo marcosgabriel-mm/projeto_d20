@@ -35,11 +35,14 @@ class _CharacterDetailsState extends State<CharacterDetails> {
     super.initState();
     characterProvider = context.read<CharacterProvider>();
 
-    if (widget.index == -1 && widget.fullPath.isEmpty) {
-      characterProvider.character = characterProvider.characterDefault;
-    } else {
-      FilesProvider().loadSimpleJsonFromDirectory(widget.fullPath, characterProvider);
-    }
+    Future.microtask(() async {
+      if (widget.index == -1 && widget.fullPath.isEmpty) {
+        characterProvider.character = characterProvider.characterDefault;
+      } else {
+        Map<String, dynamic> json = await FilesProvider().getJson(widget.fullPath);
+        characterProvider.loadCharacter(json);
+      }
+    });
   }
 
   @override

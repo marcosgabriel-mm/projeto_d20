@@ -12,6 +12,7 @@ class Character {
   Map<String, int> stats;
   Map<String, int> primaryStats;
   Map<String, dynamic> skills;
+  List<Map<dynamic, dynamic>> spells;
 
   //todo colocar magias, esquipamentos e mochila
 
@@ -28,6 +29,7 @@ class Character {
       "skills" : skills,
       "primaryStats" : primaryStats,
       "stats" : stats,
+      "spells" : spells,
     };
   }
 
@@ -41,9 +43,9 @@ class Character {
     required this.currentHitPoints,
     required this.skills,
     required this.description,
+    required this.spells,
     Map<String, int>? primaryStats,
     Map<String, int>? stats,
-  })  : primaryStats = primaryStats ?? {},
-        stats = stats ?? {};
+  }) : primaryStats = primaryStats ?? {}, stats = stats ?? {};
 }
 

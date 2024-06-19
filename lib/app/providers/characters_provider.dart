@@ -122,7 +122,8 @@ class CharacterProvider extends ChangeNotifier {
         'atributo': 'Carisma',
         'proficiente': false
       }
-    }
+    },
+    spells: [] 
   );
   
   Character characterDefault = Character(
@@ -241,7 +242,8 @@ class CharacterProvider extends ChangeNotifier {
         'atributo': 'Carisma',
         'proficiente': false
       }
-    }
+    },
+    spells: []
   );
 
   final assetsRoutes = [
@@ -331,6 +333,9 @@ class CharacterProvider extends ChangeNotifier {
     Map<String, dynamic> primaryStatsMap = json['primaryStats'];
     Map<String, int>? primaryStats = primaryStatsMap.map((key, value) => MapEntry(key, int.tryParse(value.toString()) ?? 0));
 
+    List<dynamic> spellsJson = json['spells'];
+    List<Map<String, dynamic>> spells = spellsJson.map((spell) => Map<String, dynamic>.from(spell)).toList();
+
     _character = Character(
       name: json['name'],
       race: json['race'],
@@ -340,9 +345,10 @@ class CharacterProvider extends ChangeNotifier {
       description: json['description'],
       maxHitPoints: json['maxHitPoints'],
       currentHitPoints: json['currentHitPoints'],
+      skills: json['skills'],
+      spells: spells,
       primaryStats:  primaryStats,
       stats: stats,
-      skills: json['skills']
     );
 
     notifyListeners();
@@ -350,7 +356,6 @@ class CharacterProvider extends ChangeNotifier {
 
   set character(Character character) {
     _character = character;
-    notifyListeners();
   }
 
   calcutateModificator(int atributeValue) {
@@ -571,6 +576,40 @@ class CharacterProvider extends ChangeNotifier {
     }
     loadAllCharactersToList();
     notifyListeners();
+  }
+
+  Future addSpellandSave(Map<String, dynamic> spell, int index) async {
+
+    String fullPath = await FilesProvider().getNameOfFiles(index);
+    Map<String, dynamic> characterJson = await FilesProvider().getJson(fullPath);
+    
+    CharacterProvider characterProvider = CharacterProvider();
+    characterProvider.loadCharacter(characterJson);
+
+    print(characterProvider.character.name); 
+    print(characterProvider.character.spells); 
+
+    if (characterProvider.character.spells.isEmpty) {
+      characterProvider.character.spells.add(spell);
+      FilesProvider().saveExistentJson(index, characterProvider.character);
+      return "Magia adicionada ao personagem";
+    }
+
+    bool spellExists = false;
+    for (var characterSpell in characterProvider.character.spells) {
+      if(characterSpell['name'] == spell['name']){
+        spellExists = true;
+        break;
+      }
+    }
+
+    if(!spellExists) {
+      characterProvider.character.spells.add(spell);
+      FilesProvider().saveExistentJson(index, characterProvider.character);
+      return "Magia adicionada ao personagem";
+    } else {
+      return "Magia já existe no personagem";
+    }
   }
 
 }

@@ -1,5 +1,6 @@
 import 'package:d20_project/app/pages/filters/filter_view.dart';
 import 'package:d20_project/app/pages/spells/spells_details_view.dart';
+import 'package:d20_project/app/providers/characters_provider.dart';
 import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/filter_provider.dart';
 import 'package:d20_project/app/providers/spell_provider.dart';
@@ -24,6 +25,7 @@ class _SpellViewState extends State<SpellView> {
   final ScrollController _scrollController = ScrollController();
   late SpellProvider spellProvider;
   late D20Provider d20provider;
+  late CharacterProvider characterProvider;
 
   @override
   void initState() {
@@ -47,6 +49,7 @@ class _SpellViewState extends State<SpellView> {
   Widget build(BuildContext context) {
     d20provider = context.watch<D20Provider>();
     spellProvider = context.watch<SpellProvider>();
+    characterProvider = context.watch<CharacterProvider>();
 
     Map<String, List<Map<String, dynamic>>> spellsByLevel = {};
     for (var spell in spellProvider.spells) {
@@ -151,7 +154,69 @@ class _SpellViewState extends State<SpellView> {
                       subtitle: Text(entry.value[index]['level'] + " | " + entry.value[index]["casting_time"].split(', ')[0], style: TextStyles.instance.boldItalic,),
                       trailing: IconButton(
                         onPressed: () {
-                          //todo adiconar magia para um personagem
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              if(characterProvider.listOfCharacters.isEmpty) {
+                                characterProvider.loadAllCharactersToList();
+                              }
+                              return AlertDialog(
+                                backgroundColor: ColorsApp.instance.secondaryColor,
+                                title: Text(
+                                  "Adicionar magia", 
+                                  style: TextStyles.instance.regular,
+                                  textAlign: TextAlign.center,
+                                ),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                    if (characterProvider.listOfCharacters.isEmpty)
+                                      Text("Nenhum personagem encontrado", style: TextStyles.instance.regular, textAlign: TextAlign.center,)
+                                    else
+                                      for (var characterIndex = 0; characterIndex < characterProvider.listOfCharacters.length; characterIndex++)
+                                      TextButton(
+                                        onPressed: () async {
+                                          String result = await characterProvider.addSpellandSave(entry.value[index], characterIndex);
+                                          // print(result);
+                                          if (mounted) {
+                                            Navigator.pop(context);
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  result,
+                                                  style: TextStyles.instance.regular
+                                                ),
+                                                duration: const Duration(seconds: 2),
+                                              ),
+                                            );
+                                          }
+                                        }, 
+                                        child: Container(
+                                          padding: const EdgeInsets.all(horizontalPadding),
+                                          decoration: const BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: Colors.white, 
+                                                width: 1
+                                              )
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(characterProvider.listOfCharacters[characterIndex][0], style: TextStyles.instance.regular, textAlign: TextAlign.center,),
+                                              Text(characterProvider.listOfCharacters[characterIndex][1], style: TextStyles.instance.regular, textAlign: TextAlign.center,),
+                                            ],
+                                          ),
+                                        )
+                                      ),
+                                    ],
+                                  )
+                                ),
+                              );
+                            },
+                          );
+                          
                         },
                         icon: SvgPicture.asset("assets/svg/add-spell.svg"),
                       ),
