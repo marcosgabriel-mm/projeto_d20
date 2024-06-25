@@ -37,23 +37,22 @@ class _CharacterSheetState extends State<CharacterSheet> {
     d20provider = context.watch<D20Provider>();
     characterProvider = context.watch<CharacterProvider>();
 
-    if(!d20provider.onSearch){
-      characterProvider.loadAllCharactersToList();
-    }
+    // if(!d20provider.onSearch){
+    //   characterProvider.loadAllCharactersToList();
+    // }
 
     // FilesProvider().deleteFolderAndRenameAll(0);
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
+        }
         if(d20provider.isSelectionMode){
           d20provider.toogleSelectionModeAndBottomBar();
           characterProvider.indexesSelected.clear();
-          return false;
-        } else {
-          return true;
         }
       },
-      
       child: Scaffold(
         appBar: ApplicationBar(
           title: 'Personagens',
@@ -105,7 +104,9 @@ class _CharacterSheetState extends State<CharacterSheet> {
         body: RefreshIndicator(
           onRefresh: () async {
             await Future.delayed(const Duration(microseconds: 500));
-            setState(() {});
+            setState(() {
+              characterProvider.loadAllCharactersToList();
+            });
           },
           child: characterProvider.listOfCharacters.isEmpty
           ? ListView(
@@ -255,20 +256,19 @@ class _CharacterSheetState extends State<CharacterSheet> {
                       d20provider.toogleSelectionModeAndBottomBar();
                       characterProvider.addIndexSelected(index);
                     },
-                    onTap: () {
-                      late String fullPath;
-                      FilesProvider().getNameOfFiles(index).then((path) {
-                        fullPath = path;
-                      });
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CharacterDetails(
-                            fullPath: fullPath, 
-                            index: index
-                          )
-                        )
-                      );
+                    onTap: () async {
+                      String fullPath = await FilesProvider().getNameOfFiles(index);
+                      if (mounted) { // Verifica se o widget ainda está montado
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CharacterDetails(
+                              fullPath: fullPath, 
+                              index: index,
+                            ),
+                          ),
+                        );
+                      }
                     },
                   ),
                 ),
@@ -280,30 +280,3 @@ class _CharacterSheetState extends State<CharacterSheet> {
     );
   }
 }
-
-
-// showDialog(
-//   context: context,
-//   builder: (BuildContext context) {
-//     return AlertDialog(
-//       backgroundColor: ColorsApp.instance.secondaryColor,
-//       title: Text('Confirmar exclusão', style: TextStyles.instance.regular,),
-//       content: Text('Tem certeza que deseja deletar o personagem?', style: TextStyles.instance.regular),
-//       actions: [
-//         TextButton(
-//           onPressed: () {
-//             characterProvider.deleteCharacter(index);
-//             Navigator.of(context).pop();
-//           },
-//           child: Text('Sim', style: TextStyles.instance.regular.copyWith(color: Colors.red)),
-//         ),
-//         TextButton(
-//           onPressed: () {
-//             Navigator.of(context).pop();
-//           },
-//           child: Text('Não', style: TextStyles.instance.regular),
-//         ),
-//       ],
-//     );
-//   },
-// );

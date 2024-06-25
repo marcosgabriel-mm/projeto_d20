@@ -9,6 +9,8 @@ class Character {
   int maxHitPoints;
   int currentHitPoints;
 
+  int spellClass;
+
   Map<String, int> stats;
   Map<String, int> primaryStats;
   Map<String, dynamic> skills;
@@ -21,6 +23,7 @@ class Character {
       "name" : name,
       "race" : race,
       "classType" : classType,
+      "spellClass" : spellClass,
       "level" : level,
       "experience" : experience,
       "maxHitPoints" : maxHitPoints,
@@ -44,6 +47,7 @@ class Character {
     required this.skills,
     required this.description,
     required this.spells,
+    required this.spellClass,
     Map<String, int>? primaryStats,
     Map<String, int>? stats,
   }) : primaryStats = primaryStats ?? {}, stats = stats ?? {};

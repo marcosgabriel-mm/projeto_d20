@@ -22,6 +22,7 @@ class SecondElements extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isPng = asset.contains(".png");
     return SizedBox(
       width: 85,
       height: 45,
@@ -38,7 +39,13 @@ class SecondElements extends StatelessWidget {
               children: [
                 Tooltip(
                   message: label,
-                  child: SvgPicture.asset(asset,)
+                  child: isPng 
+                    ? Image(
+                      height: 24,
+                      width: 24,
+                      image: AssetImage(asset)
+                    )
+                    : SvgPicture.asset(asset,)
                 ),
                 justText!=false 
                 ? Text(
