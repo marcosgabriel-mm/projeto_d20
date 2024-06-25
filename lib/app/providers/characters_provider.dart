@@ -6,7 +6,7 @@ import 'package:d20_project/app/providers/files_provider.dart';
 
 class CharacterProvider extends ChangeNotifier {
 
-  late Character _character = Character(
+  Character _character = Character(
     name: "Nome",
     race: "Raça",
     classType: "Classe",
@@ -14,6 +14,7 @@ class CharacterProvider extends ChangeNotifier {
     experience: 0,
     maxHitPoints: 0,
     currentHitPoints: 0,
+    spellClass: 0,
     description: "",
     primaryStats: {
       'Inspiração': 0,
@@ -125,7 +126,6 @@ class CharacterProvider extends ChangeNotifier {
     },
     spells: [] 
   );
-  
   Character characterDefault = Character(
     name: "Nome",
     race: "Raça",
@@ -134,6 +134,7 @@ class CharacterProvider extends ChangeNotifier {
     level: 1,
     experience: 0,
     maxHitPoints: 0,
+    spellClass: 0,
     currentHitPoints: 0,
     primaryStats: {
       'Inspiração': 0,
@@ -245,7 +246,6 @@ class CharacterProvider extends ChangeNotifier {
     },
     spells: []
   );
-
   final assetsRoutes = [
     {
         "Atletismo": "assets/svg/skills/atletism.svg",
@@ -341,6 +341,7 @@ class CharacterProvider extends ChangeNotifier {
       race: json['race'],
       classType: json['classType'],
       level: json['level'],
+      spellClass: json['spellClass'],
       experience: json['experience'],
       description: json['description'],
       maxHitPoints: json['maxHitPoints'],
@@ -580,14 +581,12 @@ class CharacterProvider extends ChangeNotifier {
 
   Future addSpellandSave(Map<String, dynamic> spell, int index) async {
 
+    spell['prepared'] = false;
     String fullPath = await FilesProvider().getNameOfFiles(index);
     Map<String, dynamic> characterJson = await FilesProvider().getJson(fullPath);
     
     CharacterProvider characterProvider = CharacterProvider();
     characterProvider.loadCharacter(characterJson);
-
-    print(characterProvider.character.name); 
-    print(characterProvider.character.spells); 
 
     if (characterProvider.character.spells.isEmpty) {
       characterProvider.character.spells.add(spell);
@@ -610,6 +609,17 @@ class CharacterProvider extends ChangeNotifier {
     } else {
       return "Magia já existe no personagem";
     }
+  }
+
+  void togglePreparedSpell(String spellName) {
+    debugPrint(spellName);
+    for (int i = 0; i < character.spells.length; i++) {
+      if (character.spells[i]['name'] == spellName) {
+        character.spells[i]['prepared'] = !character.spells[i]['prepared'];
+        break;
+      }
+    }
+    notifyListeners();
   }
 
 }

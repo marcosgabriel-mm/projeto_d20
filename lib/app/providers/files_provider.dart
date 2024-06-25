@@ -200,9 +200,10 @@ class FilesProvider {
   }
 
   Future deleteFolderAndRenameAll(List<int> indexes) async {
-    final appDirectory = await _localAppDirectory;
     
-    for (int index in indexes){
+    final appDirectory = await _localAppDirectory;
+
+    for (var index in indexes){
       Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR${index+1}');
 
       if (await characterDirectory.exists()) {
@@ -277,6 +278,7 @@ class FilesProvider {
 
     for (var entity in characterDirectory.listSync()) {
       if (entity is Directory) {
+        debugPrint(entity.path);
         quantity++;
       }
     }
