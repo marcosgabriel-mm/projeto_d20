@@ -88,7 +88,7 @@ class CustomRow extends StatelessWidget {
                 IconButton(
                   onPressed: () {
                     context.read<DicesProvider>().removeDiceToRoll(diceIndex);
-                    if (!context.read<DicesProvider>().isAnyDiceSelected){
+                    if (!context.read<DicesProvider>().isAnyDiceSelected && !context.read<D20Provider>().toogleBottomBar){
                       context.read<D20Provider>().turnOffOrOnBottomBar();
                     }
                   },
@@ -105,7 +105,7 @@ class CustomRow extends StatelessWidget {
                 IconButton(
                   onPressed: () {
                     context.read<DicesProvider>().addDiceToRoll(diceIndex);
-                    if (context.read<DicesProvider>().isAnyDiceSelected  && context.read<D20Provider>().toogleBottomBar){
+                    if (context.read<DicesProvider>().isAnyDiceSelected && context.read<D20Provider>().toogleBottomBar){
                       context.read<D20Provider>().turnOffOrOnBottomBar();
                     }
                   },

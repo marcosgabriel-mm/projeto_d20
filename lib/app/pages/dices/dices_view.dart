@@ -27,17 +27,17 @@ class _DicesState extends State<Dices> {
     dicesProvider = context.watch<DicesProvider>();
     d20Provider = context.watch<D20Provider>();
 
-  return WillPopScope(
-    onWillPop: () async {
-      if (dicesProvider.isAnyDiceSelected) {
-        dicesProvider.clearNumberOfDicesToRoll(context);
-        return false;
-      } else if (d20Provider.isSelectionMode) {
-        d20Provider.toogleSelectionModeAndBottomBar();
-        dicesProvider.turnAllUnselected();
-        return false;
-      }
-        return true;
+  return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
+        }        
+        if (dicesProvider.isAnyDiceSelected) {
+          dicesProvider.clearNumberOfDicesToRoll(context);
+        } else if (d20Provider.isSelectionMode) {
+          d20Provider.toogleSelectionModeAndBottomBar();
+          dicesProvider.turnAllUnselected();
+        }
       },
       child: Scaffold(
         appBar: ApplicationBar(
