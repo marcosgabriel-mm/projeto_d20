@@ -4,7 +4,6 @@ import 'package:d20_project/app/pages/spells/widgets/details_row.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 List<Map> spellImages = [
   {
@@ -51,19 +50,20 @@ class SpellsDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String> keys = spell.keys.toList();
 
+    int keysToSubtract = 3;
+    if (spell.keys.length>10) {
+      int totalKeys = spell.keys.length;
+      keysToSubtract = totalKeys-7;
+    }
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
           child: AppBar(
+            scrolledUnderElevation: 0,
             title: Text(spell["name"], style: TextStyles.instance.regular.copyWith(fontSize: 20)),
-            actions: [
-              IconButton(
-                onPressed: (){}, 
-                icon: SvgPicture.asset("assets/svg/add-spell.svg")
-              )
-            ],
           ),
         ),
       ),
@@ -75,7 +75,7 @@ class SpellsDetails extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                for (int index=1; index<spell.keys.length-3; index+=2)
+                for (int index=1; index<spell.keys.length-keysToSubtract; index+=2)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -99,7 +99,7 @@ class SpellsDetails extends StatelessWidget {
                       )
                   ],
                 ),
-                AdditionalInfos( //!arrumar essa porra
+                AdditionalInfos( //!fix
                   data: [
                     for (int index=0; index<keys.length-3; index++)
                       MapEntry(

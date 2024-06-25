@@ -59,14 +59,16 @@ class _NotesViewState extends State<NotesView> {
       notesProvider.loadNotesToList(start);
     }
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) {
+        if (didPop) {
+          return;
+        }
         if (d20provider.isSelectionMode) {
           d20provider.toogleSelectionModeAndBottomBar();
           notesProvider.turnEveryoneUnselected();
-          return false;
         }
-        return true;
       },
       child: Scaffold(
         bottomNavigationBar: !d20provider.isSelectionMode 

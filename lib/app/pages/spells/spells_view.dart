@@ -227,7 +227,6 @@ class _SpellViewState extends State<SpellView> {
                             builder: (context) => SpellsDetails(spell: entry.value[index]),
                           ),
                         );
-                      
                       },
                     ),
                   ),

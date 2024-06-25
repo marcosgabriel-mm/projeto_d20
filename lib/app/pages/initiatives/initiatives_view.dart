@@ -30,14 +30,15 @@ class _InitiativeViewState extends State<InitiativeView> {
   Widget build(BuildContext context) {
     initiativesProvider = context.watch<InitiativesProvider>();
     d20Provider = context.watch<D20Provider>();
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
+        }
         if (d20Provider.isSelectionMode) {
           d20Provider.toogleSelectionModeAndBottomBar();
           initiativesProvider.turnAllUnselected();
-          return false;
         }
-        return true;
       },
       child: Scaffold(
         appBar: ApplicationBar(
