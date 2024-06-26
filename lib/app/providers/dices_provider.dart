@@ -175,6 +175,43 @@ class DicesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+String rollASingleDice(String dices, int? modifier) {
+  
+  final random = Random();
+  
+  RegExp dicePattern = RegExp(r'(\d+)d(\d+)');
+  RegExp modifierPattern = RegExp(r'([+-]\d+)$');
+  
+  Iterable<Match> matches = dicePattern.allMatches(dices);
+  
+  int total = 0;
+
+  for (Match match in matches) {
+    int quantity = int.parse(match.group(1)!);
+    int diceSides = int.parse(match.group(2)!);
+
+    for (int i = 0; i < quantity; i++) {
+      int roll = random.nextInt(diceSides) + 1;
+      if (roll == 0) {
+        roll = 1;
+      }
+      total += roll;
+    }
+  }
+
+  var modifierMatch = modifierPattern.firstMatch(dices);
+  if (modifierMatch != null) {
+    int modValue = int.parse(modifierMatch.group(0)!);
+    total += modValue;
+  }
+
+  if (modifier != null) {
+    total += modifier;
+  }
+
+  return total.toString();
+}
+
   void rollDices(BuildContext context) {
     final random = Random();
 

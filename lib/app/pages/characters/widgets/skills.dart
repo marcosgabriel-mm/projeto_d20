@@ -1,5 +1,6 @@
 import 'package:d20_project/app/pages/characters/widgets/fields.dart';
 import 'package:d20_project/app/providers/characters_provider.dart';
+import 'package:d20_project/app/providers/dices_provider.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
@@ -55,8 +56,18 @@ class Skill extends StatelessWidget {
                         ),
                       ),
                       TextButton(
-                        //TODO: Implementar a função de rolar dado da proeficiência
-                        onPressed: () {}, 
+                        onPressed: () {
+                          String result = context.read<DicesProvider>().rollASingleDice("1d20", int.parse(skillValue));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              showCloseIcon: true,
+                              content: Text(
+                                "Resultado da Proeficiência: $result",
+                                style: TextStyles.instance.regular
+                              ),
+                            ),
+                          );
+                        },
                         style: ButtonStyle(
                           alignment: Alignment.centerLeft,
                           padding: WidgetStateProperty.all(EdgeInsets.zero),
