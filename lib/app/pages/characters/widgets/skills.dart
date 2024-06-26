@@ -42,7 +42,7 @@ class Skill extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(right: horizontalPadding/2),
                         child: GestureDetector(
-                          onLongPress: () {
+                          onTap: () {
                             context.read<CharacterProvider>().toggleProeficient(skillName);
                             context.read<CharacterProvider>().addProeficiencyModifier(skillName);
                           },
@@ -54,7 +54,17 @@ class Skill extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Text(skillName, style: TextStyles.instance.regular.copyWith(fontSize: 8, color: colors))
+                      TextButton(
+                        //TODO: Implementar a função de rolar dado da proeficiência
+                        onPressed: () {}, 
+                        style: ButtonStyle(
+                          alignment: Alignment.centerLeft,
+                          padding: WidgetStateProperty.all(EdgeInsets.zero),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        child: Text(skillName, style: TextStyles.instance.regular.copyWith(fontSize: 9, color: colors))
+                      )
                     ],
                   ),
                 ),

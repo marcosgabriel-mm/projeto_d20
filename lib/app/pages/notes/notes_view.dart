@@ -54,13 +54,8 @@ class _NotesViewState extends State<NotesView> {
     d20provider = context.watch<D20Provider>();
     notesProvider = context.watch<NotesProvider>();
 
-    if (!d20provider.onSearch){
-      start = 0;
-      notesProvider.loadNotesToList(start);
-    }
-
     return PopScope(
-      canPop: false,
+      canPop: d20provider.isSelectionMode ? false : true,
       onPopInvoked: (bool didPop) {
         if (didPop) {
           return;
@@ -76,21 +71,18 @@ class _NotesViewState extends State<NotesView> {
         : SelectionBottomMenu(
           textLabel: const ["Excluir"], 
           icons: const [Icons.delete],
-          onPressed: [
-            () => notesProvider.removeNotes(),
-          ],
+          onPressed: [() => notesProvider.removeNotes()],
         ),
         appBar: ApplicationBar(
             title: context.read<D20Provider>().currentRoute,
-            onSearch: (value) {
-              debugPrint(value);
-              notesProvider.loadNotesBySearch(value);
+            onSearch: (value) => notesProvider.loadNotesBySearch(value),
+            onSearchClose: () {
+              start = 0;
+              notesProvider.loadNotesToList(start);
             },
             actions: [
               IconButton(
-                onPressed: (){
-                  d20provider.toggleSearch();
-                }, 
+                onPressed: () => d20provider.toggleSearch(),
                 icon: const Icon(Icons.search, color: Colors.white,)
               ),
               AddButton(
@@ -118,7 +110,8 @@ class _NotesViewState extends State<NotesView> {
                 ),
               )
             ],
-            areAllSelected: d20provider.areAllSelectedFromThatScreen(context),
+            selectEveryObject: () => notesProvider.selectAll(),
+            areAllSelected: notesProvider.areEveryoneSelected(),
           ),
         floatingActionButtonLocation:  FloatingActionButtonLocation.centerDocked,
         floatingActionButton: d20provider.showFloatingButton ? const SizedBox.shrink() : FloatingActionButton(
@@ -131,7 +124,6 @@ class _NotesViewState extends State<NotesView> {
           },
           backgroundColor: ColorsApp.instance.secondaryColor,
           mini: true,
-
           child: const Icon(Icons.keyboard_arrow_up, color: Colors.white,),
         ),
         body: notesProvider.notesList.isEmpty 
@@ -140,7 +132,7 @@ class _NotesViewState extends State<NotesView> {
               child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //todo colocar uma imagem de nada encontrado
+                //TODO: colocar uma imagem de nada encontrado
                 // SvgPicture.asset("assets/svg/Papigrafo.svg"),
                 const SizedBox(height: 36),
                 Text(

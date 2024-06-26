@@ -44,9 +44,7 @@ class _InitiativeViewState extends State<InitiativeView> {
         appBar: ApplicationBar(
           title: context.read<D20Provider>().currentRoute, 
           actions : [
-            AddButton(
-                function: () => BottomSheetModal.addOrEditInitiative(context, false),
-              ),
+            AddButton(function: () => BottomSheetModal.addOrEditInitiative(context, false)),
             Padding(
               padding: const EdgeInsets.only(right: horizontalPadding),
               child: SortButton(
@@ -60,7 +58,8 @@ class _InitiativeViewState extends State<InitiativeView> {
               ),
             )
           ],
-          areAllSelected: d20Provider.areAllSelectedFromThatScreen(context),  
+          areAllSelected: initiativesProvider.areEveryoneSelected(),  
+          selectEveryObject: () => initiativesProvider.selectAll(),
         ),
         bottomNavigationBar: !d20Provider.isSelectionMode 
         ? const SizedBox.shrink() 
@@ -216,7 +215,6 @@ class _InitiativeViewState extends State<InitiativeView> {
                                           )
                                         ],
                                       ),
-                                      
                                     ],
                                   ),
                                 ),

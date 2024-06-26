@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 class TextFields extends StatefulWidget {
   final double fontSize;
   final ValueChanged<String> onTextChanged;
-  String? text;
+  final String? text;
 
-  TextFields({
+  const TextFields({
     super.key, 
     this.text, 
     required this.fontSize, 
@@ -19,10 +19,12 @@ class TextFields extends StatefulWidget {
 
 class _TextFieldsState extends State<TextFields> {
   final TextEditingController _controller = TextEditingController();
+  String valueText = "";
 
   @override
   void initState() {
     super.initState();
+    valueText = widget.text ?? "   ";
     _controller.text = widget.text ?? "   ";
   }
 
@@ -48,12 +50,10 @@ class _TextFieldsState extends State<TextFields> {
         controller: _controller,
         style: TextStyles.instance.regular.copyWith(fontSize: widget.fontSize.toDouble()),
         textAlign: TextAlign.center,
-        onTapOutside: (value) {
-          FocusScope.of(context).unfocus();
-        },
+        onTapOutside: (value) => FocusScope.of(context).unfocus(),
         onChanged: (value) {
           setState(() {
-            widget.text = value;
+            valueText = value;
           });
           widget.onTextChanged(value);
         },

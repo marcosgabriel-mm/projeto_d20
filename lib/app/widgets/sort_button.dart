@@ -9,11 +9,11 @@ class SortButton extends StatelessWidget {
   final void Function(String?)? function;
   
   const SortButton({
-    Key? key,
+    super.key,
     required this.listOfSorts,
     this.function, 
     required this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

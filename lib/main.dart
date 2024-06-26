@@ -18,27 +18,13 @@ void main() {
       runApp(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider(
-              create: (context) => FilterProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (context) => CharacterProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (context) => SpellProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (context) => NotesProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (context) => DicesProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (context) => InitiativesProvider(),
-            ),
-            ChangeNotifierProvider(
-              create: (context) => D20Provider(),
-            )
+            ChangeNotifierProvider(create: (context) => FilterProvider()),
+            ChangeNotifierProvider(create: (context) => CharacterProvider()),
+            ChangeNotifierProvider(create: (context) => SpellProvider()),
+            ChangeNotifierProvider(create: (context) => NotesProvider()),
+            ChangeNotifierProvider(create: (context) => DicesProvider()),
+            ChangeNotifierProvider(create: (context) => InitiativesProvider()),
+            ChangeNotifierProvider(create: (context) => D20Provider())
           ],
           child: const AppWidget(),
         ),

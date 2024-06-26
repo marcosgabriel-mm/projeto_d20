@@ -1,5 +1,4 @@
 import 'package:d20_project/app/providers/d20_provider.dart';
-import 'package:d20_project/app/utils/app_functions.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/theme/theme_config.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,8 @@ class ApplicationBar extends StatefulWidget implements PreferredSizeWidget {
   final bool? areAllSelected;
   final List<Widget>? actions;
   final Function(String)? onSearch;
+  final Function()? onSearchClose;
+  final Function()? selectEveryObject;
 
   const ApplicationBar({
     super.key,
@@ -19,6 +20,8 @@ class ApplicationBar extends StatefulWidget implements PreferredSizeWidget {
     this.areAllSelected,
     this.actions, 
     this.onSearch, 
+    this.onSearchClose, 
+    this.selectEveryObject, 
   });
 
   @override
@@ -45,13 +48,12 @@ class _ApplicationBarState extends State<ApplicationBar> {
           onPressed: () {
             d20provider.toggleSearch();
             textController.clear();
+            widget.onSearchClose?.call();
           },
           icon: const Icon(Icons.arrow_back)
         ),
         trailing: Iterable.generate(1).map((index) => IconButton(
-          onPressed: (){
-            textController.clear();
-          },
+          onPressed: () => textController.clear(),
           icon: const Icon(Icons.clear)
         )).toList(),
         hintText: "Pesquisar",
@@ -59,9 +61,7 @@ class _ApplicationBarState extends State<ApplicationBar> {
         controller: textController,
         textStyle: WidgetStatePropertyAll(TextStyles.instance.regular),
         onTapOutside: (event) => FocusScope.of(context).unfocus(), 
-        onChanged: (value) {
-          widget.onSearch!(value);
-        },
+        onChanged: (value) => widget.onSearch!(value),
       ),
     )
     : AppBar(
@@ -69,28 +69,26 @@ class _ApplicationBarState extends State<ApplicationBar> {
       centerTitle: false,
       elevation: 0,
       title: !d20provider.isSelectionMode
-          ? Padding(
-              padding: const EdgeInsets.only(left: horizontalPadding),
-              child: Text(widget.title, style: TextStyles.instance.regular),
-            )
-          : Padding(
-              padding: const EdgeInsets.only(left: 9),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        AppFunctions.checkScreenToSelectEveryone(context);
-                      },
-                      icon: widget.areAllSelected ?? false ? const Icon(Icons.radio_button_checked) : const Icon(Icons.radio_button_off)
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Text("Todos", style: TextStyles.instance.regular),
-                  ),
-                ],
-              ),
+        ? Padding(
+            padding: const EdgeInsets.only(left: horizontalPadding),
+            child: Text(widget.title, style: TextStyles.instance.regular),
+          )
+        : Padding(
+            padding: const EdgeInsets.only(left: 9),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButton(
+                    onPressed: () => widget.selectEveryObject?.call(),
+                    icon: widget.areAllSelected ?? false ? const Icon(Icons.radio_button_checked) : const Icon(Icons.radio_button_off)
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Text("Todos", style: TextStyles.instance.regular),
+                ),
+              ],
             ),
+          ),
       actions: [
         Visibility(
           visible: !d20provider.isSelectionMode,

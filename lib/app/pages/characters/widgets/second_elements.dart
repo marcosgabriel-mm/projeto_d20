@@ -9,14 +9,14 @@ class SecondElements extends StatelessWidget {
   final String title;
   final String label;
   final bool? justText;
-  final ValueChanged<String> onTextChanged;
+  final ValueChanged<String>? onTextChanged;
   
   const SecondElements({
     super.key, 
     required this.asset, 
     required this.title, 
     required this.label, 
-    required this.onTextChanged, 
+    this.onTextChanged, 
     this.justText
   });
 
@@ -55,7 +55,7 @@ class SecondElements extends StatelessWidget {
                 : TextFields(
                   fontSize: TextStyles.instance.regular.fontSize ?? 16, 
                   text: title,
-                  onTextChanged: onTextChanged
+                  onTextChanged: onTextChanged??(String value){}
                 )
               ],
             ),

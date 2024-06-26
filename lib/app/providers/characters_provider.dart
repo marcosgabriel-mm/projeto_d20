@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart' as path;
 
 import 'package:d20_project/app/models/character.dart';
@@ -288,8 +289,6 @@ class CharacterProvider extends ChangeNotifier {
   List<List<String>> _listOfCharacters = [];
   Character get character => _character;
   List<int> _indexesSelected = [];
-
-
 
   void addIndexSelected(int index) {
     _indexesSelected.add(index);

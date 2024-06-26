@@ -211,7 +211,7 @@ class DicesProvider extends ChangeNotifier {
     return true;
   }
 
-  void selectOrUnselectAll() {
+  void selectAll() {
     if (areEveryoneSelected()) {
       turnAllUnselected();
     } else {

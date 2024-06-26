@@ -99,7 +99,7 @@ class SpellsDetails extends StatelessWidget {
                       )
                   ],
                 ),
-                AdditionalInfos( //!fix
+                AdditionalInfos( //TODO: arrumar essa regra
                   data: [
                     for (int index=0; index<keys.length-3; index++)
                       MapEntry(
@@ -166,6 +166,4 @@ class SpellsDetails extends StatelessWidget {
       )
     );
   }
-
-
 }

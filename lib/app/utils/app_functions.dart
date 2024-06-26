@@ -1,12 +1,4 @@
-
-import 'package:d20_project/app/providers/characters_provider.dart';
-import 'package:d20_project/app/providers/dices_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:d20_project/app/providers/d20_provider.dart';
-import 'package:d20_project/app/providers/initiatives_provider.dart';
-import 'package:d20_project/app/providers/notes_provider.dart';
 import 'package:d20_project/styles/colors_app.dart';
 import 'package:d20_project/styles/text_styles.dart';
 
@@ -28,9 +20,7 @@ class AppFunctions {
         actions: [
           for (var item in textButtons)
             TextButton(
-              onPressed: () {
-                Navigator.pop(context, item == "Excluir");
-              },
+              onPressed: () => Navigator.pop(context, item == "Excluir"),
               child: Text(
                 item,
                 style: TextStyles.instance.boldItalic,
@@ -39,26 +29,6 @@ class AppFunctions {
         ],
       ),
     );
-  }
-
-  //muda na appbar
-  static void checkScreenToSelectEveryone(BuildContext context) {
-    switch (context.read<D20Provider>().currentRoute) {
-      case "Iniciativas":
-        context.read<InitiativesProvider>().selectOrUnselectAll();
-        break;
-      case "Anotações":
-        context.read<NotesProvider>().selectOrUnselectAll();
-        break;
-      case "Dados":
-        context.read<DicesProvider>().selectOrUnselectAll();
-        break;
-      case "Personagens":
-        context.read<CharacterProvider>().selectOrUnselectAll();
-        break;
-      
-      default:
-    }
   }
 
 }

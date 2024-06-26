@@ -7,7 +7,13 @@ class AdditionalInformation extends StatelessWidget {
   final String value;
   final String field;
   final String asset;
-  const AdditionalInformation({super.key, required this.value, required this.asset, required this.field});
+  
+  const AdditionalInformation({
+    super.key, 
+    required this.value, 
+    required this.asset, 
+    required this.field
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -22,9 +22,7 @@ class FilterView extends StatelessWidget {
             scrolledUnderElevation: 0,
             actions: [
               IconButton(
-                onPressed: () {
-                  Navigator.pop(context, context.read<FilterProvider>().selected);
-                },
+                onPressed: () => Navigator.pop(context, context.read<FilterProvider>().selected),
                 icon: const Icon(Icons.done),
               )
             ],

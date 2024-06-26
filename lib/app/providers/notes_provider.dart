@@ -8,7 +8,7 @@ class NotesProvider extends ChangeNotifier {
   List<Notes> _notesList = [];
   List<Notes> get notesList => _notesList;
 
-  void selectOrUnselectAll() {
+  void selectAll() {
     if (_notesList.every((note) => note.isSelected)) {
       for (var note in _notesList) {
         note.isSelected = false;
@@ -45,9 +45,11 @@ class NotesProvider extends ChangeNotifier {
   }
 
   void updateTitleDescriptionModificationDate(String newTitle, String newDescription, int index) {
+   
     _notesList[index].title = newTitle;
     _notesList[index].description = newDescription;
     _notesList[index].modificationDate = DateTime.now();
+
     FilesProvider().writeNotes(
       _notesList[index].title,
       _notesList[index].creationDate,

@@ -29,7 +29,7 @@ class _FilterOptionsState extends State<FilterOptions> {
     return ExpansionTile(
       title: Row(
         children: [
-          //todo mudar svgs
+          //TODO: Mudar SVGs
           SvgPicture.asset("assets/svg/filters/class.svg"),
           Padding(
             padding: const EdgeInsets.only(left: horizontalPadding),
@@ -46,14 +46,16 @@ class _FilterOptionsState extends State<FilterOptions> {
           children: [
             for (var index = 0; index < widget.tileDescriptionTitle.length; index++)
             GestureDetector(
-              onTap: () {
-                filterProvider.selectFilter(widget.tileDescriptionTitle[index]);
-              },
+              onTap: () => filterProvider.selectFilter(widget.tileDescriptionTitle[index]),
               child: SizedBox(
                 width: 150,
                 child: Row(
                   children: [
-                    Icon(filterProvider.selected.contains(widget.tileDescriptionTitle[index]) ? Icons.radio_button_on : Icons.radio_button_off),
+                    Icon(
+                      filterProvider.selected.contains(widget.tileDescriptionTitle[index]) 
+                        ? Icons.radio_button_on 
+                        : Icons.radio_button_off
+                      ),
                     Padding(
                       padding: const EdgeInsets.only(left: horizontalPadding),
                       child: SizedBox(

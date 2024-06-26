@@ -101,7 +101,7 @@ class InitiativesProvider extends ChangeNotifier {
 
 
 
-  void selectOrUnselectAll() {
+  void selectAll() {
     if (_initiativesList.every((initiative) => initiative.isSelected)) {
       for (var initiative in _initiativesList) {
         initiative.isSelected = false;

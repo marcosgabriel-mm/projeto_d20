@@ -18,7 +18,7 @@ class Grimoire extends StatefulWidget {
   final List<Map<dynamic, dynamic>> spells;
   final CharacterProvider characterProvider;
   
-  Grimoire({
+  const Grimoire({
     super.key,
     required this.spells, 
     required this.characterProvider,
@@ -126,14 +126,12 @@ class _GrimoireState extends State<Grimoire> {
                         asset: "assets/images/knew_spells.png", 
                         title: widget.spells.length.toString(), 
                         label: "Magias Conhecidas", 
-                        onTextChanged: (value) {},
                         justText: true,
                       ),
                       SecondElements(
                         asset: "assets/images/prepared_spells.png", 
                         title: widget.spells.where((element) => element["prepared"]).length.toString(), 
                         label: "Magias Preparadas", 
-                        onTextChanged: (value) {},
                         justText: true,
                       )
                     ],
@@ -170,7 +168,11 @@ class _GrimoireState extends State<Grimoire> {
                             _labelStringSpell = _labelStringSpell == "Magias Conhecidas" ? "Magias Preparadas" : "Magias Conhecidas";
                           });
                         }, 
-                        icon: const Icon(Icons.switch_right)
+                        icon: Icon(
+                          _labelStringSpell == "Magias Conhecidas" 
+                          ? Icons.switch_right 
+                          : Icons.switch_left,
+                        )
                       )
                     ],
                   ),
@@ -205,9 +207,7 @@ class _GrimoireState extends State<Grimoire> {
                                   name: spell["name"],
                                   level: spell["level"],
                                   castTime: spell["casting_time"].split(', ')[0],
-                                  function: () {
-                                    widget.characterProvider.togglePreparedSpell(spell['name']);
-                                  },
+                                  function: () => widget.characterProvider.togglePreparedSpell(spell['name']),
                                   onTap: () {
                                     Navigator.push(
                                       context,
@@ -233,7 +233,6 @@ class _GrimoireState extends State<Grimoire> {
           )
         );
       }
-      
     );
   }
 }

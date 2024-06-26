@@ -44,7 +44,8 @@ class _CharacterSheetState extends State<CharacterSheet> {
     // FilesProvider().deleteFolderAndRenameAll(0);
 
     return PopScope(
-      onPopInvoked: (didPop) {
+      canPop: d20provider.isSelectionMode ? false : true,
+      onPopInvoked: (bool didPop) {
         if (didPop) {
           return;
         }
@@ -57,14 +58,11 @@ class _CharacterSheetState extends State<CharacterSheet> {
         appBar: ApplicationBar(
           title: 'Personagens',
           areAllSelected: d20provider.areAllSelectedFromThatScreen(context),
-          onSearch: (value) {
-            characterProvider.searchCharactersByString(value);
-          },
+          onSearch: (value) => characterProvider.searchCharactersByString(value),
+          onSearchClose: () => characterProvider.loadAllCharactersToList(),
           actions: [
             IconButton(
-              onPressed: (){
-                d20provider.toggleSearch();
-              },
+              onPressed: () => d20provider.toggleSearch(),
               icon: const Icon(
                 Icons.search,
                 color: Colors.white,
@@ -105,6 +103,7 @@ class _CharacterSheetState extends State<CharacterSheet> {
           onRefresh: () async {
             await Future.delayed(const Duration(microseconds: 500));
             setState(() {
+              characterProvider.listOfCharacters.clear();
               characterProvider.loadAllCharactersToList();
             });
           },
@@ -208,9 +207,7 @@ class _CharacterSheetState extends State<CharacterSheet> {
                                     return Text('Erro: ${imageSnapshot.error}');
                                   } else {
                                     return GestureDetector(
-                                      onLongPress: () {
-                                        FilesProvider().saveNewPhoto(index);
-                                      },
+                                      onLongPress: () => FilesProvider().saveNewPhoto(index),
                                       onTap: () {
                                         if (d20provider.isSelectionMode){
                                           return;
@@ -258,7 +255,7 @@ class _CharacterSheetState extends State<CharacterSheet> {
                     },
                     onTap: () async {
                       String fullPath = await FilesProvider().getNameOfFiles(index);
-                      if (mounted) { // Verifica se o widget ainda está montado
+                      if (context.mounted) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(

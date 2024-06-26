@@ -62,11 +62,9 @@ class _SpellViewState extends State<SpellView> {
 
     return Scaffold(
       appBar: ApplicationBar(
-        areAllSelected: context.read<D20Provider>().areAllSelectedFromThatScreen(context),
         title: context.read<D20Provider>().currentRoute,
-        onSearch: (value) {
-          spellProvider.searchSpell(value);
-        },
+        onSearch: (value) => spellProvider.searchSpell(value),
+        onSearchClose: () => spellProvider.initWithFifitySpells(),
         actions: [
           IconButton(
             onPressed: (){
@@ -112,7 +110,6 @@ class _SpellViewState extends State<SpellView> {
         },
         backgroundColor: ColorsApp.instance.secondaryColor,
         mini: true,
-
         child: const Icon(Icons.keyboard_arrow_up, color: Colors.white,),
       ),
       body: ScrollListerner(
@@ -178,7 +175,7 @@ class _SpellViewState extends State<SpellView> {
                                         onPressed: () async {
                                           String result = await characterProvider.addSpellandSave(entry.value[index], characterIndex);
                                           // print(result);
-                                          if (mounted) {
+                                          if (context.mounted) {
                                             Navigator.pop(context);
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(

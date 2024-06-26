@@ -81,7 +81,6 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                 } else {
                   FilesProvider().saveExistentJson(widget.index, characterProvider.character);
                   characterProvider.character = characterProvider.characterDefault;
-                  characterProvider.loadAllCharactersToList();
                 }
                 Navigator.pop(context);
                 Navigator.pop(context);
@@ -117,9 +116,7 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                   TextFields(
                     fontSize: TextStyles.instance.regular.fontSize!,
                     text: characterProvider.character.name,
-                    onTextChanged: (value) {
-                      characterProvider.character.name = value;
-                    },
+                    onTextChanged: (value) => characterProvider.character.name = value
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -127,17 +124,13 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                       TextFields(
                         fontSize: 14,
                         text: characterProvider.character.race,
-                        onTextChanged: (value) {
-                          characterProvider.character.race = value;
-                        },
+                        onTextChanged: (value) => characterProvider.character.race = value
                       ),
                       Text(" | ", style: TextStyles.instance.regular.copyWith(fontSize: 14),),
                       TextFields(
                         fontSize: 14,
                         text: characterProvider.character.classType,
-                        onTextChanged: (value) {
-                          characterProvider.character.classType = value;
-                        },
+                        onTextChanged: (value) => characterProvider.character.classType = value
                       ),
                     ],
                   )
@@ -199,9 +192,7 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                     asset: "assets/svg/character/experience.svg",
                     width: 155,
                     justText: true,
-                    onTextChangedFistSubtitle: (value) {
-                      characterProvider.updateLevel(value);
-                    },
+                    onTextChangedFistSubtitle: (value) => characterProvider.updateLevel(value),
                   )
                 ],
               ),
@@ -258,16 +249,17 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                             Text(_atributeLabel, style: TextStyles.instance.regular)
                           ],
                         ),
-                        IconButton(onPressed: (){
+                        IconButton(onPressed: () {
                           setState(() {
-                            if (_atributeLabel == "Atributos do personagem") {
-                              _atributeLabel = "Salvaguardas";
-                            } else {
-                              _atributeLabel = "Atributos do personagem";
-                            }
+                            _atributeLabel = _atributeLabel == "Atributos do personagem" ? "Salvaguardas" : "Atributos do personagem";
                           });
                         }, 
-                        icon: const Icon(Icons.switch_right))
+                        icon: Icon(
+                          _atributeLabel == "Atributos do personagem" 
+                            ? Icons.switch_right 
+                            : Icons.switch_left,
+                          )
+                        )
                       ],
                     ),
                   ),
@@ -276,15 +268,13 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                     spacing: horizontalPadding,
                     runSpacing: verticalPadding,
                     children: [
-                      //todo mudar para salvaguardas
+                      //TODO: mudar para salvaguardas
                       for (int index=0; index<characterProvider.character.stats.length; index++)
                       Atribute(
                         atributeName: characterProvider.character.stats.keys.elementAt(index),
                         atributeValue: characterProvider.character.stats.values.elementAt(index).toString(),
                         atributeModificator: characterProvider.calcutateModificator(characterProvider.character.stats.values.elementAt(index)).toString(),
-                        onTextChanged: (value) {
-                          characterProvider.updateAtributes(value, index);
-                        },
+                        onTextChanged: (value) => characterProvider.updateAtributes(value, index),
                       )
                     ],
                   ),
@@ -302,7 +292,7 @@ class _CharacterDetailsState extends State<CharacterDetails> {
               child: ExpansionTile(
                 initiallyExpanded: true,
                 collapsedIconColor: Colors.white,
-                tilePadding: const EdgeInsets.only(bottom: verticalPadding),
+                tilePadding: _isExpanded ? const EdgeInsets.only(bottom: verticalPadding) : EdgeInsets.zero,
                 iconColor: Colors.white,
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -320,9 +310,7 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                     Tooltip(
                       message: "Auto completar campos",
                       child: IconButton(
-                        onPressed: (){
-                          characterProvider.autoCompleteProeficiencyModifierFields();
-                        },
+                        onPressed: () => characterProvider.autoCompleteProeficiencyModifierFields(),
                         icon: const Icon(Icons.drive_file_rename_outline, color: Colors.white),
                       ),
                     )
@@ -345,9 +333,7 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                         skillValue: (characterProvider.character.skills.values.elementAt(index) as Map<String, dynamic>)['valor'].toString(),
                         asset: characterProvider.assetsRoutes[0][characterProvider.character.skills.keys.elementAt(index)] ?? "assets/svg/skills/question_mark.svg",
                         colors: characterProvider.isProeficient(characterProvider.character.skills.keys.elementAt(index)) ? Colors.white : Colors.white30,
-                        onTextChanged: (value) {
-                          characterProvider.updateSkills(value, index);
-                        },
+                        onTextChanged: (value) => characterProvider.updateSkills(value, index),
                       )
                     ],
                   ),
@@ -370,8 +356,6 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                   for (int index=0; index<characterProvider.assetsRoutes[2].length; index++)
                   ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(ColorsApp.instance.primaryColor),
-                      shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
                       padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16, vertical: 8))
                     ),
                     onPressed: () {
@@ -446,12 +430,8 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                             enabledBorder: InputBorder.none,
                             focusedBorder: InputBorder.none,
                           ),
-                          onChanged: (value) {
-                            characterProvider.character.description = value;
-                          },
-                          onTapOutside: (value) {
-                            FocusScope.of(context).unfocus();
-                          },
+                          onChanged: (value) => characterProvider.character.description = value,
+                          onTapOutside: (value) => FocusScope.of(context).unfocus(),
                           style: TextStyles.instance.regular,
                           maxLines: null,
                         ),

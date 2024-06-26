@@ -19,9 +19,7 @@ class BottomButtonMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: ElevatedButton(
-        onPressed: () {
-          onPressed();
-        },
+        onPressed: () => onPressed(),
         style: ButtonStyle(
           elevation: const WidgetStatePropertyAll(0),
           backgroundColor: WidgetStateProperty.all<Color?>(ColorsApp.instance.primaryColor),

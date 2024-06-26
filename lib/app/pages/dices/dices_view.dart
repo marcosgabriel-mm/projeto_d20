@@ -27,7 +27,8 @@ class _DicesState extends State<Dices> {
     dicesProvider = context.watch<DicesProvider>();
     d20Provider = context.watch<D20Provider>();
 
-  return PopScope(
+    return PopScope(
+      canPop: d20Provider.isSelectionMode || dicesProvider.isAnyDiceSelected ? false : true,
       onPopInvoked: (didPop) {
         if (didPop) {
           return;
@@ -64,7 +65,8 @@ class _DicesState extends State<Dices> {
               ),
             )
           ],
-          areAllSelected: d20Provider.areAllSelectedFromThatScreen(context),  
+          selectEveryObject: () => dicesProvider.selectAll(),
+          areAllSelected: dicesProvider.areEveryoneSelected(),  
         ),
         bottomNavigationBar: Stack(
           children: [
@@ -97,7 +99,7 @@ class _DicesState extends State<Dices> {
               padding: const EdgeInsets.only(bottom: verticalPadding),
               child: Text("Dados Padrões", style: TextStyles.instance.regular),
             ), 
-            //TODO - Mudar titulo de dados padrões para dados personalizados ao começar a exibir proxima lista
+            //TODO: Mudar titulo de dados padrões para dados personalizados ao começar a exibir proxima lista
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,

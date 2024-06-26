@@ -36,7 +36,7 @@ class StickHeader extends StatelessWidget {
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   icon: Icon(
-                    //todo verificar se o slot está ocupado ou não
+                    //TODO - verificar se o slot foi usado ou não
                     false 
                     ? Icons.circle
                     : Icons.circle_outlined,
@@ -44,7 +44,7 @@ class StickHeader extends StatelessWidget {
                     size: size,
                   ),
                   onPressed: () {
-                    //todo ao clicar, usar slot de magia
+                    //TODO: ao clicar, usar slot de magia
                   },
                 )
               ),

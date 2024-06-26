@@ -21,7 +21,10 @@ class NotesText extends StatefulWidget {
   final int index;
 
   @override
-  _NotesTextState createState() => _NotesTextState();
+  State<NotesText> createState() {
+    return _NotesTextState();
+  }
+
 }
 
 class _NotesTextState extends State<NotesText> {
@@ -39,17 +42,19 @@ class _NotesTextState extends State<NotesText> {
   @override
   Widget build(BuildContext context) {
     notesProvider = context.watch<NotesProvider>();
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
+        }
         if (widget.index != -1) {
           notesProvider.updateTitleDescriptionModificationDate(_tittleNoteController.text, _descriptionController.text, widget.index);
           // FilesProvider().readNotes();
         } else if (_tittleNoteController.text.isEmpty && _descriptionController.text.isEmpty) {
-          return Future.value(true);
+          return Navigator.pop(context);
         } else {
           notesProvider.addNote(_tittleNoteController.text, _descriptionController.text);
         }
-        return Future.value(true);
       },
       child: Scaffold(
         appBar: PreferredSize(

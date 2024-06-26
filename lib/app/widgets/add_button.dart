@@ -10,7 +10,7 @@ class AddButton extends StatelessWidget {
     return IconButton(
       tooltip: "Adicionar",
       icon: const Icon(Icons.add),
-      onPressed: () async { function!(); },
+      onPressed: () async => function!(),
     );
   }
 }

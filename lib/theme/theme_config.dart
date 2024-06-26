@@ -53,6 +53,13 @@ class ThemeConfig {
       collapsedTextColor: Colors.white,
       shape: Border(),
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(
+        elevation: WidgetStateProperty.all<double>(0),
+        backgroundColor: WidgetStateProperty.all<Color>(ColorsApp.instance.primaryColor),
+        shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
+      )
+    ),
   );
 }
 

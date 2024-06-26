@@ -42,9 +42,7 @@ class GrimoireTile extends StatelessWidget {
           "$level | $castTime",
           style: TextStyles.instance.regular,
         ),
-        onTap: () {
-          onTap();
-        },
+        onTap: () => onTap(),
         trailing: IconButton(
           padding: EdgeInsets.zero,
           icon: Image.asset(
@@ -54,9 +52,7 @@ class GrimoireTile extends StatelessWidget {
             height: 24,
             width: 24,
           ),
-          onPressed: () {
-            function();
-          },
+          onPressed: () => function(),
         ),
       ),
     );
