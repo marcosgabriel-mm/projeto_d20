@@ -200,13 +200,13 @@ class _GrimoireState extends State<Grimoire> {
                           sliver: SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
-                                // Usar filteredSpells para construir os itens
                                 var spell = filteredSpells[index];
                                 return GrimoireTile(
                                   prepared: spell["prepared"],
                                   name: spell["name"],
                                   level: spell["level"],
                                   castTime: spell["casting_time"].split(', ')[0],
+                                  listType: _labelStringSpell,
                                   function: () => widget.characterProvider.togglePreparedSpell(spell['name']),
                                   onTap: () {
                                     Navigator.push(

@@ -14,43 +14,14 @@ class StickHeader extends StatelessWidget {
     return  Container(
       margin: const EdgeInsets.symmetric(horizontal: horizontalPadding-2),
       padding: const EdgeInsets.symmetric(horizontal: horizontalPadding*2, vertical: verticalPadding/2),
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center,
       decoration: BoxDecoration(
         color: ColorsApp.instance.secondaryColor,
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            spellLevel,
-            style: TextStyles.instance.regular,
-          ),
-          Row(
-            children: [
-              for (int index=0; index < spellSlots; index++)
-              Container(
-                width: size,
-                height: size,
-                margin: EdgeInsets.only(right: index < 3 ? horizontalPadding/2 : 0),
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: Icon(
-                    //TODO - verificar se o slot foi usado ou não
-                    false 
-                    ? Icons.circle
-                    : Icons.circle_outlined,
-                    color: Colors.white,
-                    size: size,
-                  ),
-                  onPressed: () {
-                    //TODO: ao clicar, usar slot de magia
-                  },
-                )
-              ),
-            ],
-          )
-        ],
+      child: Text(
+        spellLevel,
+        style: TextStyles.instance.regular,
       ),
     );
   }

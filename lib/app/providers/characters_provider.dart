@@ -360,19 +360,15 @@ class CharacterProvider extends ChangeNotifier {
 
   calcutateModificator(int atributeValue) {
 
-    if (atributeValue >= 31 || atributeValue <= 0) {
+    if (atributeValue >= 101 || atributeValue <= 0) {
       return 0;
     }
 
-    for (int index = 2; index < 31; index++) {
+    for (int index = 2; index < 101; index++) {
       if (atributeValue == 1) {
         return -5;
       }
 
-      if (atributeValue == 30) {
-        return 10;
-      }
-      
       if (atributeValue == index) {
         return (index/2).floor()-5;
       }

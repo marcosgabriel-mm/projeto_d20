@@ -9,6 +9,7 @@ class GrimoireTile extends StatelessWidget {
   final String castTime;
   final Function function;
   final Function onTap;
+  final String listType;
 
   const GrimoireTile({
     super.key, 
@@ -17,7 +18,8 @@ class GrimoireTile extends StatelessWidget {
     required this.level, 
     required this.castTime, 
     required this.function, 
-    required this.onTap
+    required this.onTap, 
+    required this.listType
   });
 
   @override
@@ -47,7 +49,7 @@ class GrimoireTile extends StatelessWidget {
           padding: EdgeInsets.zero,
           icon: Image.asset(
             prepared
-            ? "assets/images/prepared_spells.png" 
+            ? "assets/images/prepared_spells.png"
             : "assets/images/knew_spells.png",
             height: 24,
             width: 24,
