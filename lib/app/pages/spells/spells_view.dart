@@ -82,13 +82,13 @@ class _SpellViewState extends State<SpellView> {
                 var filters = await Navigator.push(
                   context, 
                   MaterialPageRoute(
-                    builder: (context) => FilterView(
-                      filters: spellProvider.spellFilters,
-                    ),
+                    builder: (context) => FilterView(filters: spellProvider.spellFilters),
                   ),
                 );
-                if (filters != null) {
+                if (!filters.isEmpty) {
                   spellProvider.searchSpellByFilter(filters);
+                }else{
+                  spellProvider.initWithFifitySpells();
                 }
               },
               icon: const Icon(
