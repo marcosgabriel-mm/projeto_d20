@@ -54,6 +54,8 @@ class _NotesViewState extends State<NotesView> {
     d20provider = context.watch<D20Provider>();
     notesProvider = context.watch<NotesProvider>();
 
+    // FilesProvider().printAllNotes();
+
     return PopScope(
       canPop: d20provider.isSelectionMode ? false : true,
       onPopInvoked: (bool didPop) {
@@ -71,7 +73,10 @@ class _NotesViewState extends State<NotesView> {
         : SelectionBottomMenu(
           textLabel: const ["Excluir"], 
           icons: const [Icons.delete],
-          onPressed: [() => notesProvider.removeNotes()],
+          onPressed: [
+            () => notesProvider.removeNotes(),
+            () => d20provider.toogleSelectionModeAndBottomBar(),
+          ],
         ),
         appBar: ApplicationBar(
             title: context.read<D20Provider>().currentRoute,

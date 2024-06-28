@@ -44,18 +44,15 @@ class NotesProvider extends ChangeNotifier {
     return true;
   }
 
-  void updateTitleDescriptionModificationDate(String newTitle, String newDescription, int index) {
+  void updateTitleDescriptionModificationDate(String newTitle, String oldTitle ,String newDescription, int index) {
    
-    _notesList[index].title = newTitle;
-    _notesList[index].description = newDescription;
-    _notesList[index].modificationDate = DateTime.now();
+    Notes note = _notesList[index];
 
-    FilesProvider().writeNotes(
-      _notesList[index].title,
-      _notesList[index].creationDate,
-      _notesList[index].modificationDate,
-      _notesList[index].description
-    );
+    note.title = newTitle;
+    note.description = newDescription;
+    note.modificationDate = DateTime.now();
+
+    FilesProvider().renameNote(_notesList[index], oldTitle);
     notifyListeners();
   }
 

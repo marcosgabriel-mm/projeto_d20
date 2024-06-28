@@ -31,10 +31,12 @@ class _NotesTextState extends State<NotesText> {
   late NotesProvider notesProvider;
   late final TextEditingController _tittleNoteController;
   late final TextEditingController _descriptionController;
+  String _oldTitle="";
 
   @override
   void initState() {
     super.initState();
+    _oldTitle = widget.noteTitle;
     _tittleNoteController = TextEditingController(text: widget.noteTitle);
     _descriptionController = TextEditingController(text: widget.noteDescription);
   }
@@ -48,7 +50,7 @@ class _NotesTextState extends State<NotesText> {
           return;
         }
         if (widget.index != -1) {
-          notesProvider.updateTitleDescriptionModificationDate(_tittleNoteController.text, _descriptionController.text, widget.index);
+          notesProvider.updateTitleDescriptionModificationDate(_tittleNoteController.text, _oldTitle,_descriptionController.text, widget.index);
           // FilesProvider().readNotes();
         } else if (_tittleNoteController.text.isEmpty && _descriptionController.text.isEmpty) {
           return Navigator.pop(context);
@@ -66,7 +68,7 @@ class _NotesTextState extends State<NotesText> {
                 IconButton(
                   onPressed: () {
                     if (widget.index != -1) {
-                      notesProvider.updateTitleDescriptionModificationDate(_tittleNoteController.text, _descriptionController.text, widget.index);
+                      notesProvider.updateTitleDescriptionModificationDate(_tittleNoteController.text, _oldTitle, _descriptionController.text, widget.index);
                       // FilesProvider().readNotes();
                     } else if (_tittleNoteController.text.isEmpty && _descriptionController.text.isEmpty) {
                       return Navigator.pop(context);  
