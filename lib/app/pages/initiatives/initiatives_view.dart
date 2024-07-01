@@ -49,7 +49,6 @@ class _InitiativeViewState extends State<InitiativeView> {
               padding: const EdgeInsets.only(right: horizontalPadding),
               child: SortButton(
                 listOfSorts: const ["Crescente", "Decrescente", "Nome", "Classe"],
-                padding: horizontalPadding,
                 function: (value) {
                   if (value != null) {
                     initiativesProvider.sortInitiatives(value);

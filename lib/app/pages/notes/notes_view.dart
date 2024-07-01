@@ -106,7 +106,6 @@ class _NotesViewState extends State<NotesView> {
                 padding: const EdgeInsets.only(right: horizontalPadding),
                 child: SortButton(
                   listOfSorts: const ["Data de criação", "Data de modificação", "Nome"],
-                  padding: horizontalPadding,
                   function: (value) {
                     if (value != null) {
                       notesProvider.sortNotes(value);

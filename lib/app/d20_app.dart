@@ -1,3 +1,4 @@
+import 'package:d20_project/app/pages/attacks/attacks_view.dart';
 import 'package:d20_project/app/pages/characters/characters_view.dart';
 import 'package:d20_project/app/pages/dices/dices_view.dart';
 import 'package:d20_project/app/pages/initiatives/initiatives_view.dart';
@@ -29,6 +30,7 @@ class _AppWidgetState extends State<AppWidget> {
       const CharacterSheet(),
       const NotesView(),
       const SpellView(),
+      const AttacksView(),
     ];
   }
 

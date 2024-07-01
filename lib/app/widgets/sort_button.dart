@@ -5,14 +5,12 @@ import 'package:d20_project/styles/text_styles.dart';
 
 class SortButton extends StatelessWidget {
   final List<String> listOfSorts;
-  final double padding;
   final void Function(String?)? function;
   
   const SortButton({
     super.key,
     required this.listOfSorts,
     this.function, 
-    required this.padding,
   });
 
   @override

@@ -56,7 +56,6 @@ class _DicesState extends State<Dices> {
               padding: const EdgeInsets.only(right: horizontalPadding),
               child: SortButton(
                 listOfSorts: const ["Crescente", "Decrescente"],
-                padding: horizontalPadding,
                 function: (value) {
                   if (value != null) {
                     dicesProvider.sortDices(value);
