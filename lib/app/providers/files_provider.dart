@@ -23,6 +23,8 @@ class FilesProvider {
     return Directory('$path/RPGHub');
   }
 
+  //* Notes section
+
   Future<File> noteFile(String noteTitle) async {
     final appDirectory = await _localAppDirectory;
     Directory directory = Directory('${appDirectory.path}/notes');
@@ -98,34 +100,36 @@ class FilesProvider {
   }
 
   Future<List<String>> searchNotesByName(String noteTitle) async {
-  final appDirectory = await _localAppDirectory;
-  Directory directory = Directory('${appDirectory.path}/notes');
-  List<String> matchingNotes = [];
+    final appDirectory = await _localAppDirectory;
+    Directory directory = Directory('${appDirectory.path}/notes');
+    List<String> matchingNotes = [];
 
-  if (await directory.exists()) {
-    var entities = directory.listSync(recursive: true, followLinks: false);
+    if (await directory.exists()) {
+      var entities = directory.listSync(recursive: true, followLinks: false);
 
-    for (var entity in entities) {
-      if (entity is File && entity.path.endsWith('.txt')) {
+      for (var entity in entities) {
+        if (entity is File && entity.path.endsWith('.txt')) {
 
-        String contents = await File(entity.path).readAsString();
-        List<String> notes = contents.split(',\n');
+          String contents = await File(entity.path).readAsString();
+          List<String> notes = contents.split(',\n');
 
-        for (var note in notes) {
-          List<String> noteParts = note.split(', ');
-          String noteTittle = noteParts[0];
+          for (var note in notes) {
+            List<String> noteParts = note.split(', ');
+            String noteTittle = noteParts[0];
 
-            if (noteTittle.toLowerCase().contains(noteTitle.toLowerCase())) {
-              matchingNotes.addAll(notes);
-            }
-          break;
+              if (noteTittle.toLowerCase().contains(noteTitle.toLowerCase())) {
+                matchingNotes.addAll(notes);
+              }
+            break;
+          }
         }
       }
     }
+
+    return matchingNotes;
   }
 
-  return matchingNotes;
-}
+  //* Characters section
   
   Future<void> saveNewPhoto(int characterId) async {
     final picker = ImagePicker();
@@ -331,5 +335,44 @@ class FilesProvider {
     }
   }
 
+  //* Attacks section
+
+  Future saveAttacks(List<Map<String, String>> listOfAttacks) async {
+
+    final appDirectory = await _localAppDirectory;
+    Directory attacksDirectory = Directory('${appDirectory.path}/attacks');
+
+    if (!await attacksDirectory.exists()) {
+      await attacksDirectory.create();
+    }
+
+    if (await attacksDirectory.exists()) {
+      File attacksFile = File('${attacksDirectory.path}/attacks.json');
+      await attacksFile.writeAsString(jsonEncode(listOfAttacks));
+    }
+  }
+
+  Future loadAttacks() async {
+    try {
+      final appDirectory = await _localAppDirectory;
+      Directory attacksDirectory = Directory('${appDirectory.path}/attacks');
+
+      if (!await attacksDirectory.exists()) {
+        await attacksDirectory.create(recursive: true);
+      }
+
+      File attacksFile = File('${attacksDirectory.path}/attacks.json');
+
+      if (await attacksFile.exists()) {
+        String contents = await attacksFile.readAsString();
+        return jsonDecode(contents);
+      } else {
+        return [];
+      }
+    } catch (e) {
+      debugPrint('Erro ao carregar ataques: $e');
+      return [];
+    }
+  }
 
 }

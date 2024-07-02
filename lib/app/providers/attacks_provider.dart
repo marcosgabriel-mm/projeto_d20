@@ -1,57 +1,73 @@
+// ignore_for_file: prefer_final_fields
+import 'package:d20_project/app/providers/files_provider.dart';
 import 'package:flutter/material.dart';
 
 class AttacksProvider extends ChangeNotifier {
 
-  final String defaultAttackName = "Novo Ataque";
-  final String defaultDice = "1d20";
+  final String _defaultAttackName = "Novo Ataque";
+  final String _defaultDice = "1d20";
 
-  // ignore: prefer_final_fields
-  List<Map<String, String>> _listOfAttacks = [];
-  get listOfAttacks => _listOfAttacks;
+  
+  List<Map<String, String>> listOfAttacks = [];
+  List<int> indexes = [];
 
-  void addNewAttack(String attackName, String dice) {
+  void addNewAttack(String attackName, String dice) async {
 
-    dice = dice.isEmpty ? defaultDice : dice;
-    attackName = attackName.isEmpty ? defaultAttackName : attackName;
+    dice = dice.isEmpty ? _defaultDice : dice;
+    attackName = attackName.isEmpty ? _defaultAttackName : attackName;
 
-    _listOfAttacks.add({
+    listOfAttacks.add({
       "name": attackName,
       "dice": dice
     });
 
-    //TODO: Chamar função de salvar arquivo
-
+    await FilesProvider().saveAttacks(listOfAttacks);
     notifyListeners();
   }
 
   void deleteAttack(int index) {
-    _listOfAttacks.removeAt(index);
 
-    //TODO: Remover ataque e salvar arquivo
-
+    listOfAttacks.removeAt(index);
+    FilesProvider().saveAttacks(listOfAttacks);
     notifyListeners();
   }
 
-  void editAttack(int index, String attackName, String dice) {
-    _listOfAttacks[index]["name"] = attackName;
-    _listOfAttacks[index]["dice"] = dice;
-
-    //TODO: Chamar função de salvar arquivo
-
+  void loadAttacks() async {
+    List attacks = await FilesProvider().loadAttacks();
+  for (var attack in attacks) {
+      listOfAttacks.add({
+        "name": attack["name"],
+        "dice": attack["dice"]
+      });
+    }
     notifyListeners();
   }
 
-  void loadAttacks() {
-
-    //TODO: Carregar ataques do arquivo
-
-    notifyListeners();
-  }
-
-  void saveAttacks() { 
-
-    //TODO: Salvar ataques no arquivo json
-
+  void saveAttacks() async { 
+    await FilesProvider().saveAttacks(listOfAttacks);
     notifyListeners();  
+  }
+
+  void addIndex(int index) {
+    indexes.add(index);
+    notifyListeners();
+  }
+
+  void removeIndex(int index) {
+    indexes.remove(index);
+    notifyListeners();
+  }
+
+  bool areEveryoneSelected() {
+    return indexes.length == listOfAttacks.length;
+  }
+
+  void selectEveryone() {
+    if (areEveryoneSelected()) {
+      indexes.clear();
+    } else {
+      indexes = List.generate(listOfAttacks.length, (index) => index);
+    }
+    notifyListeners();
   }
 }

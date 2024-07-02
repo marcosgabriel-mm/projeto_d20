@@ -8,6 +8,7 @@ class AttacksFields extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final Function(PointerDownEvent)? onTapOutside;
   final String? objectKey;
+  final bool enabled;
 
   const AttacksFields({
     super.key, 
@@ -15,7 +16,8 @@ class AttacksFields extends StatelessWidget {
     this.onTextChanged, 
     this.onSubmitted, 
     this.objectKey, 
-    this.onTapOutside
+    this.onTapOutside, 
+    required this.enabled
   });
 
   @override
@@ -24,6 +26,7 @@ class AttacksFields extends StatelessWidget {
     controller.text = text;
 
     return  TextField(
+      enabled: enabled,
       cursorColor: Colors.white,
       textAlign: TextAlign.center,
       controller: controller,
