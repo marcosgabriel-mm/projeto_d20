@@ -11,12 +11,12 @@ class Character {
 
   int spellClass;
 
-  Map<String, int> stats;
-  Map<String, int> primaryStats;
+  Map<String, dynamic> stats;
   Map<String, dynamic> skills;
+  Map<String, int> primaryStats;
   List<Map<dynamic, dynamic>> spells;
 
-  //todo colocar magias, esquipamentos e mochila
+  //TODO: colocar equipamentos
 
   Map<String, dynamic> toJson() {
     return {
@@ -48,8 +48,8 @@ class Character {
     required this.description,
     required this.spells,
     required this.spellClass,
-    Map<String, int>? primaryStats,
-    Map<String, int>? stats,
-  }) : primaryStats = primaryStats ?? {}, stats = stats ?? {};
+    required this.primaryStats,
+    required this.stats,
+  });
 }
 

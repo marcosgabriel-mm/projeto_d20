@@ -268,13 +268,15 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                     spacing: horizontalPadding,
                     runSpacing: verticalPadding,
                     children: [
-                      //TODO: mudar para salvaguardas
                       for (int index=0; index<characterProvider.character.stats.length; index++)
                       Atribute(
                         atributeName: characterProvider.character.stats.keys.elementAt(index),
-                        atributeValue: characterProvider.character.stats.values.elementAt(index).toString(),
-                        atributeModificator: characterProvider.calcutateModificator(characterProvider.character.stats.values.elementAt(index)).toString(),
+                        atributeValue: characterProvider.character.stats[characterProvider.character.stats.keys.elementAt(index)]['valor'].toString(),
+                        atributeModificator: characterProvider.calcutateModificator(characterProvider.character.stats[characterProvider.character.stats.keys.elementAt(index)]['valor'] ?? 0).toString(),
                         onTextChanged: (value) => characterProvider.updateAtributes(value, index),
+                        onTap: () => characterProvider.changeSaveTrhow(characterProvider.character.stats.keys.elementAt(index)),
+                        saveTrhow: characterProvider.character.stats[characterProvider.character.stats.keys.elementAt(index)]['salvaguarda'],
+                        titleMode: _atributeLabel,
                       )
                     ],
                   ),

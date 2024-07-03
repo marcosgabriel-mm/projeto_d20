@@ -26,12 +26,30 @@ class CharacterProvider extends ChangeNotifier {
       'Percepção Passiva': 0,
     },
     stats: {
-      'Força': 0,
-      'Destreza': 0,
-      'Constituição': 0,
-      'Inteligência': 0,
-      'Sabedoria': 0,
-      'Carisma': 0,
+      'Força': {
+        'valor': 0,
+        'salvaguarda': false
+      },
+      'Destreza': {
+        'valor': 0,
+        'salvaguarda': false
+      },
+      'Constituição': {
+        'valor': 0,
+        'salvaguarda': false
+      },
+      'Inteligência': {
+        'valor': 0,
+        'salvaguarda': false
+      },
+      'Sabedoria': {
+        'valor': 0,
+        'salvaguarda': false
+      },
+      'Carisma': {
+        'valor': 0,
+        'salvaguarda': false
+      },
     },
     skills: {
       'Atletismo': {
@@ -131,12 +149,12 @@ class CharacterProvider extends ChangeNotifier {
     name: "Nome",
     race: "Raça",
     classType: "Classe",
-    description: "",
     level: 1,
     experience: 0,
     maxHitPoints: 0,
-    spellClass: 0,
     currentHitPoints: 0,
+    spellClass: 0,
+    description: "",
     primaryStats: {
       'Inspiração': 0,
       'Bônus de Proficiência': 0,
@@ -146,12 +164,30 @@ class CharacterProvider extends ChangeNotifier {
       'Percepção Passiva': 0,
     },
     stats: {
-      'Força': 0,
-      'Destreza': 0,
-      'Constituição': 0,
-      'Inteligência': 0,
-      'Sabedoria': 0,
-      'Carisma': 0,
+      'Força': {
+        'valor': 0,
+        'salvaguarda': false
+      },
+      'Destreza': {
+        'valor': 0,
+        'salvaguarda': false
+      },
+      'Constituição': {
+        'valor': 0,
+        'salvaguarda': false
+      },
+      'Inteligência': {
+        'valor': 0,
+        'salvaguarda': false
+      },
+      'Sabedoria': {
+        'valor': 0,
+        'salvaguarda': false
+      },
+      'Carisma': {
+        'valor': 0,
+        'salvaguarda': false
+      },
     },
     skills: {
       'Atletismo': {
@@ -245,7 +281,7 @@ class CharacterProvider extends ChangeNotifier {
         'proficiente': false
       }
     },
-    spells: []
+    spells: [] 
   );
   final assetsRoutes = [
     {
@@ -326,9 +362,6 @@ class CharacterProvider extends ChangeNotifier {
 
   loadCharacter(Map<String, dynamic> json) {
 
-    Map<String, dynamic> statsMap = json['stats'];
-    Map<String, int>? stats = statsMap.map((key, value) => MapEntry(key, int.tryParse(value.toString()) ?? 0));
-
     Map<String, dynamic> primaryStatsMap = json['primaryStats'];
     Map<String, int>? primaryStats = primaryStatsMap.map((key, value) => MapEntry(key, int.tryParse(value.toString()) ?? 0));
 
@@ -346,9 +379,9 @@ class CharacterProvider extends ChangeNotifier {
       maxHitPoints: json['maxHitPoints'],
       currentHitPoints: json['currentHitPoints'],
       skills: json['skills'],
+      stats: json['stats'],
       spells: spells,
       primaryStats:  primaryStats,
-      stats: stats,
     );
 
     notifyListeners();
@@ -439,7 +472,7 @@ class CharacterProvider extends ChangeNotifier {
       Map<String, dynamic> skill = character.skills[key] as Map<String, dynamic>;
       String atributeModificator = skill['atributo'];
 
-      int modificator = calcutateModificator(character.stats[atributeModificator]!);
+      int modificator = calcutateModificator(character.stats[atributeModificator]['valor']!);
       if (skill['proficiente'] == true) {
         skill['valor'] = modificator + character.primaryStats['Bônus de Proficiência']!;
       } else {
@@ -467,7 +500,7 @@ class CharacterProvider extends ChangeNotifier {
     } else {
       parsedValue = 0;
     }
-    character.stats[character.stats.keys.elementAt(index)] = parsedValue;
+    character.stats[character.stats.keys.elementAt(index)]['valor'] = parsedValue;
     calcutateModificator(parsedValue);
     notifyListeners();
   }
@@ -491,6 +524,7 @@ class CharacterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  //! Arrumar caso usar essa função
   int? calculatePassivePerception() {
     int wisdom = calcutateModificator(character.stats['Sabedoria']!);
     int proeficiency = character.primaryStats['Bônus de Proficiência']!;
@@ -614,6 +648,11 @@ class CharacterProvider extends ChangeNotifier {
         break;
       }
     }
+    notifyListeners();
+  }
+
+  void changeSaveTrhow(String atributeName) {
+    character.stats[atributeName]['salvaguarda'] = !character.stats[atributeName]['salvaguarda'];
     notifyListeners();
   }
 
