@@ -70,4 +70,19 @@ class AttacksProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void sortAttacks(String field) {
+    switch (field) {
+      case "name":
+        listOfAttacks.sort((a, b) => a["name"]!.compareTo(b["name"]!));
+        break;
+      case "dice":
+        listOfAttacks.sort((a, b) => a["dice"]!.compareTo(b["dice"]!));
+        break;
+      default:
+        listOfAttacks.sort((a, b) => a["name"]!.compareTo(b["name"]!));
+        break;
+    }
+    notifyListeners();
+  }
 }

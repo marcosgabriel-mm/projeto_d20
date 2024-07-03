@@ -60,9 +60,12 @@ class _AttacksViewState extends State<AttacksView> {
             AddButton(function: () {
               attacksProvider.addNewAttack("", "");
             }),
-            const Padding(
-              padding: EdgeInsets.only(right: horizontalPadding),
-              child: SortButton(listOfSorts: ["Nome", "Dados"]),
+            Padding(
+              padding: const EdgeInsets.only(right: horizontalPadding),
+              child: SortButton(
+                listOfSorts: const ["Nome", "Dados"], 
+                function: (value) => attacksProvider.sortAttacks(value!),
+              ),
             )
           ],
         ),
@@ -152,7 +155,12 @@ class _AttacksViewState extends State<AttacksView> {
                       trailing: IconButton(
                         onPressed: () {
                           String result = context.read<DicesProvider>().rollASingleDice(attacksProvider.listOfAttacks[index]["dice"]!, 0);
-                          debugPrint("Resultado do ataque: $result");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Resultado do ataque: $result"),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         },
                         tooltip: "Rolar ataque",
                         icon: const Icon(Icons.casino_outlined, color: Colors.white,),
