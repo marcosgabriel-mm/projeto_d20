@@ -4,6 +4,7 @@ import 'package:d20_project/app/providers/d20_provider.dart';
 import 'package:d20_project/app/providers/dices_provider.dart';
 import 'package:d20_project/app/widgets/add_button.dart';
 import 'package:d20_project/app/widgets/appbar.dart';
+import 'package:d20_project/app/widgets/selection_bottom_menu.dart';
 import 'package:d20_project/app/widgets/sort_button.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:d20_project/theme/theme_config.dart';
@@ -68,6 +69,13 @@ class _AttacksViewState extends State<AttacksView> {
               ),
             )
           ],
+        ),
+        bottomNavigationBar: !d20Provider.isSelectionMode 
+        ? const SizedBox.shrink()
+        : SelectionBottomMenu(
+          textLabel: const ["Excluir"], 
+          icons: const [Icons.delete], 
+          onPressed: [() => attacksProvider.deleteAttacks()],
         ),
         body: attacksProvider.listOfAttacks.isEmpty
         ? Center(

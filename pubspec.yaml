@@ -77,8 +77,7 @@ flutter:
     - assets/svg/damage_types/
     - assets/svg/filters/
     - assets/fonts/Fraunces/
-    - assets/json/spells_pt.json
-    - assets/json/assets_routes.json
+    - assets/json/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

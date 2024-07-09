@@ -25,20 +25,27 @@ class AttacksProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteAttack(int index) {
+  void deleteAttacks() {
+    
+    if (indexes.isEmpty) return;
+    for (var index in indexes) { 
+      listOfAttacks.removeAt(index);
+    }
 
-    listOfAttacks.removeAt(index);
+    indexes.clear();
     FilesProvider().saveAttacks(listOfAttacks);
     notifyListeners();
   }
 
   void loadAttacks() async {
     List attacks = await FilesProvider().loadAttacks();
-  for (var attack in attacks) {
-      listOfAttacks.add({
-        "name": attack["name"],
-        "dice": attack["dice"]
-      });
+    for (var attack in attacks) {
+      if (!listOfAttacks.any((element) => element["name"] == attack["name"])) {
+        listOfAttacks.add({
+          "name": attack["name"],
+          "dice": attack["dice"]
+        });
+      }
     }
     notifyListeners();
   }
@@ -59,6 +66,7 @@ class AttacksProvider extends ChangeNotifier {
   }
 
   bool areEveryoneSelected() {
+    if (indexes.isEmpty) {return false;}
     return indexes.length == listOfAttacks.length;
   }
 
