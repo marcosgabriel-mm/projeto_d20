@@ -155,7 +155,7 @@ class _SpellViewState extends State<SpellView> {
                             context: context,
                             builder: (context) {
                               if(characterProvider.listOfCharacters.isEmpty) {
-                                characterProvider.loadAllCharactersToList();
+                                characterProvider.loadFilesToList();
                               }
                               return AlertDialog(
                                 backgroundColor: ColorsApp.instance.secondaryColor,
@@ -201,8 +201,8 @@ class _SpellViewState extends State<SpellView> {
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text(characterProvider.listOfCharacters[characterIndex][0], style: TextStyles.instance.regular, textAlign: TextAlign.center,),
-                                              Text(characterProvider.listOfCharacters[characterIndex][1], style: TextStyles.instance.regular, textAlign: TextAlign.center,),
+                                              Text(characterProvider.listOfCharacters[characterIndex]['json'].toString(), style: TextStyles.instance.regular, textAlign: TextAlign.center,),
+                                              Text(characterProvider.listOfCharacters[characterIndex]['json'].toString(), style: TextStyles.instance.regular, textAlign: TextAlign.center,),
                                             ],
                                           ),
                                         )

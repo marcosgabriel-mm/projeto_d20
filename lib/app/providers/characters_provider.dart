@@ -7,7 +7,7 @@ import 'package:d20_project/app/providers/files_provider.dart';
 
 class CharacterProvider extends ChangeNotifier {
 
-  Character _character = Character(
+  Character character = Character(
     name: "Nome",
     race: "Raça",
     classType: "Classe",
@@ -319,48 +319,17 @@ class CharacterProvider extends ChangeNotifier {
     }
   ];
 
-  List<List<String>> get listOfCharacters => _listOfCharacters;
-  List<int> get indexesSelected => _indexesSelected;
 
-  List<List<String>> _listOfCharacters = [];
-  Character get character => _character;
-  List<int> _indexesSelected = [];
+  List<Map<String, String>> listOfCharacters = [];
 
-  void addIndexSelected(int index) {
-    _indexesSelected.add(index);
-    debugPrint(_indexesSelected.toString());
-    notifyListeners();
-  }
+  void loadCharacter(int index) async {
 
-  void removeIndexSelected(int index) {
-    _indexesSelected.remove(index);
-    debugPrint(_indexesSelected.toString());
-    notifyListeners();
-  }
-
-  void selectOrUnselectAll() {
-    int quantity = _listOfCharacters.length;
-    if (_indexesSelected.length == quantity) {
-      _indexesSelected.clear();
-    } else {
-      for (int index = 0; index < quantity; index++) {
-        if (!_indexesSelected.contains(index)) {
-          _indexesSelected.add(index);
-        }
-      }
+    if (index.isNegative) {
+      character = characterDefault;
+      return;
     }
-    notifyListeners();
-  }
 
-  bool areEveryoneSelected() {
-    int quantity = _listOfCharacters.length;
-    if (_indexesSelected.length == quantity) {
-      return true;
-    }
-    return false;
-  }
-
-  loadCharacter(Map<String, dynamic> json) {
+    Map<String, dynamic> json = await FilesProvider().getJson(index);
 
     Map<String, dynamic> primaryStatsMap = json['primaryStats'];
     Map<String, int>? primaryStats = primaryStatsMap.map((key, value) => MapEntry(key, int.tryParse(value.toString()) ?? 0));
@@ -368,7 +337,7 @@ class CharacterProvider extends ChangeNotifier {
     List<dynamic> spellsJson = json['spells'];
     List<Map<String, dynamic>> spells = spellsJson.map((spell) => Map<String, dynamic>.from(spell)).toList();
 
-    _character = Character(
+    character = Character(
       name: json['name'],
       race: json['race'],
       classType: json['classType'],
@@ -381,14 +350,36 @@ class CharacterProvider extends ChangeNotifier {
       skills: json['skills'],
       stats: json['stats'],
       spells: spells,
-      primaryStats:  primaryStats,
+      primaryStats: primaryStats,
     );
 
     notifyListeners();
   }
 
-  set character(Character character) {
-    _character = character;
+  void loadFilesToList() async {
+
+    listOfCharacters.clear();
+
+    int quantity = await FilesProvider().getCharactersQuantityInPath();
+    for (int index=0 ; index < quantity; index++) {
+
+      Map<String, String> stringFiles = await FilesProvider().getCharacterFiles(index);
+      debugPrint(stringFiles.toString());
+      
+      listOfCharacters.add(stringFiles);
+    }
+    notifyListeners();
+  }
+
+  void saveCharacter( Character character, int index) async {
+    await FilesProvider().saveCharacter(character, index);
+    notifyListeners();
+  }
+
+  void deleteCharacter(int index) async {
+    await FilesProvider().deleteCharacter(index);
+    listOfCharacters.removeAt(index);
+    notifyListeners();
   }
 
   calcutateModificator(int atributeValue) {
@@ -409,6 +400,191 @@ class CharacterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void toggleProeficient(String skillName) {
+    Map<String, dynamic>? skill = character.skills[skillName] as Map<String, dynamic>?;
+    skill?['proficiente'] = !skill['proficiente'];
+    notifyListeners();
+  }
+
+  void autoCompleteProeficiencyModifierFields() {
+    for (String key in character.skills.keys) {
+      Map<String, dynamic> skill = character.skills[key] as Map<String, dynamic>;
+      String atributeModificator = skill['atributo'];
+
+      int modificator = calcutateModificator(character.stats[atributeModificator]['valor']!);
+      if (skill['proficiente'] == true) {
+        skill['valor'] = modificator + character.primaryStats['Bônus de Proficiência']!;
+      } else {
+        skill['valor'] = modificator;
+      }
+    } 
+    notifyListeners();
+  }
+
+  void addProeficiencyModifier(String skillName) {
+    Map<String, dynamic> skill = character.skills[skillName] as Map<String, dynamic>;
+
+    if (skill['proficiente'] == true) {
+      skill['valor'] += character.primaryStats['Bônus de Proficiência']!;
+    } else {
+      skill['valor'] -= character.primaryStats['Bônus de Proficiência']!;
+    }
+    notifyListeners();
+  }
+
+  void updateAtributes(String value, int index) {
+    int parsedValue;
+    if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
+      parsedValue = int.parse(value.trim());
+    } else {
+      parsedValue = 0;
+    }
+    character.stats[character.stats.keys.elementAt(index)]['valor'] = parsedValue;
+    calcutateModificator(parsedValue);
+    notifyListeners();
+  }
+
+  void updateSkills(String value, int index) {
+    if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
+      if (character.skills[character.skills.keys.elementAt(index)] is Map<String, dynamic>) {
+        (character.skills[character.skills.keys.elementAt(index)] as Map<String, dynamic>)['valor'] = int.parse(value.trim());
+      }
+    } 
+  
+    notifyListeners();
+  }
+
+  
+  //!arrumar essa função
+  void searchCharactersByString(String search) async {
+
+    listOfCharacters.clear();
+    int quantity = await FilesProvider().getCharactersQuantityInPath();
+    for (int index=0 ; index < quantity; index++) {
+      
+      String fullPath = await FilesProvider().getCharacterFiles(index);
+      String fileName = path.basename(fullPath);
+      
+      List<String> parts = fileName.split('_');
+
+      String lastPart = parts.last;
+      List<String> lastPartAndExtension = lastPart.split('.');
+      parts[parts.length - 1] = lastPartAndExtension.first;
+      
+      for (int i = 0; i < parts.length; i++) {
+        if (parts[i].toLowerCase().contains(search.toLowerCase())) {
+          // listOfCharacters.add(parts);
+          break;
+        }
+      }
+    }
+    
+    notifyListeners();
+  }
+
+  //! arrumar essa função
+  Future addSpellandSave(Map<String, dynamic> spell, int index) async {
+
+    // spell['prepared'] = false;
+    // String fullPath = await FilesProvider().getNameOfFiles(index);
+    // Map<String, dynamic> characterJson = await FilesProvider().getJson(fullPath);
+    
+    // CharacterProvider characterProvider = CharacterProvider();
+    // characterProvider.loadCharacter(characterJson);
+
+    // if (characterProvider.character.spells.isEmpty) {
+    //   characterProvider.character.spells.add(spell);
+    //   FilesProvider().saveExistentJson(index, characterProvider.character);
+    //   return "Magia adicionada ao personagem";
+    // }
+
+    // bool spellExists = false;
+    // for (var characterSpell in characterProvider.character.spells) {
+    //   if(characterSpell['name'] == spell['name']){
+    //     spellExists = true;
+    //     break;
+    //   }
+    // }
+
+    // if(!spellExists) {
+    //   characterProvider.character.spells.add(spell);
+    //   FilesProvider().saveExistentJson(index, characterProvider.character);
+    //   return "Magia adicionada ao personagem";
+    // } else {
+    //   return "Magia já existe no personagem";
+    // }
+  }
+
+  void togglePreparedSpell(String spellName) {
+    debugPrint(spellName);
+    for (int i = 0; i < character.spells.length; i++) {
+      if (character.spells[i]['name'] == spellName) {
+        character.spells[i]['prepared'] = !character.spells[i]['prepared'];
+        break;
+      }
+    }
+    notifyListeners();
+  }
+
+  void changeSaveTrhow(String atributeName) {
+    character.stats[atributeName]['salvaguarda'] = !character.stats[atributeName]['salvaguarda'];
+    notifyListeners();
+  }
+
+  bool isProeficient(String skillName) {
+    Map<String, dynamic>? skill = character.skills[skillName] as Map<String, dynamic>?;
+    if (skill?['proficiente'] == true) {
+      return true;
+    }
+    return false;
+  }
+
+  bool containsMap(List<Map> listOfCharacters, Map stringFiles) {
+    for (var map in listOfCharacters) {
+      if (map.length == stringFiles.length && map.keys.every((k) => map[k] == stringFiles[k])) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /*
+    void updateLevel(String value) {
+
+      if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
+        character.experience = int.parse(value.trim());
+      }
+
+      character.level = calculateLevel(character.experience);
+      calculateProeficiencyBonus();
+      notifyListeners();
+    }
+  */
+
+  /*
+    void calculateProeficiencyBonus() {
+      character.primaryStats['Bônus de Proficiência'] = 2 + (character.level~/4);
+      if (character.level > 16) {
+        character.primaryStats['Bônus de Proficiência'] = 6;
+      }
+      notifyListeners();
+    }
+
+    //! Arrumar caso usar essa função
+    int? calculatePassivePerception() {
+      int wisdom = calcutateModificator(character.stats['Sabedoria']!);
+      int proeficiency = character.primaryStats['Bônus de Proficiência']!;
+
+      if (isProeficient('Percepcao')) {
+        character.primaryStats['Percepção Passiva'] = 10 + wisdom + proeficiency;
+      } else {
+        character.primaryStats['Percepção Passiva'] = 10 + wisdom;
+      }
+      return character.primaryStats['Percepção Passiva'];
+    }
+  */
+
+  /* 
   calculateLevel(int experience){
     if (experience < 300) {
       return 1;
@@ -453,207 +629,6 @@ class CharacterProvider extends ChangeNotifier {
     }
   }
 
-  bool isProeficient(String skillName) {
-    Map<String, dynamic>? skill = character.skills[skillName] as Map<String, dynamic>?;
-    if (skill?['proficiente'] == true) {
-      return true;
-    }
-    return false;
-  }
-
-  toggleProeficient(String skillName) {
-    Map<String, dynamic>? skill = character.skills[skillName] as Map<String, dynamic>?;
-    skill?['proficiente'] = !skill['proficiente'];
-    notifyListeners();
-  }
-
-  void autoCompleteProeficiencyModifierFields() {
-    for (String key in character.skills.keys) {
-      Map<String, dynamic> skill = character.skills[key] as Map<String, dynamic>;
-      String atributeModificator = skill['atributo'];
-
-      int modificator = calcutateModificator(character.stats[atributeModificator]['valor']!);
-      if (skill['proficiente'] == true) {
-        skill['valor'] = modificator + character.primaryStats['Bônus de Proficiência']!;
-      } else {
-        skill['valor'] = modificator;
-      }
-    } 
-    notifyListeners();
-  }
-
-  void addProeficiencyModifier(String skillName) {
-    Map<String, dynamic> skill = character.skills[skillName] as Map<String, dynamic>;
-
-    if (skill['proficiente'] == true) {
-      skill['valor'] += character.primaryStats['Bônus de Proficiência']!;
-    } else {
-      skill['valor'] -= character.primaryStats['Bônus de Proficiência']!;
-    }
-    notifyListeners();
-  }
-
-  void updateAtributes(String value, int index) {
-    int parsedValue;
-    if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
-      parsedValue = int.parse(value.trim());
-    } else {
-      parsedValue = 0;
-    }
-    character.stats[character.stats.keys.elementAt(index)]['valor'] = parsedValue;
-    calcutateModificator(parsedValue);
-    notifyListeners();
-  }
-
-  void updateLevel(String value) {
-
-    if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
-      character.experience = int.parse(value.trim());
-    }
-
-    character.level = calculateLevel(character.experience);
-    calculateProeficiencyBonus();
-    notifyListeners();
-  }
-
-  void calculateProeficiencyBonus() {
-    character.primaryStats['Bônus de Proficiência'] = 2 + (character.level~/4);
-    if (character.level > 16) {
-      character.primaryStats['Bônus de Proficiência'] = 6;
-    }
-    notifyListeners();
-  }
-
-  //! Arrumar caso usar essa função
-  int? calculatePassivePerception() {
-    int wisdom = calcutateModificator(character.stats['Sabedoria']!);
-    int proeficiency = character.primaryStats['Bônus de Proficiência']!;
-
-    if (isProeficient('Percepcao')) {
-      character.primaryStats['Percepção Passiva'] = 10 + wisdom + proeficiency;
-    } else {
-      character.primaryStats['Percepção Passiva'] = 10 + wisdom;
-    }
-    return character.primaryStats['Percepção Passiva'];
-  }
-
-  void updateSkills(String value, int index) {
-    if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
-      if (character.skills[character.skills.keys.elementAt(index)] is Map<String, dynamic>) {
-        (character.skills[character.skills.keys.elementAt(index)] as Map<String, dynamic>)['valor'] = int.parse(value.trim());
-      }
-    } 
-  
-    notifyListeners();
-  }
-
-  void loadAllCharactersToList() async {
-
-    int quantity = await FilesProvider().getCharactersQuantityInPath();
-    for (int index=0 ; index < quantity; index++) {
-      
-      String? fullPath = await FilesProvider().getNameOfFiles(index);
-      
-      if (fullPath != null) {
-        String fileName = path.basename(fullPath);
-        
-        List<String> parts = fileName.split('_');
-
-        String lastPart = parts.last;
-        List<String> lastPartAndExtension = lastPart.split('.');
-        parts[parts.length - 1] = lastPartAndExtension.first;
-        
-        bool listExists = listOfCharacters.any((character) => listEquals(character, parts));
-        if (!listExists) {
-          listOfCharacters.add(parts);
-          notifyListeners();
-        }
-      }
-    }
-  }
-
-  void searchCharactersByString(String search) async {
-
-    listOfCharacters.clear();
-    int quantity = await FilesProvider().getCharactersQuantityInPath();
-    for (int index=0 ; index < quantity; index++) {
-      
-      String fullPath = await FilesProvider().getNameOfFiles(index);
-      String fileName = path.basename(fullPath);
-      
-      List<String> parts = fileName.split('_');
-
-      String lastPart = parts.last;
-      List<String> lastPartAndExtension = lastPart.split('.');
-      parts[parts.length - 1] = lastPartAndExtension.first;
-      
-      for (int i = 0; i < parts.length; i++) {
-        if (parts[i].toLowerCase().contains(search.toLowerCase())) {
-          listOfCharacters.add(parts);
-          break;
-        }
-      }
-    }
-    
-    notifyListeners();
-  }
-
-  void deleteCharacter() async {
-    FilesProvider().deleteFolderAndRenameAll(indexesSelected);
-
-    for (int index in indexesSelected) {
-      listOfCharacters.removeAt(index);
-    }
-    loadAllCharactersToList();
-    notifyListeners();
-  }
-
-  Future addSpellandSave(Map<String, dynamic> spell, int index) async {
-
-    spell['prepared'] = false;
-    String fullPath = await FilesProvider().getNameOfFiles(index);
-    Map<String, dynamic> characterJson = await FilesProvider().getJson(fullPath);
-    
-    CharacterProvider characterProvider = CharacterProvider();
-    characterProvider.loadCharacter(characterJson);
-
-    if (characterProvider.character.spells.isEmpty) {
-      characterProvider.character.spells.add(spell);
-      FilesProvider().saveExistentJson(index, characterProvider.character);
-      return "Magia adicionada ao personagem";
-    }
-
-    bool spellExists = false;
-    for (var characterSpell in characterProvider.character.spells) {
-      if(characterSpell['name'] == spell['name']){
-        spellExists = true;
-        break;
-      }
-    }
-
-    if(!spellExists) {
-      characterProvider.character.spells.add(spell);
-      FilesProvider().saveExistentJson(index, characterProvider.character);
-      return "Magia adicionada ao personagem";
-    } else {
-      return "Magia já existe no personagem";
-    }
-  }
-
-  void togglePreparedSpell(String spellName) {
-    debugPrint(spellName);
-    for (int i = 0; i < character.spells.length; i++) {
-      if (character.spells[i]['name'] == spellName) {
-        character.spells[i]['prepared'] = !character.spells[i]['prepared'];
-        break;
-      }
-    }
-    notifyListeners();
-  }
-
-  void changeSaveTrhow(String atributeName) {
-    character.stats[atributeName]['salvaguarda'] = !character.stats[atributeName]['salvaguarda'];
-    notifyListeners();
-  }
+*/
 
 }

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:d20_project/app/providers/characters_provider.dart';
-import 'package:d20_project/app/widgets/selection_bottom_menu.dart';
 import 'package:d20_project/styles/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -29,7 +28,17 @@ class _CharacterSheetState extends State<CharacterSheet> {
   @override
   void initState() {
     super.initState();
-    context.read<CharacterProvider>().loadAllCharactersToList();
+    context.read<CharacterProvider>().loadFilesToList();
+  }
+
+  List<String> _separeteString(String fullPath) {
+
+    String fileName = fullPath.split('/').last;
+    String fileNameWithoutExtension = fileName.split('.').first;
+
+    List<String> parts = fileNameWithoutExtension.split('_');
+
+    return parts;
   }
 
   @override
@@ -37,243 +46,175 @@ class _CharacterSheetState extends State<CharacterSheet> {
     d20provider = context.watch<D20Provider>();
     characterProvider = context.watch<CharacterProvider>();
 
-    // if(!d20provider.onSearch){
-    //   characterProvider.loadAllCharactersToList();
-    // }
-
-    // FilesProvider().deleteFolderAndRenameAll(0);
-
-    return PopScope(
-      canPop: d20provider.isSelectionMode ? false : true,
-      onPopInvoked: (bool didPop) {
-        if (didPop) {
-          return;
-        }
-        if(d20provider.isSelectionMode){
-          d20provider.toogleSelectionModeAndBottomBar();
-          characterProvider.indexesSelected.clear();
-        }
-      },
-      child: Scaffold(
-        appBar: ApplicationBar(
-          title: 'Personagens',
-          areAllSelected: d20provider.areAllSelectedFromThatScreen(context),
-          onSearch: (value) => characterProvider.searchCharactersByString(value),
-          onSearchClose: () => characterProvider.loadAllCharactersToList(),
-          actions: [
-            IconButton(
-              onPressed: () => d20provider.toggleSearch(),
-              icon: const Icon(
-                Icons.search,
-                color: Colors.white,
-              )
+    // FilesProvider().seeAllFolders();
+  
+    return Scaffold(
+      appBar: ApplicationBar(
+        title: 'Personagens',
+        areAllSelected: d20provider.areAllSelectedFromThatScreen(context),
+        onSearch: (value) => characterProvider.searchCharactersByString(value),
+        onSearchClose: () => characterProvider.loadFilesToList(),
+        actions: [
+          IconButton(
+            onPressed: () => d20provider.toggleSearch(),
+            icon: const Icon(
+              Icons.search,
+              color: Colors.white,
+            )
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: horizontalPadding),
+            child: AddButton(
+              function: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CharacterDetails(
+                      fullPath: "",
+                      index: -1,
+                    ),
+                  ),
+                );
+              },
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: horizontalPadding),
-              child: AddButton(
-                function: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CharacterDetails(
-                        fullPath: "",
-                        index: -1,
+          ),
+        ],
+      ),
+      body: characterProvider.listOfCharacters.isEmpty
+      ? RefreshIndicator(
+        onRefresh: () async {
+          characterProvider.loadFilesToList();
+        },
+        child: ListView(
+            children: [
+              SizedBox(height: MediaQuery.of(context).size.height * 0.3,),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset("assets/svg/character.svg"),
+                    Padding(
+                      padding: const EdgeInsets.only(top: verticalPadding),
+                      child: Text(
+                        'Nenhum personagem criado!',
+                        style: TextStyles.instance.regular,
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-        bottomNavigationBar: 
-        !d20provider.isSelectionMode 
-        ? const SizedBox.shrink() 
-        : SelectionBottomMenu(
-          textLabel: const ["Excluir"],
-          icons: const [Icons.delete],
-          onPressed: [
-              () {
-                characterProvider.deleteCharacter();
-                d20provider.toogleSelectionModeAndBottomBar();
-              }
-          ],
-        ),
-        body: RefreshIndicator(
-          onRefresh: () async {
-            await Future.delayed(const Duration(microseconds: 500));
-            setState(() {
-              characterProvider.listOfCharacters.clear();
-              characterProvider.loadAllCharactersToList();
-            });
-          },
-          child: characterProvider.listOfCharacters.isEmpty
-          ? ListView(
-              children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.3,),
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  ],
+                ),
+              )
+            ],
+          ),
+      )
+      : RefreshIndicator(
+        onRefresh: () async {
+          characterProvider.loadFilesToList();
+        },
+        child: ListView.builder(
+          itemCount: characterProvider.listOfCharacters.length,
+          padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: verticalPadding),
+              child: ListTile(
+                enabled: d20provider.isSelectionMode ? false : true,
+                title: Text(
+                  _separeteString(characterProvider.listOfCharacters[index]['json'].toString())[0],
+                  style: TextStyles.instance.regular,
+                ),
+                subtitle: Text(
+                  _separeteString(characterProvider.listOfCharacters[index]['json'].toString())[1],
+                  style: TextStyles.instance.regular,
+                ),
+                trailing: SizedBox(
+                  width: 110,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      SvgPicture.asset("assets/svg/character.svg"),
                       Padding(
-                        padding: const EdgeInsets.only(top: verticalPadding),
-                        child: Text(
-                          'Nenhum personagem criado!',
-                          style: TextStyles.instance.regular,
+                        padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('PV',style: TextStyles.instance.regular),
+                            Text(
+                              _separeteString(characterProvider.listOfCharacters[index]['json'].toString())[2], 
+                              style: TextStyles.instance.boldItalic,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Nível',style: TextStyles.instance.regular,),
+                          Text(_separeteString(
+                            characterProvider.listOfCharacters[index]['json'].toString())[3], 
+                            style: TextStyles.instance.boldItalic,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                leading: SizedBox(
+                  width: d20provider.isSelectionMode ? 90 : 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onLongPress: () => FilesProvider().saveNewPhoto(index),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Dialog(
+                                child: PhotoView(
+                                  imageProvider: FileImage(
+                                    File(
+                                      characterProvider.listOfCharacters[index]['photo']?.toString() ?? "assets/images/addcharacter.png"
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(15),
+                            image: DecorationImage(
+                              image: FileImage(
+                                File(
+                                  characterProvider.listOfCharacters[index]['photo']?.toString() ?? "assets/images/dice-d4.png"
+                                )
+                              ), 
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                )
-              ],
-            )
-          : ListView.builder(
-            itemCount: characterProvider.listOfCharacters.length,
-            padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: verticalPadding),
-                child: GestureDetector(
-                  onTap: () {
-                    if (d20provider.isSelectionMode) {
-                      if (characterProvider.indexesSelected.contains(index)) {
-                        characterProvider.removeIndexSelected(index);
-                      } else {
-                        characterProvider.addIndexSelected(index);
-                      }
-                    }
-                    // print(characterProvider.indexesSelected);
-                  },
-                  child: ListTile(
-                    enabled: d20provider.isSelectionMode ? false : true,
-                    title: Text(
-                      characterProvider.listOfCharacters[index][0],
-                      style: TextStyles.instance.regular,
-                    ),
-                    subtitle: Text(
-                      characterProvider.listOfCharacters[index][1],
-                      style: TextStyles.instance.regular,
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('PV',style: TextStyles.instance.regular),
-                              Text(characterProvider.listOfCharacters[index][2], style: TextStyles.instance.boldItalic,),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('Nível',style: TextStyles.instance.regular,),
-                            Text(characterProvider.listOfCharacters[index][3], style: TextStyles.instance.boldItalic,),
-                          ],
-                        )
-                      ],
-                    ),
-                    leading: SizedBox(
-                      width: d20provider.isSelectionMode ? 90 : 50,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          d20provider.isSelectionMode 
-                          ? Icon(
-                            characterProvider.indexesSelected.contains(index)
-                            ? Icons.radio_button_on 
-                            : Icons.radio_button_off,
-                            color: Colors.white,
-                          )
-                          : const SizedBox.shrink(),
-                          Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              const Icon(
-                                Icons.person_add,
-                                size: 25,
-                                color: Colors.white30,
-                              ),
-                              FutureBuilder<String>(
-                                future: FilesProvider().loadPhoto(index),
-                                builder: (BuildContext context, AsyncSnapshot<String> imageSnapshot) {
-                                  if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                                    return const CircularProgressIndicator();
-                                  } else if (imageSnapshot.hasError) {
-                                    return Text('Erro: ${imageSnapshot.error}');
-                                  } else {
-                                    return GestureDetector(
-                                      onLongPress: () => FilesProvider().saveNewPhoto(index),
-                                      onTap: () {
-                                        if (d20provider.isSelectionMode){
-                                          return;
-                                        }
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return Dialog(
-                                              child: PhotoView(
-                                                imageProvider: FileImage(File(imageSnapshot.data ?? "assets/images/person_add.png")),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Container(
-                                        width: 50,
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          border: Border.all(color: Colors.white),
-                                          borderRadius: BorderRadius.circular(15),
-                                          image: DecorationImage(
-                                            image: FileImage(
-                                              File(
-                                                imageSnapshot.data ?? "assets/images/person_add.png"
-                                              )
-                                            ), 
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
-                              )
-                            ] 
-                          ),
-                        ],
-                      ),
-                    ),
-                    onLongPress: () {
-                      d20provider.toogleSelectionModeAndBottomBar();
-                      characterProvider.addIndexSelected(index);
-                    },
-                    onTap: () async {
-                      String fullPath = await FilesProvider().getNameOfFiles(index);
-                      if (context.mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CharacterDetails(
-                              fullPath: fullPath, 
-                              index: index,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                  ),
                 ),
-              );
-            }
-          )
-        )
-      ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CharacterDetails(
+                      fullPath: characterProvider.listOfCharacters[index]['json'].toString(), 
+                      index: index
+                    )),
+                  );
+                },
+              ),
+            );
+          }
+        ),
+      )
     );
   }
 }

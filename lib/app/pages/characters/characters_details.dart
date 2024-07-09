@@ -14,12 +14,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 class CharacterDetails extends StatefulWidget {
+
   final String fullPath;
   final int index;
+
   const CharacterDetails({
     super.key, 
     required this.fullPath, 
-    required this.index
+    required this.index, 
   });
 
   @override
@@ -36,15 +38,7 @@ class _CharacterDetailsState extends State<CharacterDetails> {
   void initState() {
     super.initState();
     characterProvider = context.read<CharacterProvider>();
-
-    Future.microtask(() async {
-      if (widget.index == -1 && widget.fullPath.isEmpty) {
-        characterProvider.character = characterProvider.characterDefault;
-      } else {
-        Map<String, dynamic> json = await FilesProvider().getJson(widget.fullPath);
-        characterProvider.loadCharacter(json);
-      }
-    });
+    characterProvider.loadCharacter(widget.index);
   }
 
   void _showBackDialog() {
@@ -76,12 +70,46 @@ class _CharacterDetailsState extends State<CharacterDetails> {
               ),
               child: Text('Salvar e sair', style: TextStyles.instance.regular,),
               onPressed: () {
-                if (widget.index == -1) {
-                  FilesProvider().saveNewJson(characterProvider.character);
-                } else {
-                  FilesProvider().saveExistentJson(widget.index, characterProvider.character);
-                  characterProvider.character = characterProvider.characterDefault;
-                }
+                FilesProvider().saveCharacter(characterProvider.character, widget.index);
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _showDeleteDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: ColorsApp.instance.secondaryColor,
+          titleTextStyle: TextStyles.instance.regular,
+          contentTextStyle: TextStyles.instance.regular,
+          title: const Text('Deseja excluir o personagem?'),
+          content: const Text(
+            'Se você excluir o personagem, ele não poderá ser recuperado. Deseja excluir o personagem?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text('Cancelar', style: TextStyles.instance.regular,),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text('Excluir', style: TextStyles.instance.regular.copyWith(color: Colors.redAccent),),
+              onPressed: () {
+                characterProvider.deleteCharacter(widget.index);
                 Navigator.pop(context);
                 Navigator.pop(context);
               },
@@ -138,16 +166,10 @@ class _CharacterDetailsState extends State<CharacterDetails> {
               ),
               actions: [
                 IconButton(
-                  onPressed: (){
-                    if (widget.index == -1) {
-                      FilesProvider().saveNewJson(characterProvider.character);
-                      Navigator.pop(context);
-                    } else {
-                      FilesProvider().saveExistentJson(widget.index, characterProvider.character);
-                      characterProvider.character = characterProvider.characterDefault;
-                      characterProvider.loadAllCharactersToList();
-                      Navigator.pop(context);
-                    }
+                  onPressed: ()  {
+                    characterProvider.saveCharacter(characterProvider.character, widget.index);
+                    characterProvider.loadFilesToList();                    
+                    Navigator.pop(context); 
                   },
                   icon: const Icon(Icons.done)
                 )
@@ -191,8 +213,17 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                     secondSubtitle: characterProvider.character.level.toString(),
                     asset: "assets/svg/character/experience.svg",
                     width: 155,
-                    justText: true,
-                    onTextChangedFistSubtitle: (value) => characterProvider.updateLevel(value),
+                    justText: false,
+                    onTextChangedFistSubtitle: (value) {
+                      if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
+                        characterProvider.character.experience = int.parse(value);
+                      }
+                    },
+                    onTextChangedSecondSubtitle: (value) {
+                      if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
+                        characterProvider.character.level = int.parse(value);
+                      }
+                    },
                   )
                 ],
               ),
@@ -215,7 +246,7 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                     title: characterProvider.character.primaryStats.values.elementAt(index).toString(), 
                     // title: index == 5 && characterProvider.character.primaryStats.keys.elementAt(index) == "Percepção Passiva" ? characterProvider.calculatePassivePerception().toString() : characterProvider.character.primaryStats.values.elementAt(index).toString(),
                     label: characterProvider.character.primaryStats.keys.elementAt(index), 
-                    justText: index == 1 ? true : false,
+                    justText: false,
                     onTextChanged: (value) {
                       if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
                         characterProvider.character.primaryStats[characterProvider.character.primaryStats.keys.elementAt(index)] = int.parse(value.trim());
@@ -441,7 +472,20 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                     )
                   ],
                 ), 
-            )
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(horizontalPadding*2, verticalPadding, horizontalPadding*2, 0),
+              child: ElevatedButton(
+                style: const ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(Colors.redAccent),
+                  padding: WidgetStatePropertyAll(EdgeInsets.all(horizontalPadding))
+                ),
+                onPressed: () {
+                  _showDeleteDialog();
+                },
+                child: Text("Excluir Personagem", style: TextStyles.instance.regular),
+              ),
+            ),
           ],
         ),
       ),

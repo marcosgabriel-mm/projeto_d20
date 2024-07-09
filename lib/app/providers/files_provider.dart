@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:d20_project/app/models/character.dart';
 import 'package:d20_project/app/models/notes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -130,17 +132,123 @@ class FilesProvider {
   }
 
   //* Characters section
+
+  Future getJson(int index) async {
+    
+    Directory directory = Directory('${(await _localAppDirectory).path}/characters/CHAR$index');
+    File jsonFile = File("");
+
+    for (var entity in directory.listSync()) {
+      if (entity is File && entity.path.endsWith('.json')) {
+        jsonFile = entity;
+        break;
+      }
+    }
+
+    String jsonString = await jsonFile.readAsString();
+    Map<String, dynamic> json = jsonDecode(jsonString);
+    return json;
+  }
+
+  Future getCharacterFiles(int characterId) async {
+    
+    final appDirectory = await _localAppDirectory;
+    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$characterId');
+    Map<String, String> files = {};
+
+    if(await characterDirectory.exists()){
+      for (var entity in characterDirectory.listSync()) {
+        if (entity is File) {
+          if (entity.path.endsWith('.json')) {
+            files['json'] = entity.path.toString();
+          } else if (entity.path.endsWith('.jpg') || entity.path.endsWith('.png')) {
+            files['photo'] = entity.path;
+          }
+        }
+      }
+    }
+    return files;
+  }
+
+  Future saveCharacter(Character character, int index) async {
+
+    final  appDirectory = await  _localAppDirectory;
+    int quantity = await getCharactersQuantityInPath();
+
+    if (index.isNegative) {
+
+      try {
+        Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$quantity');
+
+        if (!await characterDirectory.exists()) {
+          await characterDirectory.create();
+        }
+       
+        File jsonFile = File('${characterDirectory.path}/${character.name}_${character.classType}_${character.currentHitPoints}_${character.level}.json');
+        await jsonFile.writeAsString(jsonEncode(character.toJson()));
+
+        ByteData data = await rootBundle.load("assets/images/addcharacter.png");
+        List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+
+        File imageFile = File('${characterDirectory.path}/character_photo_$quantity.jpg');
+        await imageFile.writeAsBytes(bytes);
+      }
+      catch (e) {
+        debugPrint('Erro ao salvar arquivo: $e');
+      }
+
+    } else {
+      
+      try {
+        Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$index');
+
+        if (!await characterDirectory.exists()) {
+          await characterDirectory.create();
+        }
+        
+        List<FileSystemEntity> files = characterDirectory.listSync();
+        for (var file in files) {
+          if (file is File && file.path.endsWith('.json')) {
+            await file.delete();
+          }
+        }
+
+        File jsonFile = File('${characterDirectory.path}/${character.name}_${character.classType}_${character.currentHitPoints}_${character.level}.json');
+        await jsonFile.writeAsString(jsonEncode(character.toJson()));
+      }
+      catch (e) {
+        debugPrint('Erro ao salvar arquivo: $e');
+      }
+    }
+  }
   
+  Future deleteCharacter(int characterId) async {
+
+    final appDirectory = await _localAppDirectory;
+    Directory oldCharacterDirectory = Directory('${appDirectory.path}/characters/CHAR$characterId');
+
+    if (await oldCharacterDirectory.exists()) {
+      await oldCharacterDirectory.delete(recursive: true);
+    }
+
+    int quantity = await getCharactersQuantityInPath();
+    for (int newIndex = characterId; newIndex < quantity; newIndex++) {
+      Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR${newIndex+1}');
+      if (await characterDirectory.exists()) {
+        String newPath = '${appDirectory.path}/characters/CHAR$newIndex';
+        characterDirectory.renameSync(newPath);
+      }
+    }
+  }
+
   Future<void> saveNewPhoto(int characterId) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       final appDirectory = await _localAppDirectory;
-
       
-      String id = (characterId+1).toString();
-      Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$id');
+      Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$characterId');
       if (!await characterDirectory.parent.exists()) {
         await characterDirectory.parent.create();
       }
@@ -149,33 +257,7 @@ class FilesProvider {
         await characterDirectory.create();
       }
 
-      String characterName = 'Character';
-      String characterClass = 'Class';
-      int characterLife = 0;
-      int characterLevel = 0;
-
-      if (await characterDirectory.exists()) {
-        var files = characterDirectory.listSync();
-
-        for (var file in files) {
-          if (file is File) {
-            if (path.extension(file.path) == '.json')  {
-              List<String> parts = path.basename(file.path).split('_');
-              String lastPart = parts.last;
-              List<String> lastPartAndExtension = lastPart.split('.');
-              parts[parts.length - 1] = lastPartAndExtension.first;
-              characterName = parts[0];
-              characterClass = parts[1];
-              characterLife = int.parse(parts[2]);
-              characterLevel = int.parse(parts[3]);
-            }
-          }
-        }
-      }
-
-      if (await characterDirectory.exists()) {
       var files = characterDirectory.listSync();
-
       for (var file in files) {
         if (file is File) {
           if (path.extension(file.path) == '.jpg' || path.extension(file.path) == '.png') {
@@ -183,127 +265,10 @@ class FilesProvider {
           }
         }
       }
-    }
 
       File imageFile = File(pickedFile.path);
-      await imageFile.copy('${characterDirectory.path}/${characterName}_${characterClass}_${characterLife}_$characterLevel.jpg');
+      await imageFile.copy('${characterDirectory.path}/character_photo_$characterId.jpg');
     }
-  }
-
-  Future<void> saveExistentJson(int characterId, Character character) async {
-
-    final appDirectory = await _localAppDirectory;
-    String id = (characterId+1).toString();
-    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$id');
-
-    if (!await characterDirectory.parent.exists()) {
-      await characterDirectory.parent.create();
-    }
-
-    if (!await characterDirectory.exists()) {
-      await characterDirectory.create();
-    }
-
-    if (await characterDirectory.exists()) {
-      List<FileSystemEntity> files = characterDirectory.listSync();
-      for (var file in files) {
-      if (file is File && file.path.endsWith('.json')) {
-        await file.delete();
-      }
-      }
-    }
-
-    File jsonFile = File('${characterDirectory.path}/${character.name}_${character.classType}_${character.currentHitPoints}_${character.level}.json');
-    await jsonFile.writeAsString(jsonEncode(character.toJson()));
-  }
-
-  Future<void> saveNewJson(Character character) async {
-    final appDirectory = await _localAppDirectory;
-    int quantity = await getCharactersQuantityInPath();
-
-    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR${quantity + 1}');
-
-    if (!await characterDirectory.parent.exists()) {
-      await characterDirectory.parent.create();
-    }
-
-    if (!await characterDirectory.exists()) {
-      await characterDirectory.create();
-    }
-
-    File jsonFile = File('${characterDirectory.path}/${character.name}_${character.classType}_${character.currentHitPoints}_${character.level}.json');
-    await jsonFile.writeAsString(jsonEncode(character.toJson()));
-  }
-
-  Future deleteFolderAndRenameAll(List<int> indexes) async {
-    
-    final appDirectory = await _localAppDirectory;
-
-    for (var index in indexes){
-      Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR${index+1}');
-
-      if (await characterDirectory.exists()) {
-        await characterDirectory.delete(recursive: true);
-      }
-    } 
-
-    int quantity = await getCharactersQuantityInPath();
-    if (quantity == 0) {
-      return;
-    }else{
-      Directory characterDirectory = Directory('${appDirectory.path}/characters');
-      int newIndex = 1;
-      for (var entity in characterDirectory.listSync()) {
-        if (entity is Directory) {
-          String newPath = '${appDirectory.path}/characters/CHAR$newIndex';
-          entity.renameSync(newPath);
-          newIndex++;
-        }
-      }      
-    }
-
-  }
-
-  Future getJson(String directory) async {
-    
-    File jsonFile = File(directory);
-    String jsonString = await jsonFile.readAsString();
-
-    Map<String, dynamic> json = jsonDecode(jsonString);
-    return json;
-  }
-
-  Future getNameOfFiles(int characterId) async {
-    
-    String id = (characterId+1).toString();
-    final appDirectory = await _localAppDirectory;
-    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$id');
-
-    if(await characterDirectory.exists()){
-      for (var entity in characterDirectory.listSync()) {
-        if (entity is File && entity.path.endsWith('.json')) {
-          return entity.path;
-        }
-      }
-    }
-    return null;
-  }
-
-  Future<String> loadPhoto(int characterId) async {
-    
-    final appDirectory = await _localAppDirectory;
-    String id = (characterId+1).toString();
-    Directory characterDirectory = Directory('${appDirectory.path}/characters/CHAR$id');
-    
-    if (await characterDirectory.exists()) {
-      List<FileSystemEntity> entities = characterDirectory.listSync();
-      for (FileSystemEntity entity in entities) {
-        if (entity is File && entity.path.endsWith('.jpg')) {
-          return entity.path;
-        }
-      }
-    }
-    return "";
   }
 
   Future getCharactersQuantityInPath() async {
@@ -312,6 +277,10 @@ class FilesProvider {
     Directory characterDirectory = Directory('${appDirectory.path}/characters');
     int quantity = 0;
 
+    if (! await characterDirectory.exists()) {
+      await characterDirectory.create();
+    }
+
     for (var entity in characterDirectory.listSync()) {
       if (entity is Directory) {
         debugPrint(entity.path);
@@ -319,7 +288,6 @@ class FilesProvider {
       }
     }
 
-    // print(quantity);
     return quantity;
   }
 
@@ -327,6 +295,7 @@ class FilesProvider {
     
     final appDirectory = await _localAppDirectory;
     Directory characterDirectory = Directory('${appDirectory.path}/characters');
+    // debugPrint(characterDirectory.path);
 
     for (var entity in characterDirectory.listSync()) {
       if (entity is Directory) {
