@@ -168,7 +168,6 @@ class _CharacterDetailsState extends State<CharacterDetails> {
                 IconButton(
                   onPressed: ()  {
                     characterProvider.saveCharacter(characterProvider.character, widget.index);
-                    characterProvider.loadFilesToList();                    
                     Navigator.pop(context); 
                   },
                   icon: const Icon(Icons.done)

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:d20_project/app/models/character.dart';
 import 'package:d20_project/app/models/notes.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-// ignore: depend_on_referenced_packages
 import 'package:path/path.dart' as path;
 
 import 'package:d20_project/app/models/character.dart';
@@ -373,7 +372,7 @@ class CharacterProvider extends ChangeNotifier {
 
   void saveCharacter( Character character, int index) async {
     await FilesProvider().saveCharacter(character, index);
-    notifyListeners();
+    loadFilesToList();
   }
 
   void deleteCharacter(int index) async {
@@ -455,64 +454,34 @@ class CharacterProvider extends ChangeNotifier {
   }
 
   
-  //!arrumar essa função
   void searchCharactersByString(String search) async {
 
-    listOfCharacters.clear();
     int quantity = await FilesProvider().getCharactersQuantityInPath();
-    for (int index=0 ; index < quantity; index++) {
-      
-      String fullPath = await FilesProvider().getCharacterFiles(index);
-      String fileName = path.basename(fullPath);
-      
-      List<String> parts = fileName.split('_');
+    listOfCharacters.clear(); 
 
-      String lastPart = parts.last;
-      List<String> lastPartAndExtension = lastPart.split('.');
-      parts[parts.length - 1] = lastPartAndExtension.first;
+    for (int index=0; index < quantity; index++) {
+      Map<String, String> characterPath = await FilesProvider().getCharacterFiles(index);
+      String characterStringFile = characterPath['json']!.split('/').last.replaceFirst('.json', '');
       
-      for (int i = 0; i < parts.length; i++) {
-        if (parts[i].toLowerCase().contains(search.toLowerCase())) {
-          // listOfCharacters.add(parts);
-          break;
-        }
+      if (characterStringFile.toLowerCase().contains(search.toLowerCase())) {
+        listOfCharacters.add(characterPath);
       }
     }
-    
+
     notifyListeners();
   }
 
-  //! arrumar essa função
   Future addSpellandSave(Map<String, dynamic> spell, int index) async {
 
-    // spell['prepared'] = false;
-    // String fullPath = await FilesProvider().getNameOfFiles(index);
-    // Map<String, dynamic> characterJson = await FilesProvider().getJson(fullPath);
-    
-    // CharacterProvider characterProvider = CharacterProvider();
-    // characterProvider.loadCharacter(characterJson);
+    spell['prepared'] = false;
+    loadCharacter(index);
 
-    // if (characterProvider.character.spells.isEmpty) {
-    //   characterProvider.character.spells.add(spell);
-    //   FilesProvider().saveExistentJson(index, characterProvider.character);
-    //   return "Magia adicionada ao personagem";
-    // }
+    if (character.spells.isEmpty || !existsSpell(spell, character.spells) ) {
+      character.spells.add(spell);
+      return "Magia adicionada ao personagem";
+    }
 
-    // bool spellExists = false;
-    // for (var characterSpell in characterProvider.character.spells) {
-    //   if(characterSpell['name'] == spell['name']){
-    //     spellExists = true;
-    //     break;
-    //   }
-    // }
-
-    // if(!spellExists) {
-    //   characterProvider.character.spells.add(spell);
-    //   FilesProvider().saveExistentJson(index, characterProvider.character);
-    //   return "Magia adicionada ao personagem";
-    // } else {
-    //   return "Magia já existe no personagem";
-    // }
+    return "Magia já existe no personagem";
   }
 
   void togglePreparedSpell(String spellName) {
@@ -548,87 +517,14 @@ class CharacterProvider extends ChangeNotifier {
     return false;
   }
 
-  /*
-    void updateLevel(String value) {
+  bool existsSpell(Map<String, dynamic> spell, List<Map<dynamic, dynamic>> spells) {
 
-      if (value.trim().isNotEmpty && int.tryParse(value.trim()) != null) {
-        character.experience = int.parse(value.trim());
+    for (var characterSpell in spells) {
+      if(characterSpell['name'] == spell['name']){
+        return true;
       }
-
-      character.level = calculateLevel(character.experience);
-      calculateProeficiencyBonus();
-      notifyListeners();
-    }
-  */
-
-  /*
-    void calculateProeficiencyBonus() {
-      character.primaryStats['Bônus de Proficiência'] = 2 + (character.level~/4);
-      if (character.level > 16) {
-        character.primaryStats['Bônus de Proficiência'] = 6;
-      }
-      notifyListeners();
     }
 
-    //! Arrumar caso usar essa função
-    int? calculatePassivePerception() {
-      int wisdom = calcutateModificator(character.stats['Sabedoria']!);
-      int proeficiency = character.primaryStats['Bônus de Proficiência']!;
-
-      if (isProeficient('Percepcao')) {
-        character.primaryStats['Percepção Passiva'] = 10 + wisdom + proeficiency;
-      } else {
-        character.primaryStats['Percepção Passiva'] = 10 + wisdom;
-      }
-      return character.primaryStats['Percepção Passiva'];
-    }
-  */
-
-  /* 
-  calculateLevel(int experience){
-    if (experience < 300) {
-      return 1;
-    }else if (experience < 900) {
-      return 2;
-    }else if (experience < 2700) {
-      return 3;
-    }else if (experience < 6500) {
-      return 4;
-    }else if (experience < 14000) {
-      return 5;
-    }else if (experience < 23000) {
-      return 6;
-    }else if (experience < 34000) {
-      return 7;
-    }else if (experience < 48000) {
-      return 8;
-    }else if (experience < 64000) {
-      return 9;
-    }else if (experience < 85000) {
-      return 10;
-    }else if (experience < 100000) {
-      return 11;
-    }else if (experience < 120000) {
-      return 12;
-    }else if (experience < 140000) {
-      return 13;
-    }else if (experience < 165000) {
-      return 14;
-    }else if (experience < 195000) {
-      return 15;
-    }else if (experience < 225000) {
-      return 16;
-    }else if (experience < 265000) {
-      return 17;
-    }else if (experience < 305000) {
-      return 18;
-    }else if (experience < 355000) {
-      return 19;
-    }else if (experience > 355000) {
-      return 20;
-    }
+    return false;
   }
-
-*/
-
 }

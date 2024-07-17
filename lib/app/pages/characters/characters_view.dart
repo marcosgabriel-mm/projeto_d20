@@ -37,6 +37,7 @@ class _CharacterSheetState extends State<CharacterSheet> {
     String fileNameWithoutExtension = fileName.split('.').first;
 
     List<String> parts = fileNameWithoutExtension.split('_');
+    // debugPrint(parts.toString());
 
     return parts;
   }
