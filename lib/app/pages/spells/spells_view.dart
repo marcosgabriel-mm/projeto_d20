@@ -91,6 +91,7 @@ class _SpellViewState extends State<SpellView> {
                     builder: (context) => FilterView(filters: spellProvider.spellFilters),
                   ),
                 );
+                if (filters==null) {return;}
                 if (!filters.isEmpty) {
                   spellProvider.searchSpellByFilter(filters);
                 }else{
