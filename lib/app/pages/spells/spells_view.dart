@@ -34,6 +34,12 @@ class _SpellViewState extends State<SpellView> {
     _scrollController.addListener(_loadMoreSpells);
   }
 
+  List _separeteString(String fullPath) {
+
+    List parts = fullPath.split('/').last.split('_');
+    return parts;
+  }
+
   void _loadMoreSpells() async {
 
     if (
@@ -201,8 +207,16 @@ class _SpellViewState extends State<SpellView> {
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text(characterProvider.listOfCharacters[characterIndex]['json'].toString(), style: TextStyles.instance.regular, textAlign: TextAlign.center,),
-                                              Text(characterProvider.listOfCharacters[characterIndex]['json'].toString(), style: TextStyles.instance.regular, textAlign: TextAlign.center,),
+                                              Text(
+                                                _separeteString(characterProvider.listOfCharacters[characterIndex]['json'].toString())[0],
+                                                style: TextStyles.instance.regular, 
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              Text(
+                                                _separeteString(characterProvider.listOfCharacters[characterIndex]['json'].toString())[1], 
+                                                style: TextStyles.instance.regular, 
+                                                textAlign: TextAlign.center,
+                                              ),
                                             ],
                                           ),
                                         )

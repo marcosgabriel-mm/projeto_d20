@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+
+// ignore: depend_on_referenced_packages, unused_import
 import 'package:path/path.dart' as path;
 
 import 'package:d20_project/app/models/character.dart';
@@ -321,7 +323,7 @@ class CharacterProvider extends ChangeNotifier {
 
   List<Map<String, String>> listOfCharacters = [];
 
-  void loadCharacter(int index) async {
+  Future loadCharacter(int index) async {
 
     if (index.isNegative) {
       character = characterDefault;
@@ -474,10 +476,14 @@ class CharacterProvider extends ChangeNotifier {
   Future addSpellandSave(Map<String, dynamic> spell, int index) async {
 
     spell['prepared'] = false;
-    loadCharacter(index);
+    await loadCharacter(index);
 
-    if (character.spells.isEmpty || !existsSpell(spell, character.spells) ) {
+    debugPrint(character.name);
+
+    if (!existsSpell(spell, character.spells)) {
       character.spells.add(spell);
+      saveCharacter(character, index);
+
       return "Magia adicionada ao personagem";
     }
 
@@ -520,6 +526,7 @@ class CharacterProvider extends ChangeNotifier {
   bool existsSpell(Map<String, dynamic> spell, List<Map<dynamic, dynamic>> spells) {
 
     for (var characterSpell in spells) {
+      debugPrint(characterSpell['name']);
       if(characterSpell['name'] == spell['name']){
         return true;
       }
