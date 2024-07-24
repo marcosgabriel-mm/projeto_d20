@@ -74,7 +74,9 @@ class AttacksProvider extends ChangeNotifier {
     if (areEveryoneSelected()) {
       indexes.clear();
     } else {
-      indexes = List.generate(listOfAttacks.length, (index) => index);
+      for (var index = 0; index < listOfAttacks.length; index++) {
+        indexes.add(index);
+      }
     }
     notifyListeners();
   }
